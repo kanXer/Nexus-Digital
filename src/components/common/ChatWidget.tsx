@@ -246,7 +246,7 @@ const clearHistory = () => {
     <>
       {/* Hint bubble + launcher */}
       <div
-        className="fixed right-6 z-50 flex flex-col items-end gap-3 always-dark transition-all duration-300"
+        className="fixed right-6 z-50 flex flex-col text-red items-end gap-3 always-dark transition-all duration-300"
         style={{ bottom: launcherBottom }}
       >
         <AnimatePresence>
@@ -256,7 +256,7 @@ const clearHistory = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.85 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="relative glass-card rounded-2xl rounded-br-sm px-4 py-2.5 text-xs font-semibold text-white shadow-card cursor-pointer"
+              className="relative glass-card rounded-2xl rounded-br-sm px-4 py-2.5 text-xs font-semibold shadow-card cursor-pointer"
               onClick={toggle}
             >
               <span className="flex items-center gap-2">
@@ -342,7 +342,7 @@ const clearHistory = () => {
                 ? "inset-0 p-4 sm:p-6 flex items-center justify-center"
                 : "right-4 left-4 sm:left-auto sm:right-6 sm:w-[400px]"
             }`}
-            style={fullscreen ? { bottom: 0, maxHeight: "none" } : { bottom: launcherBottom + 64, maxHeight: "min(88vh, 720px)", minHeight: "min(80vh, 660px)" }}
+            style={fullscreen ? { bottom: 0, maxHeight: "none" } : { bottom: launcherBottom + 64, top: 80, maxHeight: `calc(100dvh - 80px - ${launcherBottom + 64}px)` }}
           >
             {/* Dimmed, blurred page backdrop visible around the chat on big screens */}
             <AnimatePresence>
@@ -365,7 +365,7 @@ const clearHistory = () => {
             <div className={`relative flex flex-col overflow-hidden backdrop-blur-2xl border border-white/10 shadow-card chat-window-bg ${
               fullscreen
                 ? "rounded-3xl h-[calc(100vh-2rem)] sm:h-[calc(100vh-3rem)] md:max-h-[85vh] w-full md:w-auto md:min-w-[560px] lg:min-w-[680px]"
-                : "max-h-[88vh] max-h-[720px] rounded-3xl h-full"
+                : "rounded-3xl h-full"
             }`}>
               {/* Top gradient bar */}
               <div className="h-[3px] w-full bg-gradient-brand shrink-0" />
