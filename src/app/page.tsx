@@ -55,12 +55,12 @@ export default function HomePage() {
                 </span>
               </motion.div>
 
-              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.8rem,2.9vw,2.4rem)] font-bold text-white leading-[1.18] tracking-[-0.03em] mb-5">
+              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.65rem,2.7vw,2.3rem)] font-bold text-white leading-[1.2] tracking-[-0.03em] mb-5 break-words">
                 <motion.span
                   initial="hidden"
                   animate="show"
                   variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
-                  className="whitespace-nowrap"
+                  className="md:whitespace-nowrap"
                 >
                   {["Best", "Digital", "Marketing"].map((w) => (
                     <motion.span
@@ -77,7 +77,7 @@ export default function HomePage() {
                   initial="hidden"
                   animate="show"
                   variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
-                  className="whitespace-nowrap"
+                  className="md:whitespace-nowrap"
                 >
                   {["Agency"].map((w) => (
                     <motion.span
@@ -90,7 +90,7 @@ export default function HomePage() {
                   ))}
                 </motion.span>{" "}
                 <span className="gradient-text animate-gradient-text">
-                  <WordRotator words={["in Gorakhpur", "in Lucknow", "in UP", "Across India"]} />
+                  <WordRotator words={["in Gorakhpur", "in Lucknow", "in U.P.", "Across India"]} />
                 </span>
               </motion.h1>
 

@@ -60,6 +60,14 @@ export async function POST(req: Request) {
       name, email, phone, business, service, budget, message, date, time,
     });
 
+    // Auto-subscribe the submitter to the newsletter list so they receive
+    // future updates, without sending them a duplicate acknowledgement email.
+    try {
+      await saveSubmission("subscribe", { email, name, auto: true });
+    } catch (subErr) {
+      console.error("Auto-subscribe from contact form failed:", subErr);
+    }
+
     // Gmail SMTP
     await Promise.all([
       isBooking

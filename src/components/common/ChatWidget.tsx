@@ -45,6 +45,17 @@ const WHATSAPP_URL = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent
   "Hi! I just chatted with Friday and want to talk to your team."
 )}`;
 
+// Rotating hint bubble messages — shown one at a time above the floating
+// chat button, cycling through on each pop-up so it feels conversational.
+const HINT_MESSAGES = [
+  "Hi! I'm Friday — your AI assistant",
+  "Want to know about Nexus Digital services?",
+  "Ask me anything about SEO, Ads, or Web",
+  "Need help growing your business?",
+  "Let's boost your leads & sales",
+  "Have a question? Just tap here",
+];
+
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([WELCOME]);
@@ -59,6 +70,7 @@ export function ChatWidget() {
   const [launcherBottom, setLauncherBottom] = useState(80);
   const [fullscreen, setFullscreen] = useState(false);
   const [showGoDown, setShowGoDown] = useState(false);
+  const [hintIndex, setHintIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const openedRef = useRef(false);
 
@@ -68,9 +80,12 @@ export function ChatWidget() {
     const compute = () => {
       const scrolled = window.scrollY > 400;
       const isLg = window.matchMedia("(min-width: 1024px)").matches;
-      if (isLg) {
-        // Desktop stack: WhatsApp (80px) then chat above it.
-        setLauncherBottom(scrolled ? 152 : 144);
+if (isLg) {
+        // Desktop floating stack (bottom -> top): BackToTop (24) -> WhatsApp -> Chat.
+        // 24px gap between each button. All buttons are 56px (w-14 h-14).
+        // Not scrolled: WhatsApp at 24 (folds to BackToTop spot), Chat at 24+56+24 = 104.
+        // Scrolled: WhatsApp at 104 (24+56+24), Chat at 104+56+24 = 184.
+        setLauncherBottom(scrolled ? 184 : 104);
       } else {
         // Mobile stack: action bar (~60px); BackToTop (96px) only when scrolled.
         setLauncherBottom(scrolled ? 160 : 88);
@@ -92,12 +107,14 @@ export function ChatWidget() {
     return () => clearInterval(pulseId);
   }, []);
 
-  // Hint bubble pops up periodically when the chat is closed.
+  // Hint bubble pops up periodically when the chat is closed, cycling through
+  // a set of friendly messages so it never feels repetitive.
   useEffect(() => {
     if (open) return;
     const hintId = setInterval(() => {
+      setHintIndex((i) => (i + 1) % HINT_MESSAGES.length);
       setHint(true);
-      setTimeout(() => setHint(false), 3200);
+      setTimeout(() => setHint(false), 8000);
     }, 12000);
     return () => clearInterval(hintId);
   }, [open]);
@@ -261,7 +278,7 @@ const clearHistory = () => {
             >
               <span className="flex items-center gap-2">
                 <Sparkles className="w-3.5 h-3.5 text-brand-blue-light" />
-                Need help growing your business?
+                {HINT_MESSAGES[hintIndex]}
               </span>
               <span className="absolute -bottom-1 right-5 w-3 h-3 bg-white/[0.06] border-r border-b border-white/10 rotate-45" />
             </motion.div>

@@ -8,10 +8,6 @@ import { BackToTop } from "@/components/common/BackToTop";
 import { ChatWidget } from "@/components/common/ChatWidget";
 import { MobileActionBar } from "@/components/common/MobileActionBar";
 
-const CookieConsent = dynamic(() => import("@/components/common/CookieConsent").then((m) => m.CookieConsent), { ssr: false });
-const LeadMagnetPopup = dynamic(() => import("@/components/common/LeadMagnetPopup").then((m) => m.LeadMagnetPopup), { ssr: false });
-const ExitIntentPopup = dynamic(() => import("@/components/common/ExitIntentPopup").then((m) => m.ExitIntentPopup), { ssr: false });
-
 export default function SiteChrome() {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
@@ -42,9 +38,6 @@ export default function SiteChrome() {
       <ChatWidget />
       <MobileActionBar />
       <BackToTop />
-      <CookieConsent />
-      <LeadMagnetPopup />
-      <ExitIntentPopup />
     </>
   );
 }

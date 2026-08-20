@@ -42,6 +42,12 @@ export async function submitEnquiry(data: ContactFormData) {
 
   await sendTelegram(rawMsg);
   await saveSubmission("enquiry", { ...data });
+  // Auto-add to newsletter list (used by admin "Subscribers" view).
+  try {
+    await saveSubmission("subscribe", { email: data.email, name: data.name, auto: true });
+  } catch (subErr) {
+    console.error("Auto-subscribe from enquiry failed:", subErr);
+  }
   await Promise.all([
     notifyAdminEnquiry(data),
     sendAckEmail(data.email, data.name, false, true),
