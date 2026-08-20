@@ -90,7 +90,7 @@ export default function HomePage() {
                   ))}
                 </motion.span>{" "}
                 <span className="gradient-text animate-gradient-text">
-                  <WordRotator words={["in Gorakhpur", "in Uttar Pradesh", "in Lucknow", "Across India"]} />
+                  <WordRotator words={["in Gorakhpur", "in Lucknow", "in UP", "Across India"]} />
                 </span>
               </motion.h1>
 
