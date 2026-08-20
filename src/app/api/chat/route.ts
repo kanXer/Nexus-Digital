@@ -126,6 +126,25 @@ async function loadPersona(): Promise<string> {
   }
 }
 
+// All key site pages the chatbot should crawl so it can answer questions
+// about pricing, services, case-studies, etc. regardless of which page the
+// visitor is currently on.
+const SITE_PAGES = [
+  "",
+  "/services",
+  "/pricing",
+  "/about",
+  "/case-studies",
+  "/testimonials",
+  "/faq",
+  "/contact",
+  "/enquiry",
+];
+
+function siteUrl(path: string): string {
+  return (DEFAULT_SITE.replace(/\/$/, "")) + path;
+}
+
 async function readWebpage(url: string): Promise<string> {
   const target = /^https?:\/\//i.test(url) ? url : DEFAULT_SITE;
   try {
@@ -139,6 +158,44 @@ async function readWebpage(url: string): Promise<string> {
   } catch {
     return "";
   }
+}
+
+// In-memory cache of the combined site text so we don't crawl all 9 pages on
+// every single chat message. Refreshed every 30 minutes.
+let siteCache: { text: string; ts: number } | null = null;
+const SITE_CACHE_TTL = 30 * 60 * 1000;
+
+// Fetch all key pages concurrently and combine their text. Falls back to
+// reading just the current page if the live site is unreachable.
+async function readFullSite(currentUrl: string): Promise<string> {
+  if (siteCache && Date.now() - siteCache.ts < SITE_CACHE_TTL) {
+    // Append the current page too (cheap — single fetch) in case it's unique.
+    let combined = siteCache.text;
+    if (currentUrl && !siteCache.text.includes(`[PAGE: ${currentUrl}]`)) {
+      const cur = await readWebpage(currentUrl);
+      if (cur) combined += `\n\n[PAGE: ${currentUrl}]\n${cur}`;
+    }
+    return combined;
+  }
+
+  // Crawl ALL key pages in parallel.
+  const results = await Promise.all(
+    SITE_PAGES.map(async (p) => {
+      const text = await readWebpage(siteUrl(p));
+      return text ? `[PAGE: ${p || "/"}]\n${text}` : "";
+    })
+  );
+  let combined = results.filter(Boolean).join("\n\n");
+
+  // Also include the current page (might differ from the canonical site
+  // during local dev or if the visitor is on a unique URL).
+  if (currentUrl && !results.some((r) => r.includes(currentUrl))) {
+    const cur = await readWebpage(currentUrl);
+    if (cur) combined += `\n\n[PAGE: ${currentUrl}]\n${cur}`;
+  }
+
+  siteCache = { text: combined, ts: Date.now() };
+  return combined;
 }
 
 function htmlToText(html: string): string {
@@ -454,11 +511,12 @@ export async function POST(req: Request) {
     // ── NORMAL QUESTION ANSWERING (RAG + reply model) ──
     const persona = await loadPersona();
 
-    let pageText = await readWebpage(url);
-    if (!pageText) pageText = await readWebpage(DEFAULT_SITE);
-
+    // Crawl ALL key site pages (home, services, pricing, about, etc.) so the
+    // AI can answer questions about pricing/services even if the visitor is
+    // currently on a different page.
+    const pageText = await readFullSite(url);
+    const chunks = chunkText(pageText || "", 2500);
     let context = "";
-    const chunks = chunkText(pageText || "");
     if (chunks.length > 0) {
       const embeddings = await embed([...chunks, message]);
       if (embeddings && embeddings.length === chunks.length + 1) {
@@ -466,10 +524,10 @@ export async function POST(req: Request) {
         const scored = chunks
           .map((chunk, i) => ({ chunk, score: cosineSim(embeddings[i], questionEmbed) }))
           .sort((a, b) => b.score - a.score)
-          .slice(0, 5);
+          .slice(0, 8);
         context = scored.map((s) => s.chunk).join("\n\n");
       } else {
-        context = chunks.slice(0, 5).join("\n\n");
+        context = chunks.slice(0, 8).join("\n\n");
       }
     }
 
