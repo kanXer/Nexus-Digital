@@ -78,7 +78,7 @@ export function ChatWidget() {
   // visible, so hidden buttons never leave a dead gap beneath it.
   useEffect(() => {
     const compute = () => {
-      const scrolled = window.scrollY > 400;
+      const scrolled = window.scrollY > 150;
       const isLg = window.matchMedia("(min-width: 1024px)").matches;
 if (isLg) {
         // Desktop floating stack (bottom -> top): BackToTop (24) -> WhatsApp -> Chat.
@@ -87,8 +87,9 @@ if (isLg) {
         // Scrolled: WhatsApp at 104 (24+56+24), Chat at 104+56+24 = 184.
         setLauncherBottom(scrolled ? 184 : 104);
       } else {
-        // Mobile stack: action bar (~60px); BackToTop (96px) only when scrolled.
-        setLauncherBottom(scrolled ? 160 : 88);
+        // Mobile stack: MobileActionBar (~72px) at bottom; BackToTop (96px) only when scrolled.
+        // Chat launcher sits above BackToTop with a 24px gap when scrolled.
+        setLauncherBottom(scrolled ? 176 : 88);
       }
     };
     compute();
@@ -308,13 +309,13 @@ const clearHistory = () => {
                 animate={{ opacity: 0, scale: 2.1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 1.6, ease: "easeOut" }}
-                className="absolute inset-0 rounded-full bg-brand-blue"
+                className="absolute inset-0 rounded-full bg-brand-blue pointer-events-none"
               />
             )}
           </AnimatePresence>
           {/* Breathing ring */}
           <span
-            className="absolute inset-0 rounded-full ring-2 ring-brand-blue-light animate-pulse"
+            className="absolute inset-0 rounded-full ring-2 ring-brand-blue-light animate-pulse pointer-events-none"
             style={{ animationDuration: "3s" }}
           />
 

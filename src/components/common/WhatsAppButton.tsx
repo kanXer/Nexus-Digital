@@ -17,7 +17,7 @@ export function WhatsAppButton() {
   const [bottom, setBottom] = useState(FOLDED);
 
   useEffect(() => {
-    const compute = () => setBottom(window.scrollY > 400 ? UNFOLDED : FOLDED);
+    const compute = () => setBottom(window.scrollY > 150 ? UNFOLDED : FOLDED);
     compute();
     const onScroll = () => compute();
     window.addEventListener("scroll", onScroll, { passive: true });
