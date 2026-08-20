@@ -1,4 +1,5 @@
 "use client";
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { Testimonial } from "@/data/testimonials";
@@ -8,7 +9,7 @@ interface TestimonialCardProps {
   index?: number;
 }
 
-export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps) {
+function TestimonialCardBase({ testimonial, index = 0 }: TestimonialCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -51,3 +52,5 @@ export function TestimonialCard({ testimonial, index = 0 }: TestimonialCardProps
     </motion.div>
   );
 }
+
+export const TestimonialCard = memo(TestimonialCardBase);

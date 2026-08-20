@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
 
@@ -9,7 +9,7 @@ interface FAQItemProps {
   index?: number;
 }
 
-export function FAQItem({ question, answer, index = 0 }: FAQItemProps) {
+function FAQItemBase({ question, answer, index = 0 }: FAQItemProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -54,3 +54,5 @@ export function FAQItem({ question, answer, index = 0 }: FAQItemProps) {
     </motion.div>
   );
 }
+
+export const FAQItem = memo(FAQItemBase);

@@ -1,4 +1,5 @@
 "use client";
+import { memo } from "react";
 import { motion } from "framer-motion";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
 
@@ -11,7 +12,7 @@ interface SectionHeadingProps {
   className?: string;
 }
 
-export function SectionHeading({
+function SectionHeadingBase({
   badge,
   title,
   highlight,
@@ -53,3 +54,5 @@ export function SectionHeading({
     </div>
   );
 }
+
+export const SectionHeading = memo(SectionHeadingBase);

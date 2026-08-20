@@ -87,9 +87,11 @@ if (isLg) {
         // Scrolled: WhatsApp at 104 (24+56+24), Chat at 104+56+24 = 184.
         setLauncherBottom(scrolled ? 184 : 104);
       } else {
-        // Mobile stack: MobileActionBar (~72px) at bottom; BackToTop (96px) only when scrolled.
-        // Chat launcher sits above BackToTop with a 24px gap when scrolled.
-        setLauncherBottom(scrolled ? 176 : 88);
+        // Mobile stack (bottom -> top): BackToTop (24) -> WhatsApp (104) -> Chat (184).
+        // All 56px tall with 24px gaps. BackToTop only visible when scrolled.
+        // Not scrolled: WhatsApp 24 (folds to BackToTop spot), Chat 104.
+        // Scrolled: WhatsApp 104 (24+56+24), Chat 184 (104+56+24).
+        setLauncherBottom(scrolled ? 184 : 104);
       }
     };
     compute();

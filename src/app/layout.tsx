@@ -232,6 +232,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="en" className={`${poppins.variable} ${unbounded.variable}`} data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api.telegram.org" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </head>
       <body className="bg-black text-white antialiased">

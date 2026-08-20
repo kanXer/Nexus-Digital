@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowRight, CheckCircle, Star, X, CheckIcon, Phone,
@@ -169,9 +170,8 @@ export default function HomeBelowFold() {
                 <div className="absolute -top-12 -right-12 w-24 h-24 bg-brand-blue/5 rounded-full blur-2xl group-hover:bg-brand-blue/10 transition-all duration-500" />
                 <div className="relative z-10">
                   {member.photo ? (
-                    <div className="w-24 h-24 rounded-full overflow-hidden ring-2 ring-brand-blue/40 mx-auto mb-4 shadow-[0_4px_20px_rgba(220,38,38,0.3)]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={member.photo} alt={member.name} className="w-full h-full object-cover" loading="lazy" />
+                    <div className="relative w-24 h-24 rounded-full overflow-hidden ring-2 ring-brand-blue/40 mx-auto mb-4 shadow-[0_4px_20px_rgba(220,38,38,0.3)]">
+                      <Image src={member.photo} alt={member.name} fill sizes="96px" className="object-cover" />
                     </div>
                   ) : (
                     <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light flex items-center justify-center text-white text-xl font-bold mx-auto mb-4 shadow-[0_4px_20px_rgba(220,38,38,0.3)]">

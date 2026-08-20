@@ -36,7 +36,6 @@ export default function SiteChrome() {
       <Footer />
       <WhatsAppButton />
       <ChatWidget />
-      <MobileActionBar />
       <BackToTop />
     </>
   );
