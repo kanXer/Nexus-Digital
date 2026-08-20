@@ -27,7 +27,7 @@ export default function TestimonialsPage() {
             as="h1"
             title="What Our Clients Say"
             highlight="Clients Say"
-            className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-5"
+            className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-5"
           />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55">
             Don&apos;t take our word for it — here&apos;s what the businesses we work with say about {config.name}, the trusted digital marketing agency in Gorakhpur &amp; Uttar Pradesh.

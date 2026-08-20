@@ -51,18 +51,18 @@ export default function HomePage() {
               <motion.div variants={itemVariants}>
                 <span className="tag-badge mb-5 inline-flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                  Digital Marketing Agency in India
+                  Digital Marketing Agency in Gorakhpur, UP
                 </span>
               </motion.div>
 
-              <motion.h1 variants={itemVariants} className="text-[clamp(2.25rem,5vw,3.5rem)] font-black text-white leading-[1.05] tracking-[-0.04em] mb-5">
+              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.8rem,2.9vw,2.4rem)] font-bold text-white leading-[1.18] tracking-[-0.03em] mb-5">
                 <motion.span
                   initial="hidden"
                   animate="show"
                   variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
-                  className="inline-block"
+                  className="whitespace-nowrap"
                 >
-                  {["Best", "Digital", "Marketing", "Agency"].map((w) => (
+                  {["Best", "Digital", "Marketing"].map((w) => (
                     <motion.span
                       key={w}
                       variants={{ hidden: { opacity: 0, y: 32, filter: "blur(4px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] } } }}
@@ -71,9 +71,26 @@ export default function HomePage() {
                       {w}
                     </motion.span>
                   ))}
+                </motion.span>
+                <br className="hidden md:block" />
+                <motion.span
+                  initial="hidden"
+                  animate="show"
+                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
+                  className="whitespace-nowrap"
+                >
+                  {["Agency"].map((w) => (
+                    <motion.span
+                      key={w}
+                      variants={{ hidden: { opacity: 0, y: 32, filter: "blur(4px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] } } }}
+                      className="inline-block mr-[0.3em]"
+                    >
+                      {w}
+                    </motion.span>
+                  ))}
                 </motion.span>{" "}
                 <span className="gradient-text animate-gradient-text">
-                  <WordRotator words={["in Gorakhpur", "in Uttar Pradesh", "in Lucknow", "across India"]} />
+                  <WordRotator words={["in Gorakhpur", "in Uttar Pradesh", "in Lucknow", "Across India"]} />
                 </span>
               </motion.h1>
 

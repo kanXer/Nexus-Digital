@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
 import { BackToTop } from "@/components/common/BackToTop";
+import { ChatWidget } from "@/components/common/ChatWidget";
 import { MobileActionBar } from "@/components/common/MobileActionBar";
 
 const CookieConsent = dynamic(() => import("@/components/common/CookieConsent").then((m) => m.CookieConsent), { ssr: false });
@@ -38,6 +39,7 @@ export default function SiteChrome() {
       <Navbar />
       <Footer />
       <WhatsAppButton />
+      <ChatWidget />
       <MobileActionBar />
       <BackToTop />
       <CookieConsent />

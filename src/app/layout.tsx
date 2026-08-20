@@ -1,19 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Poppins, Unbounded } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 import { config } from "@/lib/config";
 import SiteChrome from "@/components/layout/SiteChrome";
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
+  variable: "--font-poppins",
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const unbounded = Unbounded({
   subsets: ["latin"],
-  variable: "--font-grotesk",
+  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-unbounded",
   display: "swap",
 });
 
@@ -226,7 +229,7 @@ const schemaMarkup = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-      <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`} data-theme="light" suppressHydrationWarning>
+      <html lang="en" className={`${poppins.variable} ${unbounded.variable}`} data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />

@@ -37,7 +37,7 @@ export function SectionHeading({
         title={title}
         highlight={highlight}
         initialDelay={badge ? 0.1 : 0.15}
-        className="text-[clamp(1.75rem,4vw,3rem)] font-black text-white leading-[1.08] tracking-[-0.03em]"
+        className="font-display text-[clamp(1.5rem,3.2vw,2.6rem)] font-bold text-white leading-[1.18] tracking-[-0.02em]"
       />
       {subtitle && (
         <motion.p

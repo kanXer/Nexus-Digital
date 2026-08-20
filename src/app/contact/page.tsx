@@ -97,7 +97,7 @@ export default function ContactPage() {
             as="h1"
             title="Let's Grow Together"
             highlight="Grow Together"
-            className="text-[clamp(2rem,5vw,3.75rem)] font-black text-white leading-[1.05] tracking-[-0.04em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
           />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 leading-relaxed">
             Tell us about your business and we&apos;ll create a custom growth plan. As the top digital marketing agency gorakhpur businesses count on, Nexus Digital Marketing Agency Gorakhpur is ready to help your brand rank, advertise, and grow. We offer our services across Gorakhpur, Lucknow, Uttar Pradesh, and all of India.

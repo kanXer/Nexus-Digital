@@ -21,7 +21,7 @@ export default function CaseStudiesPage() {
             as="h1"
             title="Real Clients. Real Results."
             highlight="Real Results."
-            className="text-[clamp(2rem,5vw,3.75rem)] font-black text-white leading-[1.05] tracking-[-0.04em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
           />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 leading-relaxed">
             Detailed breakdowns of campaigns delivering steady, measurable results for our clients — from Google Ads PPC management and SEO to lead generation for businesses in Gorakhpur, Uttar Pradesh &amp; India.

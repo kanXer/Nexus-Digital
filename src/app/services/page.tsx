@@ -42,7 +42,7 @@ export default function ServicesPage() {
             as="h1"
             title="Full-Stack Digital Marketing"
             highlight="Services That Convert"
-            className="text-[clamp(2rem,5vw,3.75rem)] font-black text-white leading-[1.05] tracking-[-0.04em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
           />
           <motion.p
             initial={{ opacity: 0, y: 15 }}

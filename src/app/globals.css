@@ -34,8 +34,8 @@
   --color-dark-300: #444444;
   --color-glass-white: rgba(255, 255, 255, 0.05);
   --color-glass-border: rgba(255, 255, 255, 0.1);
-  --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
-  --font-display: var(--font-grotesk), 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-sans: var(--font-poppins), 'Poppins', sans-serif;
+  --font-display: var(--font-unbounded), 'Unbounded', sans-serif;
 }
 
 /* ═══ THEME VARIABLES ═══ */
@@ -544,5 +544,113 @@ textarea.input-field { min-height: 7rem; resize: vertical; }
 
   --border-default: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.16);
+}
+
+/* ═══ THEME-AWARE CHAT WINDOW ═══ */
+.chat-window-bg {
+  background: linear-gradient(160deg, #171318 0%, #0B0B0D 45%, #08080A 100%);
+}
+
+.chat-surface {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-surface-input {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4));
+}
+
+.chat-field {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+[data-theme="light"] .chat-field {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.32);
+}
+
+[data-theme="light"] .chat-input::placeholder { color: rgba(0, 0, 0, 0.5); }
+
+.chat-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-overlay {
+  background: linear-gradient(to bottom, transparent, transparent 45%, rgba(0, 0, 0, 0.4));
+}
+
+.chat-user-text { color: #fff; }
+
+[data-theme="light"] .chat-window-bg {
+  background: linear-gradient(160deg, #fdfdfd 0%, #f5f6f8 45%, #eceef1 100%);
+}
+
+[data-theme="light"] .chat-surface {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .chat-surface-input {
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+}
+
+[data-theme="light"] .chat-field {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .chat-chip {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .chat-overlay {
+  background: linear-gradient(to bottom, transparent, transparent 45%, rgba(255, 255, 255, 0.35));
+}
+
+[data-theme="light"] .chat-user-text { color: #fff; }
+
+/* Chat window text selection — distinct from the site's red selection so it
+   stands out inside the chat regardless of the surrounding theme. */
+.chat-window *::selection {
+  background-color: #7C3AED;
+  color: #ffffff;
+}
+.chat-window ::-moz-selection {
+  background-color: #7C3AED;
+  color: #ffffff;
+}
+
+/* Scrollbar visible inside the chat window on both themes. */
+.chat-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+.chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 9999px;
+}
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+[data-theme="light"] .chat-scrollbar {
+  scrollbar-color: rgba(0, 0, 0, 0.35) transparent;
+}
+[data-theme="light"] .chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.35);
+}
+[data-theme="light"] .chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.55);
 }
 

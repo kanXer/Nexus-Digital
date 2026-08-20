@@ -7,6 +7,7 @@ import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
 import { config } from "@/lib/config";
 import { FAQItem } from "@/components/ui/FAQItem";
 import { pricingPlans, pricingFaqs } from "@/data/pricing";
+import { servicePricing } from "@/data/servicePricing";
 
 export default function PricingPage() {
   return (
@@ -21,7 +22,7 @@ export default function PricingPage() {
             as="h1"
             title="Simple, Transparent Pricing"
             highlight="Pricing"
-            className="text-[clamp(2rem,5vw,3.75rem)] font-black text-white leading-[1.05] tracking-[-0.04em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
           />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 leading-relaxed">
             Looking for an affordable digital marketing agency in Gorakhpur? As the top digital marketing agency gorakhpur businesses trust, Nexus Digital Marketing Agency Gorakhpur offers clear, budget-friendly packages. Explore our digital marketing services in Gorakhpur with transparent rates, no hidden fees, and zero long-term lock-ins.
@@ -86,6 +87,74 @@ export default function PricingPage() {
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-center text-white/25 text-xs mt-3">
             *Note: Ad budgets are paid directly to platforms and are not included in service fees.
           </motion.p>
+        </div>
+      </section>
+
+      {/* Service-wise pricing breakdown */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-hero pointer-events-none opacity-60" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <SectionHeading
+            badge="Service Pricing"
+            title="Service-wise "
+            highlight="Breakdown"
+            subtitle="Transparent service-fee pricing for each offering — available as both freelance and full agency rates."
+          />
+          <div className="mt-14 space-y-14">
+            {servicePricing.map((group, gi) => (
+              <div key={group.category}>
+                <motion.h3
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
+                  className="flex items-center gap-3 text-lg md:text-xl font-bold text-white mb-6"
+                >
+                  <span className="w-8 h-8 rounded-xl bg-gradient-brand flex items-center justify-center shadow-glow-sm shrink-0">
+                    <span className="text-xs">₹</span>
+                  </span>
+                  {group.category}
+                </motion.h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {group.items.map((item, i) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, y: 24 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
+                      className="glass-card border-white/8 rounded-3xl p-6 flex flex-col hover:border-brand-blue/40 hover:shadow-glow-sm transition-all duration-300"
+                    >
+                      <h4 className="text-[15px] font-bold text-white leading-snug mb-4">{item.serviceName}</h4>
+                      <ul className="space-y-2 flex-1 mb-5">
+                        {item.deliverables.map((d) => (
+                          <li key={d} className="flex items-start gap-2 text-[13px] text-white/60">
+                            <Check className="w-3.5 h-3.5 text-brand-blue-light shrink-0 mt-0.5" />
+                            <span>{d}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="grid grid-cols-2 gap-3 mb-4">
+                        <div className="rounded-2xl bg-white/[0.05] border border-white/8 px-4 py-3">
+                          <p className="text-[10px] uppercase tracking-wider text-white/40 font-semibold mb-1">Freelance</p>
+                          <p className="text-lg font-black text-white">₹{item.freelanceInr.toLocaleString("en-IN")}</p>
+                          <p className="text-[10px] text-white/35">{item.cycle === "monthly" ? "per month" : "one-time"}</p>
+                        </div>
+                        <div className="rounded-2xl bg-gradient-brand/10 border border-brand-blue/25 px-4 py-3">
+                          <p className="text-[10px] uppercase tracking-wider text-brand-blue-light font-semibold mb-1">Agency</p>
+                          <p className="text-lg font-black text-white">₹{item.agencyInr.toLocaleString("en-IN")}</p>
+                          <p className="text-[10px] text-white/35">{item.cycle === "monthly" ? "per month" : "one-time"}</p>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-white/35 leading-relaxed border-t border-white/6 pt-3">
+                        {item.disclaimer}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

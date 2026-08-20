@@ -33,7 +33,7 @@ export default function PortfolioPage() {
             as="h1"
             title="Work That Speaks for Itself"
             highlight="Speaks for Itself"
-            className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-5"
+            className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-5"
           />
           <motion.p
             initial={{ opacity: 0 }}
