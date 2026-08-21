@@ -370,8 +370,8 @@ const clearHistory = () => {
     <>
       {/* Hint bubble + launcher */}
       <div
-        className="fixed right-6 z-50 flex flex-col text-red items-end gap-3 always-dark transition-all duration-300"
-        style={{ bottom: launcherBottom }}
+        className="fixed right-6 z-50 flex flex-col items-end gap-3 always-dark transition-transform duration-300 will-change-transform"
+        style={{ bottom: 0, transform: `translateY(-${launcherBottom}px)` }}
       >
         <AnimatePresence>
           {hint && !open && (
@@ -380,7 +380,7 @@ const clearHistory = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.85 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="relative glass-card rounded-2xl rounded-br-sm px-4 py-2.5 text-xs font-semibold shadow-card cursor-pointer"
+              className="relative glass-card rounded-2xl rounded-br-sm px-4 py-2.5 text-[11px] sm:text-xs font-semibold shadow-card cursor-pointer max-w-[calc(100vw-5rem)] sm:max-w-xs"
               onClick={toggle}
             >
               <span className="flex items-center gap-2">
@@ -461,7 +461,7 @@ const clearHistory = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.92 }}
             transition={{ type: "spring", stiffness: 300, damping: 26 }}
-            className={`chat-window fixed z-50 transition-all duration-300 ${
+            className={`chat-window fixed z-50 will-change-transform transition-[opacity,transform] duration-300 ${
               fullscreen
                 ? "inset-0 p-4 sm:p-6 flex items-center justify-center"
                 : "right-4 left-4 sm:left-auto sm:right-6 sm:w-[400px]"
@@ -476,7 +476,7 @@ const clearHistory = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="fixed inset-0 -z-10 bg-black/60 backdrop-blur-md"
+                  className="fixed inset-0 -z-10 bg-black/60 backdrop-blur-md gpu-layer"
                 />
               )}
             </AnimatePresence>

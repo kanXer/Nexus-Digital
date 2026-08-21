@@ -237,7 +237,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://api.telegram.org" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
       </head>
-      <body className="bg-black text-white antialiased">
+      <body className="bg-black text-white antialiased overflow-x-hidden">
 	<Analytics/>
         <main>{children}</main>
         <SiteChrome />

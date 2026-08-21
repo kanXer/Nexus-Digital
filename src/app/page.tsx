@@ -30,7 +30,7 @@ export default function HomePage() {
   return (
     <div className="bg-black overflow-hidden">
       {/* ═══ HERO ═══ */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center pt-24 overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen flex items-start lg:items-center pt-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="absolute inset-0 bg-black/30 pointer-events-none" />
         <div className="absolute inset-0 noise-bg pointer-events-none" />
@@ -157,11 +157,11 @@ export default function HomePage() {
                     {[40, 65, 45, 80, 55, 90, 70, 95, 60, 88, 72, 100].map((h, i) => (
                       <motion.div
                         key={i}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${h}%` }}
+                        initial={{ scaleY: 0 }}
+                        animate={{ scaleY: 1 }}
                         transition={{ delay: 0.8 + i * 0.04, duration: 0.4, ease: "easeOut" }}
-                        className="flex-1 rounded-t-sm relative group/bar"
-                        style={{ background: `linear-gradient(180deg, rgba(220, 38, 38, ${0.4 + h / 200}) 0%, rgba(239, 68, 68, ${0.2 + h / 200}) 100%)` }}
+                        className="flex-1 rounded-t-sm relative group/bar origin-bottom"
+                        style={{ background: `linear-gradient(180deg, rgba(220, 38, 38, ${0.4 + h / 200}) 0%, rgba(239, 68, 68, ${0.2 + h / 200}) 100%)`, height: `${h}%` }}
                       >
                         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-blue-light opacity-0 group-hover/bar:opacity-100 transition-opacity" />
                       </motion.div>
@@ -170,10 +170,10 @@ export default function HomePage() {
                 </motion.div>
 
                 {/* Floating stat badges */}
-                <motion.div animate={{ y: [-6, 6, -6] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-3 -right-3 glass-card rounded-lg px-3 py-1.5 border border-white/10 shadow-lg">
+                <motion.div animate={{ y: [-6, 6, -6] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }} className="absolute -top-3 right-2 sm:-right-3 glass-card rounded-lg px-3 py-1.5 border border-white/10 shadow-lg">
                   <p className="text-green-400 text-xs font-bold">+40% Leads</p>
                 </motion.div>
-                <motion.div animate={{ y: [4, -8, 4] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute -bottom-2 -left-2 glass-card rounded-lg px-3 py-1.5 border border-white/10 shadow-lg">
+                <motion.div animate={{ y: [4, -8, 4] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }} className="absolute -bottom-2 left-2 sm:-left-2 glass-card rounded-lg px-3 py-1.5 border border-white/10 shadow-lg">
                   <p className="text-brand-blue-light text-xs font-bold">⭐ 4.9 Rating</p>
                 </motion.div>
               </div>

@@ -282,7 +282,7 @@ async function chatCompletion(messages: { role: string; content: string }[]): Pr
       model: NIM_CHAT_MODEL,
       messages,
       temperature: 0.4,
-      max_tokens: 1024,
+      max_tokens: 512,
     }),
     signal: AbortSignal.timeout(180000),
   });
@@ -297,7 +297,26 @@ async function chatCompletion(messages: { role: string; content: string }[]): Pr
   }
   const processed = stripThinking(raw);
   // Never prefix the reply with a speaker label like "Friday:".
-  return processed.replace(/^\s*(?:friday|assistant|ai|bot|you|visitor)\b\s*:\s*/i, "").trim();
+  return enforceShortReply(
+    processed.replace(/^\s*(?:friday|assistant|ai|bot|you|visitor)\b\s*:\s*/i, "").trim()
+  );
+}
+
+// HARD length guard — small models often ignore word-budget instructions, so we
+// physically cut the reply to its first 1–2 sentences (~240 chars). Anything
+// short passes through untouched.
+function enforceShortReply(reply: string): string {
+  const t = (reply || "").trim();
+  if (t.length <= 400) return t;
+  // Flatten markdown bullets / line breaks into plain prose first.
+  const flat = t
+    .replace(/^\s*[*\-•]\s*/gm, "")
+    .replace(/\s*\n+\s*/g, " ")
+    .replace(/\s{2,}/g, " ");
+  const sentences = flat.match(/[^.!?]+[.!?]+["']?|[^.!?]+$/g) ?? [flat];
+  const three = sentences.slice(0, 3).join(" ").trim();
+  if (three.length >= 60) return three;
+  return sentences[0]?.trim() || flat.slice(0, 400);
 }
 
 // Removes <think> blocks, "thinking process" preambles and diagnostic steps,
@@ -348,126 +367,6 @@ function stripThinking(raw: string): string {
   return "";
 }
 
-// Streams the AI reply as plain-text chunks so the chat can render tokens as
-// they arrive. <think> blocks are filtered out on the fly across boundaries.
-async function chatCompletionStream(
-  messages: { role: string; content: string }[]
-): Promise<ReadableStream<Uint8Array>> {
-  const upstream = await fetch(`${NIM_API_BASE}/chat/completions`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${NIM_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: NIM_CHAT_MODEL,
-      messages,
-      temperature: 0.4,
-      max_tokens: 1024,
-      stream: true,
-    }),
-    signal: AbortSignal.timeout(180000),
-  });
-  if (!upstream.ok || !upstream.body) throw new Error(`NIM chat error ${upstream.status}`);
-
-  const decoder = new TextDecoder();
-  const encoder = new TextEncoder();
-  let sseBuffer = "";
-  let rawAll = ""; // full upstream body — used if upstream ignores stream:true
-  let insideThink = false;
-  let tagTail = ""; // holds possible partial "<think>" prefix across chunks
-  let emitted = false;
-
-  return new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const reader = upstream.body!.getReader();
-      const pushOut = (text: string) => {
-        if (!text) return;
-        emitted = true;
-        controller.enqueue(encoder.encode(text));
-      };
-      const processDelta = (delta: string): string => {
-        tagTail += delta;
-        let out = "";
-        while (tagTail.length > 0) {
-          if (insideThink) {
-            const closeIdx = tagTail.indexOf("</think>");
-            if (closeIdx !== -1) {
-              insideThink = false;
-              tagTail = tagTail.slice(closeIdx + 8);
-            } else {
-              // Discard buffered thought; keep tail in case "</think>" spans boundary.
-              tagTail = tagTail.slice(-8);
-              break;
-            }
-          } else {
-            const openIdx = tagTail.indexOf("<think>");
-            if (openIdx !== -1) {
-              out += tagTail.slice(0, openIdx);
-              insideThink = true;
-              tagTail = tagTail.slice(openIdx + 7);
-            } else {
-              // Hold back a trailing partial "<think…" prefix (max 7 chars).
-              const lt = tagTail.lastIndexOf("<");
-              if (lt !== -1 && tagTail.length - lt <= 7 && "<think>".startsWith(tagTail.slice(lt))) {
-                out += tagTail.slice(0, lt);
-                tagTail = tagTail.slice(lt);
-              } else {
-                out += tagTail;
-                tagTail = "";
-              }
-              break;
-            }
-          }
-        }
-        return out;
-      };
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunkStr = decoder.decode(value, { stream: true });
-          sseBuffer += chunkStr;
-          rawAll += chunkStr;
-          const lines = sseBuffer.split("\n");
-          sseBuffer = lines.pop() || "";
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith("data:")) continue;
-            const payload = trimmed.slice(5).trim();
-            if (payload === "[DONE]") continue;
-            try {
-              const json = JSON.parse(payload);
-              const delta: string = json?.choices?.[0]?.delta?.content ?? "";
-              if (delta) pushOut(processDelta(delta));
-            } catch {
-              /* ignore malformed SSE lines */
-            }
-          }
-        }
-        // Flush any held-back text at stream end.
-        if (!insideThink && tagTail) pushOut(tagTail);
-        if (!emitted) {
-          // Upstream ignored stream:true and returned a normal JSON body —
-          // extract the reply from it instead of showing an error.
-          try {
-            const j = JSON.parse(rawAll);
-            const c = j?.choices?.[0]?.message?.content;
-            if (typeof c === "string" && c.trim()) pushOut(stripThinking(c).trim());
-          } catch {
-            /* not JSON either */
-          }
-        }
-        if (!emitted) pushOut("Sorry, I couldn't process that. Please try again.");
-      } catch {
-        if (!emitted) pushOut("Something went wrong. Please try again or contact us on WhatsApp.");
-      } finally {
-        controller.close();
-        reader.releaseLock();
-      }
-    },
-  });
-}
 
 function fallbackReply(): string {
   return `Namaste! 🙏 I'm the Nexus Digital assistant. I couldn't reach the AI models right now, but I can still help you. Check our Services, Pricing or Contact pages, or message us on WhatsApp at ${CONTACT.phone} for a free consultation.`;
@@ -712,18 +611,22 @@ Stay on this exact topic in your reply. If the visitor's new message continues t
 ## Hard constraints (override everything else)
 1. Reply ONLY to what was asked. Match the question's scope — short question = short answer (1-3 sentences). Never dump extra services, pricing, or the whole catalog unless asked.
 2. Business only: answer solely about Nexus Digital's services, pricing, process and marketing. Never chat about non-business topics; politely steer back.
-3. Keep every reply under ~40 words unless the visitor asks for a detailed breakdown/quote.
+3. Keep replies concise and natural — 1–3 sentences, under ~40 words total. Avoid filler, restating the question, or long pleasantries. Include the enquiry offer "Can I submit your enquiry for you?" only when relevant and it fits naturally within the response budget.
 4. At most ONE call-to-action per reply, and only when relevant.
 5. The ONLY call-to-action you may use is offering the enquiry form: "Can I submit your enquiry for you?" (inside the chat — never push "connect with specialist", "talk to a team", or external contact links to the visitor).
 6. Never say "connect with a specialist" or "talk to our team". Every offer to move forward MUST be the in-chat enquiry form.
-7. Always keep the chat flowing toward help: after answering ANY question, gently steer toward a useful next step — a follow-up question, a relevant service, or the enquiry form. Even casual "hi" or small talk must end with a marketing-relevant question or the enquiry offer.
+7. After answering, you MAY add a tiny nudge (a brief follow-up question or the enquiry offer) — only when it fits naturally. The nudge should be concise and add value, not inflate the reply.
 8. If the visitor mentions budget, a service, or a project — ask: "Can I submit your enquiry for you?" and wait for their yes/no. Do not keep repeating the same offer if they decline — switch to answering their questions and let them lead.
 
 ## Site Info
 ${siteInfo}
 
 ## Page Content (${url})
-${context || "(no page content available)"}`;
+${context || "(no page content available)"}
+
+## FINAL REMINDER (highest priority — overrides everything above)
+Maximum 2 short sentences (~20 words). NO bullet lists, NO headings, NO plan/feature dumps, NO pricing tables. Answer the question in one breath, then optionally add: "Can I submit your enquiry for you?"
+Example — Q: "Social media marketing?" A: "Yes, we run full SMM — posts, reels and strategy, plans from ₹6k/month. Can I submit your enquiry for you?"`;
 
     const messages = [
       { role: "system", content: systemPrompt },
@@ -731,16 +634,16 @@ ${context || "(no page content available)"}`;
       { role: "user", content: message },
     ];
 
-    // Streamed mode — pipe AI tokens to the client as they arrive so replies
-    // feel instant. Enquiry/off-topic paths above still return JSON.
+    // "Streamed" mode — reply is generated, hard-trimmed to 1–2 sentences and
+    // returned as plain text; the client typewriter renders it chunk-by-chunk.
+    // Enquiry/off-topic paths above still return JSON.
     if (body?.stream === true && NIM_API_KEY) {
       try {
-        const stream = await chatCompletionStream(messages);
-        return new Response(stream, {
+        const text = await chatCompletion(messages);
+        return new Response(enforceShortReply(text) || fallbackReply(), {
           headers: {
             "Content-Type": "text/plain; charset=utf-8",
             "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",
           },
         });
       } catch (err) {
