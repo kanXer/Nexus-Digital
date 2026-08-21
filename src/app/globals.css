@@ -103,6 +103,8 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
+  word-break: break-word;
+  line-height: 1.2;
 }
 
 ::selection { background-color: rgba(220, 38, 38, 0.5); color: #fff; }

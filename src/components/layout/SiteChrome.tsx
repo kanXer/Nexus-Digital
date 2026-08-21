@@ -34,9 +34,11 @@ export default function SiteChrome() {
     <>
       <Navbar />
       <Footer />
-      <WhatsAppButton />
+      <div className="flex fixed bottom-4 right-2 z-50 flex-col items-end gap-1 sm:gap-2">
+        <WhatsAppButton />
+        <BackToTop />
+      </div>
       <ChatWidget />
-      <BackToTop />
     </>
   );
 }

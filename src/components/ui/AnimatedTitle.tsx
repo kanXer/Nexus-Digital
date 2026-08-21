@@ -44,13 +44,14 @@ export function AnimatedTitle({
         return (
           <Fragment key={`w-${index}`}>
             <motion.span
-              className="inline-block mr-[0.22em]"
+              className="inline mr-[0.22em] whitespace-nowrap"
+              style={{ wordBreak: "break-word" }}
               initial={{ opacity: 0, y: 32 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{ delay, duration: 0.7, ease: easeOut }}
             >
-              <span className={gradient ? "gradient-text animate-gradient-text" : ""}>{word}</span>
+              <span className={gradient ? "gradient-text animate-gradient-text inline" : ""}>{word}</span>
             </motion.span>
           </Fragment>
         );

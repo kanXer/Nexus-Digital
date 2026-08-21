@@ -7,7 +7,7 @@ import { submitEnquiry } from "@/lib/contact";
 const NIM_API_BASE = process.env.NIM_API_BASE || "https://integrate.api.nvidia.com/v1";
 const NIM_API_KEY = process.env.NVIDIA_NIM_API_KEY || process.env.NIM_API_KEY || "";
 const NIM_EMBED_MODEL = process.env.NIM_EMBED_MODEL || "nvidia/nemotron-3-embed-1b";
-const NIM_CHAT_MODEL = process.env.NIM_CHAT_MODEL || "nvidia/glm-5.2";
+const NIM_CHAT_MODEL = process.env.NIM_CHAT_MODEL || "meta/llama-3.1-8b-instruct";
 
 const DEFAULT_SITE = process.env.NEXT_PUBLIC_AGENCY_WEBSITE || "https://nexusdigitalmarketing.shop";
 
@@ -117,13 +117,17 @@ function normalizeService(text: string): string {
   return "";
 }
 
+// Persona is static — read once per server instance, then served from memory.
+let personaCache: string | null = null;
 async function loadPersona(): Promise<string> {
+  if (personaCache) return personaCache;
   try {
     const file = path.join(process.cwd(), "src", "lib", "chatbot", "persona.md");
-    return await readFile(file, "utf8");
+    personaCache = await readFile(file, "utf8");
   } catch {
-    return "You are Friday, the AI website assistant for Nexus Digital, a digital marketing agency in Gorakhpur, India. You are warm, concise and helpful. Answer using the website content provided when available. Your name is Friday — always introduce yourself as Friday when asked.";
+    personaCache = "You are Friday, the AI website assistant for Nexus Digital, a digital marketing agency in Gorakhpur, India. You are warm, concise and helpful. Answer using the website content provided when available. Your name is Friday — always introduce yourself as Friday when asked.";
   }
+  return personaCache;
 }
 
 // All key site pages the chatbot should crawl so it can answer questions
@@ -150,7 +154,7 @@ async function readWebpage(url: string): Promise<string> {
   try {
     const res = await fetch(target, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; NexusAI-Bot/1.0)" },
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(6000),
     });
     if (!res.ok) return "";
     const html = await res.text();
@@ -160,24 +164,17 @@ async function readWebpage(url: string): Promise<string> {
   }
 }
 
-// In-memory cache of the combined site text so we don't crawl all 9 pages on
-// every single chat message. Refreshed every 30 minutes.
-let siteCache: { text: string; ts: number } | null = null;
-const SITE_CACHE_TTL = 30 * 60 * 1000;
+// ── SITE CONTEXT CACHE (biggest latency win) ──
+// Site text, its chunks AND their embeddings are computed ONCE and reused for
+// every message. Per-request cost drops to a single small embedding call for
+// just the user's message. Stale cache is served instantly while a background
+// refresh runs — visitors never wait on a crawl after the first request.
+type SiteContext = { chunks: string[]; embeddings: number[][] | null };
 
-// Fetch all key pages concurrently and combine their text. Falls back to
-// reading just the current page if the live site is unreachable.
-async function readFullSite(currentUrl: string): Promise<string> {
-  if (siteCache && Date.now() - siteCache.ts < SITE_CACHE_TTL) {
-    // Append the current page too (cheap — single fetch) in case it's unique.
-    let combined = siteCache.text;
-    if (currentUrl && !siteCache.text.includes(`[PAGE: ${currentUrl}]`)) {
-      const cur = await readWebpage(currentUrl);
-      if (cur) combined += `\n\n[PAGE: ${currentUrl}]\n${cur}`;
-    }
-    return combined;
-  }
+let siteCache: { ts: number; ctx: SiteContext } | null = null;
+const SITE_CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours
 
+async function buildSiteContext(): Promise<SiteContext> {
   // Crawl ALL key pages in parallel.
   const results = await Promise.all(
     SITE_PAGES.map(async (p) => {
@@ -185,17 +182,27 @@ async function readFullSite(currentUrl: string): Promise<string> {
       return text ? `[PAGE: ${p || "/"}]\n${text}` : "";
     })
   );
-  let combined = results.filter(Boolean).join("\n\n");
+  const combined = results.filter(Boolean).join("\n\n");
+  const chunks = chunkText(combined, 2000);
+  // Batch-embed every chunk once (single API call).
+  const embeddings = await embed(chunks);
+  return { chunks, embeddings };
+}
 
-  // Also include the current page (might differ from the canonical site
-  // during local dev or if the visitor is on a unique URL).
-  if (currentUrl && !results.some((r) => r.includes(currentUrl))) {
-    const cur = await readWebpage(currentUrl);
-    if (cur) combined += `\n\n[PAGE: ${currentUrl}]\n${cur}`;
+async function getSiteContext(): Promise<SiteContext> {
+  if (siteCache) {
+    if (Date.now() - siteCache.ts >= SITE_CACHE_TTL) {
+      buildSiteContext()
+        .then((ctx) => {
+          siteCache = { ts: Date.now(), ctx };
+        })
+        .catch(() => {});
+    }
+    return siteCache.ctx;
   }
-
-  siteCache = { text: combined, ts: Date.now() };
-  return combined;
+  const ctx = await buildSiteContext();
+  siteCache = { ts: Date.now(), ctx };
+  return ctx;
 }
 
 function htmlToText(html: string): string {
@@ -234,7 +241,7 @@ async function embed(texts: string[]): Promise<number[][] | null> {
         Authorization: `Bearer ${NIM_API_KEY}`,
       },
       body: JSON.stringify({ model: NIM_EMBED_MODEL, input: texts }),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) return null;
     const data = await res.json();
@@ -243,6 +250,14 @@ async function embed(texts: string[]): Promise<number[][] | null> {
   } catch {
     return null;
   }
+}
+
+// Cheap retrieval fallback when embeddings are unavailable — keyword overlap.
+function keywordScore(chunk: string, message: string): number {
+  const words = message.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+  if (words.length === 0) return 0;
+  const lower = chunk.toLowerCase();
+  return words.reduce((s, w) => s + (lower.includes(w) ? 1 : 0), 0);
 }
 
 function cosineSim(a: number[], b: number[]): number {
@@ -267,25 +282,41 @@ async function chatCompletion(messages: { role: string; content: string }[]): Pr
       model: NIM_CHAT_MODEL,
       messages,
       temperature: 0.4,
-      max_tokens: 4096,
-      reasoning_effort: "low",
+      max_tokens: 1024,
     }),
     signal: AbortSignal.timeout(180000),
   });
   if (!res.ok) throw new Error(`NIM chat error ${res.status}`);
   const data = await res.json();
-  const raw = data?.choices?.[0]?.message?.content?.trim() || "";
-  // Reasoning models sometimes dump their chain-of-thought into `content`
-  // when the run gets cut short. Strip any leading thinking block.
-  const processed = /here's a thinking process|thinking process:|here's how i('|’)?ll|let me think|reasoning:/i.test(raw.slice(0, 200))
-    ? stripThinking(raw)
-    : raw;
+  const choice = data?.choices?.[0]?.message ?? {};
+  // Reasoning models return chain-of-thought in reasoning_content / <think> tags.
+  let raw: string = typeof choice.content === "string" ? choice.content.trim() : "";
+  if (!raw && typeof choice.reasoning_content === "string") {
+    // Some models put ONLY reasoning when cut short — extract answer from it.
+    raw = stripThinking(choice.reasoning_content);
+  }
+  const processed = stripThinking(raw);
   // Never prefix the reply with a speaker label like "Friday:".
   return processed.replace(/^\s*(?:friday|assistant|ai|bot|you|visitor)\b\s*:\s*/i, "").trim();
 }
 
+// Removes <think> blocks, "thinking process" preambles and diagnostic steps,
+// keeping only the final plain-text answer.
 function stripThinking(raw: string): string {
-  const t = raw.trim();
+  let t = (raw || "").trim();
+  if (!t) return "";
+
+  // Drop every complete <think>…</think> block (multi-line safe).
+  t = t.replace(/<think>[\s\S]*?<\/think>/gi, "");
+  // Drop an unterminated leading <think> block (stream cut mid-thought).
+  if (/^\s*<think>/i.test(t)) {
+    t = t.replace(/^\s*<think>[\s\S]*/i, (m) => {
+      const close = m.indexOf("</think>");
+      return close === -1 ? "" : m.slice(close + 8);
+    });
+  }
+  t = t.trim();
+  if (!t) return "";
 
   // Models that produce a "thinking process" often end with the real answer
   // after a labelled section — grab the labelled answer if present.
@@ -315,6 +346,113 @@ function stripThinking(raw: string): string {
     return last;
   }
   return "";
+}
+
+// Streams the AI reply as plain-text chunks so the chat can render tokens as
+// they arrive. <think> blocks are filtered out on the fly across boundaries.
+async function chatCompletionStream(
+  messages: { role: string; content: string }[]
+): Promise<ReadableStream<Uint8Array>> {
+  const upstream = await fetch(`${NIM_API_BASE}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${NIM_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: NIM_CHAT_MODEL,
+      messages,
+      temperature: 0.4,
+      max_tokens: 1024,
+      stream: true,
+    }),
+    signal: AbortSignal.timeout(180000),
+  });
+  if (!upstream.ok || !upstream.body) throw new Error(`NIM chat error ${upstream.status}`);
+
+  const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
+  let sseBuffer = "";
+  let insideThink = false;
+  let tagTail = ""; // holds possible partial "<think>" prefix across chunks
+  let emitted = false;
+
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const reader = upstream.body!.getReader();
+      const pushOut = (text: string) => {
+        if (!text) return;
+        emitted = true;
+        controller.enqueue(encoder.encode(text));
+      };
+      const processDelta = (delta: string): string => {
+        tagTail += delta;
+        let out = "";
+        while (tagTail.length > 0) {
+          if (insideThink) {
+            const closeIdx = tagTail.indexOf("</think>");
+            if (closeIdx !== -1) {
+              insideThink = false;
+              tagTail = tagTail.slice(closeIdx + 8);
+            } else {
+              // Discard buffered thought; keep tail in case "</think>" spans boundary.
+              tagTail = tagTail.slice(-8);
+              break;
+            }
+          } else {
+            const openIdx = tagTail.indexOf("<think>");
+            if (openIdx !== -1) {
+              out += tagTail.slice(0, openIdx);
+              insideThink = true;
+              tagTail = tagTail.slice(openIdx + 7);
+            } else {
+              // Hold back a trailing partial "<think…" prefix (max 7 chars).
+              const lt = tagTail.lastIndexOf("<");
+              if (lt !== -1 && tagTail.length - lt <= 7 && "<think>".startsWith(tagTail.slice(lt))) {
+                out += tagTail.slice(0, lt);
+                tagTail = tagTail.slice(lt);
+              } else {
+                out += tagTail;
+                tagTail = "";
+              }
+              break;
+            }
+          }
+        }
+        return out;
+      };
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          sseBuffer += decoder.decode(value, { stream: true });
+          const lines = sseBuffer.split("\n");
+          sseBuffer = lines.pop() || "";
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith("data:")) continue;
+            const payload = trimmed.slice(5).trim();
+            if (payload === "[DONE]") continue;
+            try {
+              const json = JSON.parse(payload);
+              const delta: string = json?.choices?.[0]?.delta?.content ?? "";
+              if (delta) pushOut(processDelta(delta));
+            } catch {
+              /* ignore malformed SSE lines */
+            }
+          }
+        }
+        // Flush any held-back text at stream end.
+        if (!insideThink && tagTail) pushOut(tagTail);
+        if (!emitted) pushOut("Sorry, I couldn't process that. Please try again.");
+      } catch {
+        if (!emitted) pushOut("Something went wrong. Please try again or contact us on WhatsApp.");
+      } finally {
+        controller.close();
+        reader.releaseLock();
+      }
+    },
+  });
 }
 
 function fallbackReply(): string {
@@ -385,6 +523,14 @@ export async function POST(req: Request) {
 
     if (!message) {
       return NextResponse.json({ error: "Message is required" }, { status: 400 });
+    }
+
+    // ── INSTANT GREETINGS (zero latency — skips crawl, RAG and model call) ──
+    if (/^(hi+|hello+|hey+|namaste|namaskar|good\s*(morning|afternoon|evening)|thanks?|thank\s*you|thx|ty|ok(ay)?|great|nice|awesome|cool)[\s!.,]*$/i.test(message)) {
+      return NextResponse.json({
+        reply: "Namaste! 👋 I'm Friday. How can I help you grow today — SEO, Google/Meta Ads, Social Media, or a new website?",
+        action: "chat",
+      });
     }
 
     // ── ENQUIRY FLOW ──
@@ -511,24 +657,28 @@ export async function POST(req: Request) {
     // ── NORMAL QUESTION ANSWERING (RAG + reply model) ──
     const persona = await loadPersona();
 
-    // Crawl ALL key site pages (home, services, pricing, about, etc.) so the
-    // AI can answer questions about pricing/services even if the visitor is
-    // currently on a different page.
-    const pageText = await readFullSite(url);
-    const chunks = chunkText(pageText || "", 2500);
+    // Cached chunks + precomputed embeddings — per-message cost is ONE small
+    // embedding call for the user's message only (crawl happens once, then
+    // stale-while-revalidate in background).
+    const { chunks, embeddings } = await getSiteContext();
     let context = "";
     if (chunks.length > 0) {
-      const embeddings = await embed([...chunks, message]);
-      if (embeddings && embeddings.length === chunks.length + 1) {
-        const questionEmbed = embeddings[embeddings.length - 1];
-        const scored = chunks
-          .map((chunk, i) => ({ chunk, score: cosineSim(embeddings[i], questionEmbed) }))
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 8);
-        context = scored.map((s) => s.chunk).join("\n\n");
+      let scored: { chunk: string; score: number }[];
+      const qEmb = await embed([message]);
+      if (qEmb && embeddings && embeddings.length === chunks.length) {
+        const q = qEmb[0];
+        scored = chunks
+          .map((chunk, i) => ({ chunk, score: cosineSim(embeddings[i], q) }))
+          .sort((a, b) => b.score - a.score);
       } else {
-        context = chunks.slice(0, 8).join("\n\n");
+        // Embedding unavailable — cheap keyword retrieval instead.
+        scored = chunks.map((chunk) => ({ chunk, score: keywordScore(chunk, message) }));
       }
+      // Top 5 relevant slices, trimmed — smaller prompt = faster first token.
+      context = scored
+        .slice(0, 5)
+        .map((s) => s.chunk.slice(0, 1200))
+        .join("\n\n");
     }
 
     const siteInfo = [
@@ -566,6 +716,24 @@ ${context || "(no page content available)"}`;
       ...history.map((h) => ({ role: h.role, content: h.content })),
       { role: "user", content: message },
     ];
+
+    // Streamed mode — pipe AI tokens to the client as they arrive so replies
+    // feel instant. Enquiry/off-topic paths above still return JSON.
+    if (body?.stream === true && NIM_API_KEY) {
+      try {
+        const stream = await chatCompletionStream(messages);
+        return new Response(stream, {
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+          },
+        });
+      } catch (err) {
+        console.error("Chat stream failed:", err);
+        return NextResponse.json({ reply: fallbackReply(), action: "chat" });
+      }
+    }
 
     let reply = "";
     if (NIM_API_KEY) {

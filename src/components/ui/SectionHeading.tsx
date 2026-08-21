@@ -30,7 +30,7 @@ function SectionHeadingBase({
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] as const }}
           className="inline-block mb-5"
         >
-          <span className="tag-badge">{badge}</span>
+          <span className="tag-badge max-w-[90vw] truncate text-xs px-3 py-1 sm:text-sm">{badge}</span>
         </motion.div>
       )}
       <AnimatedTitle

@@ -52,7 +52,7 @@ const whyUs = [
   { icon: Zap, title: "Fast Execution", desc: "Campaigns live in days, not weeks. We move at the speed your business demands." },
 ];
 
-const clientLogos = ["Gkp Mission Rehab", "1st Poultry Conclave"];
+const clientLogos = ["Gorakhpur Mission Rehab", "1st Poultry Conclave"];
 
 const caseStudyPreviews = [
   { headline: "Neuro Rehab Website & Local SEO", client: "Gorakhpur Mission Rehab", industry: "Healthcare", service: "Website + Local SEO", gradient: "from-teal-600/25 to-cyan-600/15", href: "/case-studies", result: "Online", label: "Presence" },
@@ -164,7 +164,7 @@ export default function HomeBelowFold() {
         <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
         <div className="container-custom relative z-10">
           <SectionHeading badge="Our Team" title="Meet the People " highlight="Behind the Results" subtitle="Founder, editors, and producers working relentlessly to grow your business with strategy, creativity, and craft." />
-          <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-6 h-auto">
             {teamMembers.map((member) => (
               <motion.div key={member.id} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }} whileHover={{ y: -6 }} className="group relative overflow-hidden glass-card rounded-2xl p-6 text-center hover:border-white/15 transition-all">
                 <div className="absolute -top-12 -right-12 w-24 h-24 bg-brand-blue/5 rounded-full blur-2xl group-hover:bg-brand-blue/10 transition-all duration-500" />

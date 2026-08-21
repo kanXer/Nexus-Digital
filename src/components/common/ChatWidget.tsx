@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Send, X, Sparkles, MessageCircle, Mail, Phone, Maximize2, Minimize2, Trash2, ArrowDown } from "lucide-react";
+import Image from "next/image";
+import { Bot, Send, X, Sparkles, MessageCircle, Mail, Phone, Maximize2, Minimize2, Trash2, ArrowDown, User } from "lucide-react";
 import { config } from "@/lib/config";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
@@ -17,7 +18,7 @@ type EnquiryStepOptions = string[] | undefined;
 const WELCOME: ChatMsg = {
   role: "assistant",
   content:
-    "Namaste! I'm Friday, your AI assistant from Nexus Digital. I can help you with SEO, Google Ads, Social Media, or Website Development. What can I help you grow today?",
+    "Namaste! I'm Friday, your AI assistant. How can I help you grow today?",
 };
 
 // All service categories exactly as shown on the Services page.
@@ -56,6 +57,30 @@ const HINT_MESSAGES = [
   "Have a question? Just tap here",
 ];
 
+// Friday AI avatar — site logo image inside a branded ring, with name label.
+function FridayAvatar() {
+  return (
+    <div className="flex flex-col items-center gap-0.5 shrink-0 w-9">
+      <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-brand flex items-center justify-center shadow-glow-sm ring-1 ring-white/25">
+        <Image src="/favicon.svg" alt="Friday" width={20} height={20} className="w-5 h-5 object-contain" />
+      </div>
+      <span className="text-[8px] font-bold text-white/45 leading-none">Friday</span>
+    </div>
+  );
+}
+
+// User avatar — simple person icon with "You" label.
+function UserAvatar() {
+  return (
+    <div className="flex flex-col items-center gap-0.5 shrink-0 w-9">
+      <div className="w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center shadow-sm">
+        <User className="w-3.5 h-3.5 text-white/70" />
+      </div>
+      <span className="text-[8px] font-bold text-white/45 leading-none">You</span>
+    </div>
+  );
+}
+
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([WELCOME]);
@@ -80,17 +105,9 @@ export function ChatWidget() {
     const compute = () => {
       const scrolled = window.scrollY > 150;
       const isLg = window.matchMedia("(min-width: 1024px)").matches;
-if (isLg) {
-        // Desktop floating stack (bottom -> top): BackToTop (24) -> WhatsApp -> Chat.
-        // 24px gap between each button. All buttons are 56px (w-14 h-14).
-        // Not scrolled: WhatsApp at 24 (folds to BackToTop spot), Chat at 24+56+24 = 104.
-        // Scrolled: WhatsApp at 104 (24+56+24), Chat at 104+56+24 = 184.
+      if (isLg) {
         setLauncherBottom(scrolled ? 184 : 104);
       } else {
-        // Mobile stack (bottom -> top): BackToTop (24) -> WhatsApp (104) -> Chat (184).
-        // All 56px tall with 24px gaps. BackToTop only visible when scrolled.
-        // Not scrolled: WhatsApp 24 (folds to BackToTop spot), Chat 104.
-        // Scrolled: WhatsApp 104 (24+56+24), Chat 184 (104+56+24).
         setLauncherBottom(scrolled ? 184 : 104);
       }
     };
@@ -176,8 +193,47 @@ const clearHistory = () => {
           url: typeof window !== "undefined" ? window.location.href : "",
           history: next.slice(0, -1),
           enquiry,
+          stream: true,
         }),
       });
+
+      const contentType = res.headers.get("content-type") || "";
+
+      // ── STREAMED AI REPLY ── plain-text chunks arrive as tokens are generated.
+      if (contentType.includes("text/plain") && res.body) {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let acc = "";
+        // Append an empty assistant message we update live as chunks arrive.
+        setMessages((m) => [...m, { role: "assistant", content: "" }]);
+        setLoading(false);
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          acc += decoder.decode(value, { stream: true });
+          const snapshot = acc;
+          setMessages((m) => {
+            const copy = [...m];
+            copy[copy.length - 1] = { role: "assistant", content: snapshot };
+            return copy;
+          });
+        }
+        // Stream ended with nothing usable — show fallback.
+        if (!acc.trim()) {
+          setMessages((m) => {
+            const copy = [...m];
+            copy[copy.length - 1] = {
+              role: "assistant",
+              content: "Sorry, I couldn't process that. Please try again.",
+            };
+            return copy;
+          });
+        }
+        setEnquiryOptions([]);
+        return;
+      }
+
+      // ── JSON REPLY (enquiry flow / off-topic / errors) ──
       const data = await res.json();
       const action = data.action === "contact" ? "contact" : data.action === "enquiry" ? "enquiry" : "chat";
       setLastAction(action);
@@ -226,20 +282,15 @@ const clearHistory = () => {
     const base = [...SERVICE_CATEGORIES, "Start my Enquiry"];
     if (/enquiry|form|submit|quote/i.test(text)) return base;
     return [...SERVICE_CATEGORIES.slice(0, 3), "Start my Enquiry"];
-  }, [messages, loading]);
+  }, [messages, loading, REPLY_SUGGESTIONS, SERVICE_CATEGORIES]);
 
   const ContactButtons = (
-    <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: "spring", stiffness: 350, damping: 26 }}
-      className="flex flex-col gap-2 mt-2"
-    >
+    <div className="flex flex-col gap-2 mt-2">
       <a
         href={WHATSAPP_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-all hover:brightness-110 active:scale-95 shadow-[0_6px_20px_rgba(37,211,102,0.35)]"
+        className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-white hover:brightness-110 active:scale-95 shadow-[0_6px_20px_rgba(37,211,102,0.35)]"
         style={{ background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)" }}
       >
         <MessageCircle className="w-4 h-4" fill="white" />
@@ -248,18 +299,18 @@ const clearHistory = () => {
       <div className="flex gap-2">
         <a
           href={`mailto:${config.email}`}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-white chat-surface hover:bg-white/12 transition-all active:scale-95"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-white hover:bg-white/12 active:scale-95"
         >
           <Mail className="w-4 h-4 text-brand-blue-light" /> Email
         </a>
         <a
           href={`tel:${config.phoneRaw}`}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-white chat-surface hover:bg-white/12 transition-all active:scale-95"
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-semibold text-white hover:bg-white/12 active:scale-95"
         >
           <Phone className="w-4 h-4 text-brand-blue-light" /> Call
         </a>
       </div>
-    </motion.div>
+    </div>
   );
 
   return (
@@ -470,16 +521,12 @@ const clearHistory = () => {
                         m.role === "user" ? "justify-end" : "justify-start"
                       }`}
                     >
-                      {m.role === "assistant" && (
-                        <div className="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow-sm shrink-0 ring-1 ring-white/20">
-                          <Bot className="w-3.5 h-3.5" />
-                        </div>
-                      )}
+                      {m.role === "assistant" && <FridayAvatar />}
                       <div
                         className={`relative max-w-[85%] sm:max-w-[75%] md:max-w-[480px] lg:max-w-[520px] px-4 py-2.5 text-[14px] leading-[1.5] whitespace-pre-wrap break-words backdrop-blur-md ${
                           m.role === "user"
                             ? "bg-gradient-brand chat-user-text rounded-2xl rounded-br-sm shadow-[0_8px_24px_rgba(220,38,38,0.35)] border border-white/15"
-                            : "chat-surface text-white rounded-2xl rounded-bl-sm shadow-card"
+                            : "bg-blue-500/12 border border-blue-400/25 text-white rounded-2xl rounded-bl-sm shadow-card"
                         }`}
                       >
                         {m.role === "user" && (
@@ -487,13 +534,12 @@ const clearHistory = () => {
                         )}
                         {m.content}
                       </div>
+                      {m.role === "user" && <UserAvatar />}
                     </motion.div>
                   ))}
                   {lastAction === "contact" && !loading && (
                     <div className="flex items-end gap-2 justify-start">
-                      <div className="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow-sm shrink-0 ring-1 ring-white/20">
-                        <Bot className="w-3.5 h-3.5" />
-                      </div>
+                      <FridayAvatar />
                       <div className="max-w-[85%] sm:max-w-[75%] md:max-w-[480px]">{ContactButtons}</div>
                     </div>
                   )}
@@ -503,10 +549,8 @@ const clearHistory = () => {
                       animate={{ opacity: 1, y: 0 }}
                       className="flex items-end gap-2"
                     >
-                      <div className="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow-sm shrink-0 ring-1 ring-white/20">
-                        <Bot className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="px-4 py-3 rounded-2xl rounded-bl-sm chat-surface border backdrop-blur-md flex items-center gap-1.5">
+                      <FridayAvatar />
+                      <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-blue-500/12 border border-blue-400/25 backdrop-blur-md flex items-center gap-1.5">
                         {[0, 1, 2].map((d) => (
                           <motion.span
                             key={d}
