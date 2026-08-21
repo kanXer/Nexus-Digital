@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { Bot, Send, X, Sparkles, MessageCircle, Mail, Phone, Maximize2, Minimize2, Trash2, ArrowDown, User } from "lucide-react";
+import { Bot, Send, X, Sparkles, MessageCircle, Mail, Phone, Maximize2, Minimize2, Trash2, ArrowDown, User, ChevronDown, ChevronUp } from "lucide-react";
 import { config } from "@/lib/config";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
@@ -96,6 +96,7 @@ export function ChatWidget() {
   const [fullscreen, setFullscreen] = useState(false);
   const [showGoDown, setShowGoDown] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);
+  const [sugOpen, setSugOpen] = useState(true); // suggestions panel collapse toggle
   const scrollRef = useRef<HTMLDivElement>(null);
   const openedRef = useRef(false);
 
@@ -677,19 +678,45 @@ const clearHistory = () => {
                 </div>
               )}
 
-              {/* Suggestion chips — quick replies on first screen, contextual follow-ups after each reply */}
+              {/* Suggestion chips — quick replies on first screen, contextual follow-ups after each reply.
+                  MOBILE ONLY: collapsible via chevron button + single swipeable row.
+                  DESKTOP: always visible, wrapped, no toggle (original behaviour). */}
               {!enquiry.active && !followUp && suggestions.length > 0 && !loading && (
-                <div className="flex flex-wrap gap-2 px-4 pb-2 pt-1 shrink-0">
-                  {suggestions.map((q) => (
+                <div className="shrink-0 px-4 pb-2 pt-1">
+                  {/* Mobile-only control row */}
+                  <div className="flex items-center justify-between gap-2 md:hidden">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30">
+                      Quick replies
+                    </span>
                     <button
-                      key={q}
                       type="button"
-                      onClick={() => send(q)}
-                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                      onClick={() => setSugOpen((o) => !o)}
+                      aria-label={sugOpen ? "Hide suggestions" : "Show suggestions"}
+                      aria-expanded={sugOpen}
+                      title={sugOpen ? "Hide suggestions" : "Show suggestions"}
+                      className="flex items-center gap-1 text-[10px] font-semibold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-2.5 py-1 transition-all cursor-pointer active:scale-95"
                     >
-                      {q}
+                      {sugOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
+                      {sugOpen ? "Hide" : "Show"}
                     </button>
-                  ))}
+                  </div>
+                  {/* Chips — swipeable row on mobile, wrapped flow on desktop */}
+                  <div
+                    className={`gap-2 pb-0.5 overflow-x-auto no-scrollbar md:overflow-x-visible md:flex-wrap md:mt-0 ${
+                      sugOpen ? "flex mt-1.5 md:mt-0" : "hidden md:flex"
+                    }`}
+                  >
+                    {suggestions.map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        onClick={() => send(q)}
+                        className="group shrink-0 whitespace-nowrap md:whitespace-normal md:shrink text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
