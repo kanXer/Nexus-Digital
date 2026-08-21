@@ -373,6 +373,7 @@ async function chatCompletionStream(
   const decoder = new TextDecoder();
   const encoder = new TextEncoder();
   let sseBuffer = "";
+  let rawAll = ""; // full upstream body — used if upstream ignores stream:true
   let insideThink = false;
   let tagTail = ""; // holds possible partial "<think>" prefix across chunks
   let emitted = false;
@@ -425,7 +426,9 @@ async function chatCompletionStream(
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          sseBuffer += decoder.decode(value, { stream: true });
+          const chunkStr = decoder.decode(value, { stream: true });
+          sseBuffer += chunkStr;
+          rawAll += chunkStr;
           const lines = sseBuffer.split("\n");
           sseBuffer = lines.pop() || "";
           for (const line of lines) {
@@ -444,6 +447,17 @@ async function chatCompletionStream(
         }
         // Flush any held-back text at stream end.
         if (!insideThink && tagTail) pushOut(tagTail);
+        if (!emitted) {
+          // Upstream ignored stream:true and returned a normal JSON body —
+          // extract the reply from it instead of showing an error.
+          try {
+            const j = JSON.parse(rawAll);
+            const c = j?.choices?.[0]?.message?.content;
+            if (typeof c === "string" && c.trim()) pushOut(stripThinking(c).trim());
+          } catch {
+            /* not JSON either */
+          }
+        }
         if (!emitted) pushOut("Sorry, I couldn't process that. Please try again.");
       } catch {
         if (!emitted) pushOut("Something went wrong. Please try again or contact us on WhatsApp.");

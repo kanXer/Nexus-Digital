@@ -139,7 +139,14 @@ export function ChatWidget() {
     return () => clearInterval(hintId);
   }, [open]);
 
+  // Auto-follow control — true while the user is at/near the bottom, so new
+  // (streaming) text keeps the latest message visible above the suggestions.
+  // The moment the user swipes up/down manually, following stops until they
+  // scroll back to the bottom themselves.
+  const followRef = useRef(true);
+
   const scrollToBottom = useCallback(() => {
+    followRef.current = true;
     requestAnimationFrame(() => {
       scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
     });
@@ -150,9 +157,11 @@ export function ChatWidget() {
     if (!el) return;
     const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
     setShowGoDown(distFromBottom > 120);
+    followRef.current = distFromBottom <= 80;
   }, []);
 
 const clearHistory = () => {
+  followRef.current = true;
   setMessages([WELCOME]);
   setEnquiry({ active: false, step: 0, data: {} });
   setEnquiryOptions([]);
@@ -165,11 +174,17 @@ const clearHistory = () => {
   });
 };
 
+  // Keep the newest message pinned just above the suggestions while streaming,
+  // but ONLY while the user hasn't scrolled away (followRef). Instant scrollTop
+  // assignment avoids smooth-scroll fighting during rapid typewriter updates.
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading, open, scrollToBottom]);
+    const el = scrollRef.current;
+    if (!el || !followRef.current) return;
+    el.scrollTop = el.scrollHeight;
+  }, [messages, loading, open]);
 
   const toggle = () => {
+    followRef.current = true;
     setOpen((o) => !o);
     if (!openedRef.current) {
       openedRef.current = true;
@@ -177,13 +192,53 @@ const clearHistory = () => {
     }
   };
 
+  // Smooth typewriter — reveals text at message index `replyIndex` at a steady
+  // pace so EVERY reply (streamed AI, pre-defined enquiry steps, errors) always
+  // appears chunked. Resolves once the full text is visible.
+  const typewrite = useCallback(
+    (replyIndex: number, full: { text: string }, isDone: () => boolean) =>
+      new Promise<void>((resolve) => {
+        let rendered = 0;
+        const finish = () => {
+          setMessages((m) => {
+            if (!m[replyIndex] || m[replyIndex].role !== "assistant") return m;
+            const copy = [...m];
+            copy[replyIndex] = { role: "assistant", content: full.text };
+            return copy;
+          });
+          resolve();
+        };
+        const typer = setInterval(() => {
+          if (rendered >= full.text.length) {
+            if (isDone()) {
+              clearInterval(typer);
+              finish();
+            }
+            return;
+          }
+          rendered = Math.min(full.text.length, rendered + Math.max(2, Math.ceil(full.text.length / 140)));
+          const snapshot = full.text.slice(0, rendered);
+          setMessages((m) => {
+            if (!m[replyIndex] || m[replyIndex].role !== "assistant") return m;
+            const copy = [...m];
+            copy[replyIndex] = { role: "assistant", content: snapshot };
+            return copy;
+          });
+        }, 16);
+      }),
+    []
+  );
+
   const send = async (preset?: string) => {
     const text = (preset ?? input).trim();
     if (!text || loading) return;
+    followRef.current = true; // new message — resume following the bottom
     const next: ChatMsg[] = [...messages, { role: "user", content: text }];
     setMessages(next);
     setInput("");
     setLoading(true);
+    const replyIndex = next.length; // fixed index where the assistant reply lands
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -199,41 +254,38 @@ const clearHistory = () => {
 
       const contentType = res.headers.get("content-type") || "";
 
-      // ── STREAMED AI REPLY ── plain-text chunks arrive as tokens are generated.
+      // ── STREAMED AI REPLY ── tokens arrive as they are generated.
       if (contentType.includes("text/plain") && res.body) {
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
-        let acc = "";
-        // Append an empty assistant message we update live as chunks arrive.
+        const full = { text: "" };
+        let finished = false;
+
         setMessages((m) => [...m, { role: "assistant", content: "" }]);
         setLoading(false);
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          acc += decoder.decode(value, { stream: true });
-          const snapshot = acc;
-          setMessages((m) => {
-            const copy = [...m];
-            copy[copy.length - 1] = { role: "assistant", content: snapshot };
-            return copy;
-          });
+        const typing = typewrite(replyIndex, full, () => finished);
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            full.text += decoder.decode(value, { stream: true });
+          }
+        } finally {
+          reader.releaseLock();
         }
-        // Stream ended with nothing usable — show fallback.
-        if (!acc.trim()) {
-          setMessages((m) => {
-            const copy = [...m];
-            copy[copy.length - 1] = {
-              role: "assistant",
-              content: "Sorry, I couldn't process that. Please try again.",
-            };
-            return copy;
-          });
+
+        if (!full.text.trim()) {
+          full.text = "Sorry, I couldn't process that. Please try again.";
         }
+        finished = true;
+        await typing;
         setEnquiryOptions([]);
         return;
       }
 
-      // ── JSON REPLY (enquiry flow / off-topic / errors) ──
+      // ── PRE-DEFINED REPLY (enquiry flow / greetings / off-topic / errors) ──
+      // Typed out with the same chunked effect for a consistent feel.
       const data = await res.json();
       const action = data.action === "contact" ? "contact" : data.action === "enquiry" ? "enquiry" : "chat";
       setLastAction(action);
@@ -247,15 +299,15 @@ const clearHistory = () => {
         const e = data.enquiry;
         setEnquiry({ active: !!e.active, step: Number(e.step) || 0, data: e.data || {} });
       }
-      setMessages((m) => [
-        ...m,
-        { role: "assistant", content: data.reply || "Sorry, I couldn't process that. Please try again." },
-      ]);
+      const full = { text: data.reply || "Sorry, I couldn't process that. Please try again." };
+      setMessages((m) => [...m, { role: "assistant", content: "" }]);
+      setLoading(false);
+      await typewrite(replyIndex, full, () => true);
+      return;
     } catch {
-      setMessages((m) => [
-        ...m,
-        { role: "assistant", content: "Something went wrong. Please try again or contact us on WhatsApp." },
-      ]);
+      const full = { text: "Something went wrong. Please try again or contact us on WhatsApp." };
+      setMessages((m) => [...m, { role: "assistant", content: "" }]);
+      await typewrite(replyIndex, full, () => true);
     } finally {
       setLoading(false);
     }
