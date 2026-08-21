@@ -149,7 +149,19 @@ export function ChatWidget() {
     if (!vv) return;
     const update = () => {
       const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      setKeyboardInset(inset > 100 ? Math.round(inset) : 0);
+      const next = inset > 100 ? Math.round(inset) : 0;
+      setKeyboardInset(next);
+      if (next > 0) {
+        // Keyboard opened/resized — re-pin the newest message so it (plus the
+        // suggestions and input row) all stay visible above the keyboard.
+        followRef.current = true;
+        const pin = () => {
+          const el = scrollRef.current;
+          if (el) el.scrollTop = el.scrollHeight;
+        };
+        requestAnimationFrame(pin);
+        setTimeout(pin, 280);
+      }
     };
     update();
     vv.addEventListener("resize", update);

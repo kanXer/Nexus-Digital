@@ -1,79 +1,52 @@
 "use client";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface WordRotatorProps {
   words: string[];
   className?: string;
-  typeSpeed?: number;
-  deleteSpeed?: number;
-  pauseDuration?: number;
+  interval?: number;
 }
 
-type Phase = "pop" | "typing" | "pause" | "deleting" | "rest";
-
-export function WordRotator({
-  words,
-  className = "",
-  typeSpeed = 80,
-  deleteSpeed = 45,
-  pauseDuration = 2000,
-}: WordRotatorProps) {
-  const [wordIndex, setWordIndex] = useState(0);
-  const [phase, setPhase] = useState<Phase>("pop");
-  const [charCount, setCharCount] = useState(0);
-
-  const current = words[wordIndex % words.length];
+/**
+ * Premium word rotator — each word slides up through a mask and fades.
+ * Animates transform/opacity only (GPU-composited, zero layout thrash) and
+ * re-renders once per cycle instead of per character. A hidden sizer reserves
+ * the widest word's width so the heading never reflows between swaps.
+ */
+export function WordRotator({ words, className = "", interval = 2600 }: WordRotatorProps) {
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    let t: ReturnType<typeof setTimeout>;
+    const id = setInterval(() => setIndex((i) => (i + 1) % words.length), interval);
+    return () => clearInterval(id);
+  }, [words, interval]);
 
-    switch (phase) {
-      case "pop":
-        // Wait for fade-up pop, then begin typing the word
-        t = setTimeout(() => setPhase("typing"), 400);
-        break;
-      case "typing":
-        if (charCount < current.length) {
-          t = setTimeout(() => setCharCount((c) => c + 1), typeSpeed);
-        } else {
-          t = setTimeout(() => setPhase("pause"), 0);
-        }
-        break;
-      case "pause":
-        t = setTimeout(() => setPhase("deleting"), pauseDuration);
-        break;
-      case "deleting":
-        if (charCount > 0) {
-          t = setTimeout(() => setCharCount((c) => c - 1), deleteSpeed);
-        } else {
-          t = setTimeout(() => setPhase("rest"), 0);
-        }
-        break;
-      case "rest":
-        // small gap before next word's pop on a fresh index
-        t = setTimeout(() => {
-          setWordIndex((i) => (i + 1) % words.length);
-          setPhase("pop");
-        }, 150);
-        break;
-    }
+  const longest = useMemo(
+    () => words.reduce((a, b) => (b.length > a.length ? b : a), ""),
+    [words]
+  );
 
-    return () => clearTimeout(t);
-  }, [phase, charCount, current, words, typeSpeed, deleteSpeed, pauseDuration]);
+  const current = words[index % words.length];
 
   return (
-    <span className={`relative inline-flex items-baseline whitespace-nowrap ${className}`}>
-      <motion.span
-        key={wordIndex}
-        initial={{ opacity: 0, y: -40, filter: "blur(4px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-        className="inline-block"
-      >
-        {current.slice(0, charCount)}
-        <span className="inline-block w-[2px] h-[0.85em] ml-0.5 align-middle bg-brand-blue-light animate-pulse" />
-      </motion.span>
+    <span className="relative inline-block whitespace-nowrap align-bottom">
+      {/* Invisible sizer — holds the widest word so layout stays stable */}
+      <span className="invisible" aria-hidden="true">
+        {longest}
+      </span>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={index}
+          initial={{ y: "0.85em", opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: "-0.85em", opacity: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className={`absolute left-0 top-0 w-full will-change-transform ${className}`}
+        >
+          {current}
+        </motion.span>
+      </AnimatePresence>
     </span>
   );
 }

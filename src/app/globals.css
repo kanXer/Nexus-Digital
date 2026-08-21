@@ -123,7 +123,7 @@ html { scroll-behavior: smooth; }
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-default);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  contain: paint;
+  contain: layout;
 }
 
 .glass-card::before {
@@ -142,7 +142,7 @@ html { scroll-behavior: smooth; }
   backdrop-filter: blur(20px);
   border: 1px solid rgba(220, 38, 38, 0.25);
   box-shadow: 0 8px 32px rgba(220, 38, 38, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  contain: paint;
+  contain: layout;
 }
 
 [data-theme="light"] .glass-card {
@@ -699,6 +699,20 @@ svg {
 
 img {
   height: auto;
+}
+
+/* Hide scrollbars on mobile — cleaner, premium look. Desktop keeps the
+   custom red scrollbar defined above. */
+@media (max-width: 767px) {
+  ::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  * {
+    scrollbar-width: none;
+  }
 }
 
 /* ══� ENHANCED SPINNER KEYFRAMES ══� */

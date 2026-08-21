@@ -55,12 +55,12 @@ export default function HomePage() {
                 </span>
               </motion.div>
 
-              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.65rem,2.7vw,2.3rem)] font-bold text-white leading-[1.2] tracking-[-0.03em] mb-5 break-words">
+              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.4rem,5.5vw,2.3rem)] font-bold text-white leading-[1.2] tracking-[-0.03em] mb-5 break-words">
                 <motion.span
                   initial="hidden"
                   animate="show"
                   variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
-                  className="md:whitespace-nowrap"
+                  className="whitespace-nowrap"
                 >
                   {["Best", "Digital", "Marketing"].map((w) => (
                     <motion.span
@@ -72,12 +72,12 @@ export default function HomePage() {
                     </motion.span>
                   ))}
                 </motion.span>
-                <br className="hidden md:block" />
+                <br className="block" />
                 <motion.span
                   initial="hidden"
                   animate="show"
                   variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
-                  className="md:whitespace-nowrap"
+                  className="whitespace-nowrap"
                 >
                   {["Agency"].map((w) => (
                     <motion.span
@@ -89,9 +89,7 @@ export default function HomePage() {
                     </motion.span>
                   ))}
                 </motion.span>{" "}
-                <span className="gradient-text animate-gradient-text">
-                  <WordRotator words={["in Gorakhpur", "in Lucknow", "in U.P.", "Across India"]} />
-                </span>
+                <WordRotator words={["in Gorakhpur", "in Lucknow", "in U.P.", "Across India"]} className="gradient-text animate-gradient-text" />
               </motion.h1>
 
               <motion.p variants={itemVariants} className="text-base md:text-lg text-white/55 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
