@@ -145,6 +145,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: "#000000",
+  interactiveWidget: "resizes-content",
 };
 
 const schemaMarkup = {

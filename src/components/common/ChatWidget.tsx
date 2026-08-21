@@ -94,6 +94,7 @@ export function ChatWidget() {
   const [lastAction, setLastAction] = useState<"chat" | "enquiry" | "contact">("chat");
   const [launcherBottom, setLauncherBottom] = useState(80);
   const [fullscreen, setFullscreen] = useState(false);
+  const [isNarrow, setIsNarrow] = useState(false);
   const [showGoDown, setShowGoDown] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);
   const [sugOpen, setSugOpen] = useState(true); // suggestions panel collapse toggle
@@ -127,6 +128,48 @@ export function ChatWidget() {
     const pulseId = setInterval(() => setPulse((p) => p + 1), 7000);
     return () => clearInterval(pulseId);
   }, []);
+
+  // On phones (<640px) the chat always opens as a full-screen sheet that
+  // covers every floating button; `immersive` also detaches the window from
+  // launcherBottom so page scrolling can never shift/jitter it.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const apply = () => setIsNarrow(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  // Keep the input above the on-screen keyboard (iOS): track how much of the
+  // visual viewport the keyboard covers and lift the sheet by that amount.
+  const [keyboardInset, setKeyboardInset] = useState(0);
+  useEffect(() => {
+    if (!open || !isNarrow) { setKeyboardInset(0); return; }
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const update = () => {
+      const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      setKeyboardInset(inset > 100 ? Math.round(inset) : 0);
+    };
+    update();
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
+    return () => {
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
+    };
+  }, [open, isNarrow]);
+
+  // Lock background page scroll while the mobile sheet is open — stops iOS
+  // from panning the page (and the fixed chat with it) when the keyboard opens.
+  useEffect(() => {
+    if (!open || !isNarrow) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, [open, isNarrow]);
+
+  const immersive = fullscreen || isNarrow;
 
   // Hint bubble pops up periodically when the chat is closed, cycling through
   // a set of friendly messages so it never feels repetitive.
@@ -461,16 +504,18 @@ const clearHistory = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.92 }}
             transition={{ type: "spring", stiffness: 300, damping: 26 }}
-            className={`chat-window fixed z-50 will-change-transform transition-[opacity,transform] duration-300 ${
-              fullscreen
-                ? "inset-0 p-4 sm:p-6 flex items-center justify-center"
+            className={`chat-window fixed z-[60] will-change-transform transition-[opacity,transform] duration-300 ${
+              immersive
+                ? isNarrow
+                  ? "inset-0 h-[100dvh] p-0"
+                  : "inset-0 p-4 sm:p-6 flex items-center justify-center"
                 : "right-4 left-4 sm:left-auto sm:right-6 sm:w-[400px]"
             }`}
-            style={fullscreen ? { bottom: 0, maxHeight: "none" } : { bottom: launcherBottom + 64, top: 80, maxHeight: `calc(100dvh - 80px - ${launcherBottom + 64}px)` }}
+            style={immersive ? { bottom: isNarrow ? keyboardInset : 0, maxHeight: "none" } : { bottom: launcherBottom + 64, top: 80, maxHeight: `calc(100dvh - 80px - ${launcherBottom + 64}px)` }}
           >
             {/* Dimmed, blurred page backdrop visible around the chat on big screens */}
             <AnimatePresence>
-              {fullscreen && (
+              {immersive && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -487,9 +532,11 @@ const clearHistory = () => {
             }`} />
 
             <div className={`relative flex flex-col overflow-hidden backdrop-blur-2xl border border-white/10 shadow-card chat-window-bg ${
-              fullscreen
-                ? "rounded-3xl h-[calc(100vh-2rem)] sm:h-[calc(100vh-3rem)] md:max-h-[85vh] w-full md:w-auto md:min-w-[560px] lg:min-w-[680px]"
-                : "rounded-3xl h-full"
+              isNarrow
+                ? "rounded-none h-full w-full"
+                : fullscreen
+                  ? "rounded-3xl h-[calc(100vh-2rem)] sm:h-[calc(100vh-3rem)] md:max-h-[85vh] w-full md:w-auto md:min-w-[560px] lg:min-w-[680px]"
+                  : "rounded-3xl h-full"
             }`}>
               {/* Top gradient bar */}
               <div className="h-[3px] w-full bg-gradient-brand shrink-0" />
@@ -503,11 +550,11 @@ const clearHistory = () => {
               <div className="relative flex flex-col flex-1 min-h-0 w-full mx-auto max-w-full md:max-w-3xl lg:max-w-4xl">
 
               {/* Header */}
-              <div className="relative flex items-center gap-3 px-4 py-4 bg-gradient-to-r from-brand-blue/20 via-transparent to-transparent border-b border-white/10 shrink-0">
+              <div className="relative flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-4 bg-gradient-to-r from-brand-blue/20 via-transparent to-transparent border-b border-white/10 shrink-0">
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-gradient-brand blur-md opacity-60" />
-                  <div className="relative w-11 h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow ring-2 ring-white/20">
-                    <Bot className="w-6 h-6" />
+                  <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow ring-2 ring-white/20">
+                    <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   <motion.span
                     className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black"
@@ -516,14 +563,14 @@ const clearHistory = () => {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-display font-bold text-[15px] leading-tight flex items-center gap-2 text-white">
+                  <p className="font-display font-bold text-sm sm:text-[15px] leading-tight flex items-center gap-2 text-white">
                     Friday
                     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30 text-emerald-300 text-[9px] font-bold uppercase tracking-wider">
                       <span className="w-1 h-1 rounded-full bg-emerald-400" />
                       Online
                     </span>
                   </p>
-                  <p className="text-[11px] text-white/45 flex items-center gap-1 mt-0.5">
+                  <p className="hidden sm:flex text-[11px] text-white/45 items-center gap-1 mt-0.5">
                     <Sparkles className="w-3 h-3 text-brand-blue-light" />
                     Digital Marketing Assistant
                   </p>
@@ -537,14 +584,16 @@ const clearHistory = () => {
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setFullscreen((f) => !f)}
-                  aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
-                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
-                >
-                  {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                </button>
+                {!isNarrow && (
+                  <button
+                    type="button"
+                    onClick={() => setFullscreen((f) => !f)}
+                    aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
+                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
+                  >
+                    {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={toggle}
@@ -721,7 +770,7 @@ const clearHistory = () => {
               )}
 
               {/* Input */}
-              <div className="p-3.5 border-t border-white/10 chat-surface-input shrink-0">
+              <div className="p-3 sm:p-3.5 border-t border-white/10 chat-surface-input shrink-0">
                 <div className="relative flex items-center gap-2 rounded-full chat-field p-1.5 pl-4 transition-all focus-within:border-brand-blue-light/60 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12),0_4px_20px_rgba(220,38,38,0.15)]">
                   <input
                     type="text"
