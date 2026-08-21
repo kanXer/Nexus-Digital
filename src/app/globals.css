@@ -269,10 +269,11 @@ html { scroll-behavior: smooth; }
 .btn-secondary:active { transform: translateY(-1px) scale(0.98); }
 
 /* ═══ LAYOUT ═══ */
+/* NOTE: content-visibility:auto was removed — on mobile it delayed rendering
+   until sections were scrolled into view and caused scroll-position jumps. */
 .section-padding {
   padding-top: 3rem;
   padding-bottom: 3rem;
-  content-visibility: auto;
 }
 
 @media (min-width: 768px) {
