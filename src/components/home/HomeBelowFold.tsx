@@ -52,7 +52,7 @@ const whyUs = [
   { icon: Zap, title: "Fast Execution", desc: "Campaigns live in days, not weeks. We move at the speed your business demands." },
 ];
 
-const clientLogos = ["Gorakhpur Mission Rehab", "1st Poultry Conclave"];
+const clientLogos = ["Gkp Mission Rehab", "1st Poultry Conclave"];
 
 const caseStudyPreviews = [
   { headline: "Neuro Rehab Website & Local SEO", client: "Gorakhpur Mission Rehab", industry: "Healthcare", service: "Website + Local SEO", gradient: "from-teal-600/25 to-cyan-600/15", href: "/case-studies", result: "Online", label: "Presence" },
