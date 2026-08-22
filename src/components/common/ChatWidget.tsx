@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/immutability */
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Bot, Send, X, Sparkles, MessageCircle, Mail, Phone, Maximize2, Minimize2, Trash2, ArrowDown, User, ChevronDown, ChevronUp } from "lucide-react";
@@ -13,12 +14,38 @@ type EnquiryData = {
   data: Record<string, string>;
 };
 
-type EnquiryStepOptions = string[] | undefined;
+// Pull an email (and best-effort name) out of the conversation so we can save a
+// lead even when the visitor shares it casually instead of going through the
+// structured enquiry form.
+function extractLead(messages: ChatMsg[]): { email: string; name: string } {
+  const emailRe = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+  let email = "";
+  for (const m of messages) {
+    if (m.role === "user") {
+      const match = m.content.match(emailRe);
+      if (match) email = match[0];
+    }
+  }
+  if (!email) return { email: "", name: "" };
+
+  const nameRe =
+    /(?:my name is|i am |i'm |this is|name[:\-]?\s*)([A-Za-z][A-Za-z'’.\-]{1,}(?:\s+[A-Za-z][A-Za-z'’.\-]{1,})?)/i;
+  let name = "";
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const nm = messages[i].content.match(nameRe);
+    if (nm) {
+      name = nm[1].trim();
+      break;
+    }
+  }
+  if (!name) name = email.split("@")[0].replace(/[._]/g, " ");
+  return { email, name };
+}
 
 const WELCOME: ChatMsg = {
   role: "assistant",
   content:
-    "Namaste! I'm Friday, your AI assistant. How can I help you grow today?",
+    "Namaste! I'm Friday, your AI assistant. Want more leads & sales? I can show you a plan you can start paying for instantly — or book a free consultation. What can I help you grow today?",
 };
 
 // All service categories exactly as shown on the Services page.
@@ -30,7 +57,7 @@ const SERVICE_CATEGORIES = [
   "Analytics & Reporting",
 ];
 
-const QUICK_REPLIES = [...SERVICE_CATEGORIES, "Ask for Pricing", "Start my Enquiry"];
+const QUICK_REPLIES = [...SERVICE_CATEGORIES, "Free SEO audit", "Ask for Pricing", "View Pricing", "Start Paid Plan", "Start my Enquiry"];
 
 // Contextual suggestion chips — shown after each assistant reply, matched against
 // the last message's topic so follow-ups feel relevant to what was just said.
@@ -40,6 +67,7 @@ const REPLY_SUGGESTIONS: { match: RegExp; chips: string[] }[] = [
   { match: /google ads|ppc|search ad|google ad/i, chips: ["Google Ads budget", "PPC management", "How fast do ads work?"] },
   { match: /website|landing page|web dev|web design|custom site/i, chips: ["Website cost", "Landing page design", "How long does it take?"] },
   { match: /email|newsletter|whatsapp/i, chips: ["Email Marketing", "WhatsApp Automation", "Can you send campaigns?"] },
+  { match: /plan|price|pricing|cost|package|buy|pay|subscribe|start now|monthly|fee|charge/i, chips: ["View Pricing", "Start Paid Plan", "Ask for Pricing"] },
 ];
 
 const WHATSAPP_URL = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent(
@@ -50,12 +78,43 @@ const WHATSAPP_URL = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent
 // chat button, cycling through on each pop-up so it feels conversational.
 const HINT_MESSAGES = [
   "Hi! I'm Friday — your AI assistant",
-  "Want to know about Nexus Digital services?",
-  "Ask me anything about SEO, Ads, or Web",
-  "Need help growing your business?",
-  "Let's boost your leads & sales",
-  "Have a question? Just tap here",
+  "See plans you can start paying for today",
+  "Pay & grow with Nexus Digital",
+  "Book a free consultation now",
+  "Limited slots this month — start today",
+  "Your growth plan is one tap away",
 ];
+
+// Convert plain-text URLs in a message into clickable links (open in new tab).
+function linkify(text: string): ReactNode {
+  const urlRe =
+    /(https?:\/\/[^\s<]+)|(\/(?:pricing|contact|services|enquiry|about|case-studies|testimonials|faq)(?:\/[^\s<]*)?)/g;
+  const out: ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let i = 0;
+  while ((m = urlRe.exec(text)) !== null) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    const token = m[0];
+    const href = token.startsWith("http")
+      ? token
+      : `https://nexusdigitalmarketing.shop${token}`;
+    out.push(
+      <a
+        key={i++}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-brand-blue-light underline underline-offset-2 hover:text-white break-words"
+      >
+        {token}
+      </a>
+    );
+    last = m.index + token.length;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
 
 // Friday AI avatar — site logo image inside a branded ring, with name label.
 function FridayAvatar() {
@@ -100,6 +159,7 @@ export function ChatWidget() {
   const [sugOpen, setSugOpen] = useState(true); // suggestions panel collapse toggle
   const scrollRef = useRef<HTMLDivElement>(null);
   const openedRef = useRef(false);
+  const leadCapturedRef = useRef(false);
 
   // Position the launcher just above whichever floating buttons are currently
   // visible, so hidden buttons never leave a dead gap beneath it.
@@ -293,6 +353,22 @@ const clearHistory = () => {
     setMessages(next);
     setInput("");
     setLoading(true);
+
+    // Capture a lead if the visitor shared an email anywhere in the conversation.
+    // (Skip while the structured enquiry form is active — it already saves the lead.)
+    const lead = extractLead(next);
+    if (lead.email && !leadCapturedRef.current && !enquiry.active) {
+      leadCapturedRef.current = true;
+      fetch("/api/chat/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: lead.name, email: lead.email, message: text }),
+      })
+        .then(() => {})
+        .catch(() => {
+          leadCapturedRef.current = false; // allow retry on next message
+        });
+    }
     const replyIndex = next.length; // fixed index where the assistant reply lands
 
     try {
@@ -646,7 +722,7 @@ const clearHistory = () => {
                         {m.role === "user" && (
                           <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-full" />
                         )}
-                        {m.content}
+                        {linkify(m.content)}
                       </div>
                       {m.role === "user" && <UserAvatar />}
                     </motion.div>

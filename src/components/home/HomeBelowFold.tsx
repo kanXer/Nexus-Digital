@@ -11,9 +11,13 @@ import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { FAQItem } from "@/components/ui/FAQItem";
-import { TestimonialCard } from "@/components/ui/TestimonialCard";
-import { testimonials } from "@/data/testimonials";
 import { pricingPlans } from "@/data/pricing";
+import LeadCalculator from "@/components/home/LeadCalculator";
+import ServiceQuiz from "@/components/home/ServiceQuiz";
+import IndustriesWeServe from "@/components/home/IndustriesWeServe";
+import TestimonialsCarousel from "@/components/home/TestimonialsCarousel";
+import LeadMagnetSection from "@/components/home/LeadMagnetSection";
+import PayPalButton from "@/components/payment/PayPalButton";
 import { faqs } from "@/data/faq";
 import { teamMembers } from "@/data/team";
 
@@ -129,6 +133,12 @@ export default function HomeBelowFold() {
         </div>
       </section>
 
+      {/* ═══ INDUSTRIES WE SERVE ═══ */}
+      <IndustriesWeServe />
+
+      {/* ═══ LEAD MAGNETS ═══ */}
+      <LeadMagnetSection />
+
       {/* ═══ WHY CHOOSE US ═══ */}
       <section className="section-padding bg-white/2 border-y border-white/6 relative">
         <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
@@ -158,6 +168,9 @@ export default function HomeBelowFold() {
           </div>
         </div>
       </section>
+
+      {/* ═══ SERVICE QUIZ ═══ */}
+      <ServiceQuiz />
 
       {/* ═══ TEAM ═══ */}
       <section className="section-padding bg-white/2 border-b border-white/6 relative overflow-hidden">
@@ -267,24 +280,11 @@ export default function HomeBelowFold() {
         </div>
       </section>
 
+      {/* ═══ LEAD CALCULATOR ═══ */}
+      <LeadCalculator />
+
       {/* ═══ TESTIMONIALS ═══ */}
-      <section className="section-padding bg-white/2 border-y border-white/6 relative">
-        <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
-        <div className="container-custom relative z-10">
-          <SectionHeading badge="Testimonials" title="What Our " highlight="Clients Say" subtitle="Don't take our word for it — here's what the businesses we work with think." />
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {testimonials.slice(0, 6).map((t, i) => (
-              <TestimonialCard key={t.id} testimonial={t} index={i} />
-            ))}
-          </div>
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="mt-10 text-center">
-            <Link href="/testimonials" className="btn-secondary px-8 py-3 group">
-              View All Reviews
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+      <TestimonialsCarousel />
 
       {/* ═══ PRICING ═══ */}
       <section className="section-padding relative">
@@ -332,6 +332,15 @@ export default function HomeBelowFold() {
                 <Link href={plan.ctaLink} className={`${plan.highlight ? "btn-primary" : "btn-secondary"} justify-center text-sm`}>
                   {plan.cta}
                 </Link>
+                <div className="mt-4">
+                  <p className="text-center text-[11px] uppercase tracking-wider text-white/30 mb-2">
+                    Or pay securely &amp; instantly
+                  </p>
+                  <PayPalButton planId={plan.id} planName={plan.name} priceInr={plan.priceInr} recurring />
+                  <p className="text-center text-[11px] text-white/25 mt-3">
+                    🔥 Join 200+ businesses growing with us — live in 24h
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -408,10 +417,10 @@ export default function HomeBelowFold() {
         <div className="absolute inset-0 noise-bg pointer-events-none opacity-40" />
         <div className="container-custom relative z-10 text-center max-w-2xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}>
-            <span className="tag-badge mb-5 inline-flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              Ready to Grow?
-            </span>
+          <span className="tag-badge mb-5 inline-flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            Ready to grow? 🔥 Slots filling fast
+          </span>
             <AnimatedTitle
               as="h2"
               title="Start Growing Your Business Today"
@@ -419,19 +428,26 @@ export default function HomeBelowFold() {
               className="text-[clamp(2rem,5vw,3.25rem)] font-black text-white mb-5 leading-tight tracking-tight"
               initialDelay={0.1}
             />
-            <p className="text-white/50 text-base md:text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-              Send us an enquiry today — whether you&apos;re in Gorakhpur, Lucknow, or anywhere in UP, we&apos;ll get back with a custom growth plan for your business, no strings attached.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/enquiry#enquiry-form" className="btn-primary text-base px-8 py-4 group">
-                Send an Enquiry
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-              <a href={`tel:${config.phone}`} className="btn-secondary text-base px-8 py-4">
-                <Phone className="w-4 h-4" />
-                Call Us Now
-              </a>
-            </div>
+          <p className="text-white/60 text-base md:text-lg mb-4 max-w-lg mx-auto leading-relaxed">
+            🔥 Limited new-client slots this month — lock your growth plan today. Book a <strong className="text-white">free consultation</strong> or <strong className="text-white">pay &amp; start instantly</strong> to become a Nexus client in minutes.
+          </p>
+          <p className="text-brand-blue-light/80 text-sm mb-8 max-w-lg mx-auto font-medium">
+            Trusted by 200+ businesses across India 🇮🇳
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/contact#book-consultation" className="btn-secondary text-base px-8 py-4 group">
+              Book Free Consultation
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+            <Link href="/pricing" className="btn-primary text-base px-8 py-4 group">
+              Pay &amp; Get Started
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+            <a href={`tel:${config.phone}`} className="btn-secondary text-base px-8 py-4">
+              <Phone className="w-4 h-4" />
+              Call Us Now
+            </a>
+          </div>
           </motion.div>
         </div>
       </section>

@@ -8,6 +8,8 @@ import { config } from "@/lib/config";
 import { FAQItem } from "@/components/ui/FAQItem";
 import { pricingPlans, pricingFaqs } from "@/data/pricing";
 import { servicePricing } from "@/data/servicePricing";
+import PayPalButton from "@/components/payment/PayPalButton";
+import ServiceItemBuyer from "@/components/pricing/ServiceItemBuyer";
 
 export default function PricingPage() {
   return (
@@ -78,6 +80,15 @@ export default function PricingPage() {
                 <Link href={plan.ctaLink} className={`${plan.highlight ? "btn-primary" : "btn-secondary"} justify-center text-sm py-3`}>
                   {plan.cta}
                 </Link>
+                <div className="mt-4">
+                  <p className="text-center text-[11px] uppercase tracking-wider text-white/30 mb-2">
+                    Or pay securely &amp; instantly
+                  </p>
+                  <PayPalButton planId={plan.id} planName={plan.name} priceInr={plan.priceInr} recurring />
+                  <p className="text-center text-[11px] text-white/25 mt-3">
+                    🔥 Join 200+ businesses growing with us — live in 24h
+                  </p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -145,10 +156,11 @@ export default function PricingPage() {
                           <p className="text-lg font-black text-white">₹{item.agencyInr.toLocaleString("en-IN")}</p>
                           <p className="text-[10px] text-white/35">{item.cycle === "monthly" ? "per month" : "one-time"}</p>
                         </div>
-                      </div>
-                      <p className="text-[11px] text-white/35 leading-relaxed border-t border-white/6 pt-3">
-                        {item.disclaimer}
-                      </p>
+                  </div>
+                  <ServiceItemBuyer item={item} />
+                  <p className="text-[11px] text-white/35 leading-relaxed border-t border-white/6 pt-3">
+                    {item.disclaimer}
+                  </p>
                     </motion.div>
                   ))}
                 </div>

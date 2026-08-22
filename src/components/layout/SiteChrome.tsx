@@ -7,6 +7,7 @@ import { WhatsAppButton } from "@/components/common/WhatsAppButton";
 import { BackToTop } from "@/components/common/BackToTop";
 import { ChatWidget } from "@/components/common/ChatWidget";
 import { MobileActionBar } from "@/components/common/MobileActionBar";
+import { SocialProofPopup } from "@/components/common/SocialProofPopup";
 
 export default function SiteChrome() {
   const pathname = usePathname();
@@ -37,6 +38,7 @@ export default function SiteChrome() {
       <WhatsAppButton />
       <BackToTop />
       <ChatWidget />
+      <SocialProofPopup />
     </>
   );
 }

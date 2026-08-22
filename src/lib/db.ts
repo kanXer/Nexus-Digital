@@ -23,12 +23,21 @@ async function ensureIndexes(db: Db) {
       { expiresAt: 1 },
       { expireAfterSeconds: 0 }
     );
+
+    // Prevent double-recording the same PayPal order/subscription (idempotency).
+    await db
+      .collection("payments")
+      .createIndex(
+        { paypalOrderId: 1 },
+        { unique: true, sparse: true, background: true }
+      )
+      .catch(() => {});
   } catch (err) {
     console.error("Failed to ensure indexes:", err);
   }
 }
 
-export async function saveSubmission(type: "contact" | "booking" | "enquiry" | "subscribe", data: Record<string, unknown>) {
+export async function saveSubmission(type: "contact" | "booking" | "enquiry" | "subscribe" | "leadmagnet", data: Record<string, unknown>) {
   try {
     const db = await getDb();
     const status = type === "contact" ? "pending" : type === "booking" ? "pending" : type === "enquiry" ? "pending" : undefined;

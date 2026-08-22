@@ -247,6 +247,37 @@ export async function sendAdminStatusNote(subject: string, rows: { label: string
   await sendMail(SENDER_EMAIL, subject, wrapHtml("Status Updated", rows));
 }
 
+export interface InvoiceAttachment {
+  filename: string;
+  content: Buffer;
+  contentType: string;
+}
+
+export async function sendInvoiceEmail(opts: {
+  to: string;
+  subject: string;
+  html: string;
+  attachment: InvoiceAttachment;
+}) {
+  if (!transporter) {
+    console.warn("SMTP not configured — skipping invoice email");
+    return;
+  }
+  await transporter.sendMail({
+    from: `"${SENDER_NAME}" <${SENDER_EMAIL}>`,
+    to: opts.to,
+    subject: opts.subject,
+    html: opts.html,
+    attachments: [
+      {
+        filename: opts.attachment.filename,
+        content: opts.attachment.content,
+        contentType: opts.attachment.contentType,
+      },
+    ],
+  });
+}
+
 export async function sendNewsletterMail(subscribers: { email: string; name?: string }[], subject: string, content: string) {
   if (!transporter) {
     console.warn("Gmail SMTP not configured — skipping newsletter");

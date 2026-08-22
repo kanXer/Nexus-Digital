@@ -9,6 +9,7 @@ export interface PricingPlan {
   tagline: string;
   priceRange: string;
   period: string;
+  priceInr: number;
   badge?: string;
   highlight: boolean;
   features: PricingFeature[];
@@ -23,6 +24,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "Best for Tier-2 & Tier-3 Cities",
     priceRange: "₹5,000 – ₹10,000",
     period: "/month",
+    priceInr: 5000,
     highlight: false,
     features: [
       { text: "Social Media Management", included: true },
@@ -47,6 +49,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "For businesses ready to scale with paid ads and lead generation",
     priceRange: "₹15,000 – ₹20,000",
     period: "/month",
+    priceInr: 15000,
     badge: "Most Popular",
     highlight: true,
     features: [
@@ -72,6 +75,7 @@ export const pricingPlans: PricingPlan[] = [
     tagline: "Full-stack marketing for maximum growth and brand authority",
     priceRange: "₹25,000 – ₹50,000+",
     period: "/month",
+    priceInr: 25000,
     highlight: false,
     features: [
       { text: "Full-stack Marketing", included: true },

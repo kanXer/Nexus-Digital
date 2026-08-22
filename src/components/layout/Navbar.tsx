@@ -3,9 +3,10 @@ import { useState, useEffect, useRef, startTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, ChevronDown, ArrowRight, UserCog } from "lucide-react";
+import { Menu, X, Zap, ChevronDown, ArrowRight, UserCog, Calculator } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { config } from "@/lib/config";
+import LeadCalculator from "@/components/home/LeadCalculator";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -28,6 +29,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [calcOpen, setCalcOpen] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -55,9 +57,18 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    document.body.style.overflow = mobileOpen || calcOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
-  }, [mobileOpen]);
+  }, [mobileOpen, calcOpen]);
+
+  useEffect(() => {
+    if (!calcOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setCalcOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [calcOpen]);
 
   return (
     <>
@@ -137,6 +148,15 @@ export default function Navbar() {
             </nav>
 
             <div className="hidden lg:flex items-center gap-3">
+              <button
+                onClick={() => setCalcOpen(true)}
+                title="Lead Calculator"
+                aria-label="Open Lead Calculator"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-all duration-200"
+              >
+                <Calculator className="w-4 h-4 text-brand-blue-light" />
+                Calculator
+              </button>
               <ThemeToggle />
               <Link
                 href="/admin"
@@ -188,6 +208,13 @@ export default function Navbar() {
               </div>
 
               <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+                <button
+                  onClick={() => { setCalcOpen(true); setMobileOpen(false); }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors w-full text-left"
+                >
+                  <Calculator className="w-4 h-4 text-brand-blue-light" />
+                  Lead Calculator
+                </button>
                 {navLinks.map((link) =>
                   link.children ? (
                     <div key={link.label}>
@@ -233,6 +260,38 @@ export default function Navbar() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ LEAD CALCULATOR MODAL ═══ */}
+      <AnimatePresence>
+        {calcOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto py-12 px-4"
+            onClick={() => setCalcOpen(false)}
+          >
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" />
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="relative z-10 w-full max-w-5xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setCalcOpen(false)}
+                aria-label="Close Lead Calculator"
+                className="fixed top-4 right-4 z-[70] w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <LeadCalculator />
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
