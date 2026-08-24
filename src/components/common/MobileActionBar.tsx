@@ -15,9 +15,9 @@ export function MobileActionBar() {
       <div className="flex items-stretch gap-2.5">
         <Link
           href="/enquiry#enquiry-form"
-          className="btn-cta-premium flex-1 py-3.5 group"
+          className="btn-primary flex-1 py-3.5 group relative overflow-hidden animate-pulse-slow shadow-[0_0_15px_rgba(220,38,38,0.2)]"
         >
-          <span className="relative z-10">Enquiry</span>
+          <span className="relative z-10 text-[13px] font-bold">Get Free Audit</span>
           <ArrowRight className="w-4 h-4 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
         <a

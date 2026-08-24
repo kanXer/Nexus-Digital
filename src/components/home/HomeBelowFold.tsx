@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowRight, CheckCircle, Star, X, CheckIcon, Phone,
@@ -17,7 +18,8 @@ import ServiceQuiz from "@/components/home/ServiceQuiz";
 import IndustriesWeServe from "@/components/home/IndustriesWeServe";
 import TestimonialsCarousel from "@/components/home/TestimonialsCarousel";
 import LeadMagnetSection from "@/components/home/LeadMagnetSection";
-import PayPalButton from "@/components/payment/PayPalButton";
+import PaytmButton from "@/components/payment/PaytmButton";
+import { useAuth } from "@/context/AuthContext";
 import { faqs } from "@/data/faq";
 import { teamMembers } from "@/data/team";
 
@@ -56,14 +58,30 @@ const whyUs = [
   { icon: Zap, title: "Fast Execution", desc: "Campaigns live in days, not weeks. We move at the speed your business demands." },
 ];
 
-const clientLogos = ["Gorakhpur Mission Rehab", "1st Poultry Conclave"];
+const clientLogos = ["Gorakhpur Mission Rehab", "1st Poultry Conclave", "Radhey Radhey Blood Bank"];
 
 const caseStudyPreviews = [
   { headline: "Neuro Rehab Website & Local SEO", client: "Gorakhpur Mission Rehab", industry: "Healthcare", service: "Website + Local SEO", gradient: "from-teal-600/25 to-cyan-600/15", href: "/case-studies", result: "Online", label: "Presence" },
   { headline: "Poultry Conclave Event Website", client: "1st Poultry Conclave Gorakhpur", industry: "Event", service: "Event Website + Registrations", gradient: "from-amber-600/25 to-yellow-600/15", href: "/case-studies", result: "Event", label: "Registrations" },
+  { headline: "Charitable Blood Bank Web Platform", client: "Radhey Radhey Blood & Component Centre", industry: "Healthcare / Social", service: "Website + Community Outreach", gradient: "from-red-600/25 to-rose-600/15", href: "/portfolio", result: "Community", label: "Reach" },
 ];
 
 export default function HomeBelowFold() {
+  const { user, recordNewOrder } = useAuth();
+  const router = useRouter();
+
+  const handleHomeDemo = async (plan: { id: string; name: string; priceInr: number }) => {
+    const txnId = `NEX-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+    const order = await recordNewOrder({
+      title: plan.name,
+      amount: `₹${plan.priceInr.toLocaleString("en-IN")}/mo`,
+      planId: plan.id,
+      isSubscription: true,
+      numericAmount: plan.priceInr,
+    });
+    router.push(`/payment-success?orderId=${order.id}&plan=${plan.id}&txn=${txnId}`);
+  };
+
   return (
     <div>
       {/* ═══ STATS ═══ */}
@@ -336,7 +354,14 @@ export default function HomeBelowFold() {
                   <p className="text-center text-[11px] uppercase tracking-wider text-white/30 mb-2">
                     Or pay securely &amp; instantly
                   </p>
-                  <PayPalButton planId={plan.id} planName={plan.name} priceInr={plan.priceInr} recurring />
+                  <PaytmButton
+                    planId={plan.id}
+                    planName={plan.name}
+                    priceInr={plan.priceInr}
+                    recurring
+                    userId={user?.uid}
+                    onDemo={() => handleHomeDemo(plan)}
+                  />
                   <p className="text-center text-[11px] text-white/25 mt-3">
                     🔥 Join 200+ businesses growing with us — live in 24h
                   </p>

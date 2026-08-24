@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import TopInfoBar from "@/components/layout/TopInfoBar";
 import { WhatsAppButton } from "@/components/common/WhatsAppButton";
 import { BackToTop } from "@/components/common/BackToTop";
 import { ChatWidget } from "@/components/common/ChatWidget";
@@ -24,6 +25,7 @@ export default function SiteChrome() {
   if (isAdminLogin) {
     return (
       <>
+        <TopInfoBar />
         <Navbar />
         <Footer />
         <BackToTop />
@@ -33,6 +35,7 @@ export default function SiteChrome() {
 
   return (
     <>
+      <TopInfoBar />
       <Navbar />
       <Footer />
       <WhatsAppButton />

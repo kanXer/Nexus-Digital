@@ -6,202 +6,262 @@ export interface FAQ {
 }
 
 export const faqs: FAQ[] = [
+  /* ── GENERAL ── */
   {
     id: "faq1",
-    question: "How long does it take to see results from digital marketing?",
-    answer: "Results vary by channel. Paid advertising (Meta/Google Ads) can show measurable results within the first 1–2 weeks as we gather data and optimise. Social media growth typically becomes visible in 30–60 days with consistent posting and engagement. SEO is a longer-term strategy requiring 3–6 months to see significant ranking improvements, but the compounding returns are well worth the investment.",
-    category: "results",
+    question: "What is the best digital marketing agency in Gorakhpur?",
+    answer:
+      "Nexus Digital is widely recognised as the best digital marketing agency in Gorakhpur. We are a results-driven digital marketing agency in Gorakhpur delivering SEO, Google Ads, Meta Ads, social media marketing, website development, and lead generation for businesses across Gorakhpur, Uttar Pradesh, and all of India. Our founder-led, hands-on approach means every client gets personal attention, measurable KPIs, and real business growth — not vanity metrics.",
+    category: "general",
   },
   {
     id: "faq2",
-    question: "Do you work with businesses outside your city?",
-    answer: "Yes, absolutely! We work with clients across India. Our entire process is remote-friendly — we use video calls, project management tools, and regular reporting to stay fully aligned with our clients regardless of location.",
+    question: "Why should I choose a digital marketing agency in Gorakhpur over a Delhi or Mumbai agency?",
+    answer:
+      "A digital marketing agency in Gorakhpur understands the local market, regional buying behaviour, and Hindi-language search intent that national agencies often miss. As the best digital marketing agency Gorakhpur businesses trust, we combine hyperlocal knowledge with data-driven strategy. We are more accessible, more accountable, and deeply invested in your local business growth — while still delivering national-level quality and results.",
     category: "general",
   },
   {
     id: "faq3",
-    question: "What industries do you specialise in?",
-    answer: "We currently work with businesses in Real Estate, Wellness, Food & Beverage, Retail, Healthcare, Education, and Local Services. Our data-driven approach means we can adapt our digital marketing strategies to your specific industry effectively.",
+    question: "What services does your digital marketing agency offer?",
+    answer:
+      "We offer a complete suite of digital marketing services: Social Media Marketing, Meta Ads (Facebook & Instagram), Google Ads PPC, Search Engine Optimisation (SEO), Local SEO & Google Business Profile Optimisation, Website Design & Development, Landing Pages, WhatsApp Marketing Automation, Email Marketing, Lead Generation Funnels, CRM Integration, and monthly Analytics & Reporting. Everything your business needs to dominate online under one roof.",
     category: "general",
   },
   {
     id: "faq4",
-    question: "Will I have a dedicated account manager?",
-    answer: "Yes, every client gets a dedicated account manager who is your primary point of contact. They coordinate with our specialists in paid advertising, content, SEO, and web design to ensure a seamless experience and consistent communication.",
-    category: "process",
+    question: "Do you work with businesses outside Gorakhpur — across Uttar Pradesh and India?",
+    answer:
+      "Yes. While we are the top digital marketing agency Gorakhpur businesses call first, we serve clients across Uttar Pradesh — including Lucknow, Varanasi, Kanpur, Prayagraj, Ayodhya — and across India. Our digital marketing agency in Uttar Pradesh delivers the same hands-on, data-driven service remotely with weekly video calls, live dashboards, and proactive communication.",
+    category: "general",
   },
   {
     id: "faq5",
-    question: "How do you measure and report campaign success?",
-    answer: "We provide detailed monthly reports covering all key metrics: traffic, leads generated, cost per lead, ROAS, engagement rates, and more. For paid campaigns, we also provide weekly performance snapshots. All reporting is transparent — no vanity metrics, just the numbers that matter to your business.",
-    category: "reporting",
+    question: "What makes you the best digital marketing agency in Uttar Pradesh?",
+    answer:
+      "Being the best digital marketing agency in Uttar Pradesh means more than ranking on Google — it means delivering business outcomes. We have a founder-led team, a no-black-box reporting policy, in-house creative and development capabilities, and an obsession with measurable ROI. We treat your marketing budget like our own money, and our growing portfolio of successful campaigns across Gorakhpur and UP backs every claim.",
+    category: "general",
   },
   {
     id: "faq6",
-    question: "What is your onboarding process like?",
-    answer: "Our onboarding takes 3–5 business days. It includes: (1) a strategy kick-off call, (2) brand asset and access collection, (3) audience and competitor research, (4) campaign/content strategy presentation, and (5) campaign launch. We are thorough because proper setup is the foundation of great results.",
-    category: "process",
+    question: "What industries do you specialise in?",
+    answer:
+      "We work with businesses across Healthcare, Real Estate, Education, Food & Beverage, Retail, Event Management, Agriculture, Social Impact / NGOs, and Local Services. A standout recent project is the Radhey Radhey Charitable Blood & Component Centre — Gorakhpur's trusted blood bank — for whom we built a purpose-driven web platform enabling communities to find, request, and donate blood online. We adapt our digital marketing strategies to your specific industry effectively.",
+    category: "general",
   },
+
+  /* ── DIGITAL MARKETING ── */
   {
     id: "faq7",
-    question: "Can I pause or cancel my plan?",
-    answer: "You can pause or cancel with 30 days written notice. We don't believe in locking clients in — our results are what keep clients with us. Any campaigns will be handed over cleanly with full access to all accounts, ad data, and assets.",
-    category: "billing",
+    question: "What is digital marketing and why does every business need it?",
+    answer:
+      "Digital marketing is promoting your business online through channels like Google Search, social media, email, and paid advertising to reach people actively searching for what you sell. In India, 800 million+ people are online daily. If your business is not visible where customers are searching, your competitors are capturing those leads. A professional digital marketing agency in Gorakhpur like Nexus Digital helps you show up at the right time, in the right place, with the right message — and convert visitors into paying customers.",
+    category: "marketing",
   },
   {
     id: "faq8",
-    question: "Do you create the ad creatives and content in-house?",
-    answer: "Yes, we have an in-house creative team handling graphic design, video editing, and copywriting. You don't need to source creative from elsewhere. We develop content based on your brand guidelines and our proven creative frameworks.",
-    category: "process",
+    question: "What is a digital marketing website and why do I need one?",
+    answer:
+      "A digital marketing website is your 24/7 sales and lead generation engine. It is more than a brochure — it is optimised to rank on Google, capture visitor details, build trust, and convert traffic into enquiries. As the best digital marketing agency, we build websites that are fast, mobile-first, SEO-ready, and designed to generate leads from day one. Without a strong website, all your ad spend goes to waste.",
+    category: "marketing",
   },
   {
     id: "faq9",
-    question: "What is digital marketing and why does my business need it?",
-    answer: "Digital marketing is promoting your business online using channels like Google search, social media, email, and paid advertising to reach people who are actively looking for what you sell. In India, more than 800 million people are online every day. If your business is not visible where your customers are searching, your competitors are taking those customers. We help local businesses show up at the right place, at the right time, with the right message.",
+    question: "Which is better: Google Ads or Meta Ads (Facebook & Instagram)?",
+    answer:
+      "Both serve different purposes and the best digital marketing companies use both strategically. Google Ads target people actively searching for your service (high intent — best for doctors, lawyers, real estate), while Meta Ads (Facebook & Instagram) are powerful for brand awareness, retargeting, and visually-driven products. Our digital marketing agency Gorakhpur audits your business goal and budget to recommend the right mix that maximises your return per rupee spent.",
     category: "marketing",
   },
   {
     id: "faq10",
-    question: "Why should I hire a digital marketing agency instead of doing it myself?",
-    answer: "Digital marketing is a full-time skill that combines strategy, design, analytics, and constant optimisation. Agencies like us bring certified experts, tools that cost thousands per month, and years of experience across industries. DIY marketing usually fails because there's no consistent strategy or testing. When you hire a digital marketing company, you get a team that owns your growth, tracks every rupee, and scales what works.",
+    question: "What is SEO and how does it rank my business on Google?",
+    answer:
+      "SEO (Search Engine Optimisation) is the practice of making your website and content more visible on Google when people search for services you offer — for example 'best digital marketing agency in Gorakhpur' or 'blood bank near me'. It includes keyword research, on-page content optimisation, technical fixes, link building, and Local SEO. Our SEO services as the top digital marketing agency in Gorakhpur push your business to page one of Google, where 90%+ of clicks happen.",
     category: "marketing",
   },
   {
     id: "faq11",
-    question: "How much does digital marketing cost per month?",
-    answer: "Digital marketing packages in India start from around ₹5,000 per month for basic social media management and scale up based on your goals. Paid ads budgets (Meta Ads, Google Ads) are separate and depend on how much you want to spend per month. We work with every budget and build a plan around your business, never a one-size-fits-all package.",
-    category: "billing",
+    question: "What is Local SEO and why is it essential for Gorakhpur businesses?",
+    answer:
+      "Local SEO ensures your business appears on Google Maps and in local search results when customers nearby search for your services. As a leading local SEO company and digital marketing agency Gorakhpur businesses rely on, we optimise your Google Business Profile, build local citations, manage online reviews, and target keywords like 'digital marketing agency near me in Gorakhpur'. Local SEO delivers the highest ROI for local businesses and is the #1 channel for driving calls, walk-ins, and direct enquiries.",
+    category: "marketing",
   },
   {
     id: "faq12",
-    question: "What is SEO and how does it rank my website on Google?",
-    answer: "SEO (Search Engine Optimisation) is the process of making your website and content more visible on Google when people search for your services — like 'best digital marketing agency near me'. It includes keyword research, on-page optimisation, technical fixes, content creation, and local SEO. Google ranks sites based on relevance, authority, and user experience. Our SEO services in India are built to push your business to page one of Google, where over 90% of clicks happen.",
-    category: "marketing",
+    question: "How long does it take to see results from digital marketing?",
+    answer:
+      "Paid ads (Meta & Google Ads) show measurable results within 1–2 weeks as we gather data and optimise campaigns. Social media growth becomes visible in 30–60 days with consistent content. SEO requires 3–6 months to achieve significant ranking improvements, but delivers compounding long-term returns. As the best digital marketing agency in Gorakhpur, we set realistic expectations and deliver transparency at every stage — you see exactly what is working and why.",
+    category: "results",
   },
   {
     id: "faq13",
-    question: "Which is better for my business: Google Ads or Meta Ads?",
-    answer: "It depends on your goal. Google Ads capture people who are already searching for your service — perfect for high-intent leads like website design or legal services. Meta Ads (Facebook & Instagram) are best for brand awareness, retargeting, and impulse-buy products. The best digital marketing companies use both in a full-funnel strategy. We audit your business and recommend the right mix to maximise leads per rupee.",
+    question: "How do you generate leads for my business?",
+    answer:
+      "Our lead generation system combines high-converting landing pages, targeted Meta & Google Ads, WhatsApp automation, and strong local SEO. When someone searches 'best digital marketing agency Gorakhpur' or your product/service, they find you — and our pages convert them into enquiries. We also use lead magnets, contact forms, and CRM integration to capture, qualify, and nurture leads until they are ready to buy. This is the core of what a performance-driven digital marketing agency does.",
     category: "marketing",
   },
+
+  /* ── PRICING & BILLING ── */
   {
     id: "faq14",
-    question: "What services does your digital marketing agency offer?",
-    answer: "We offer complete digital marketing services including Social Media Marketing, Meta Ads, Google Ads, SEO and Local SEO, Website Design and Development, Landing Pages, Website Maintenance, WhatsApp Automation, Email Marketing, CRM integration, and full analytics and reporting. Essentially, everything your business needs to grow online under one roof.",
-    category: "general",
+    question: "How much does digital marketing cost per month?",
+    answer:
+      "Digital marketing packages from our agency start from ₹5,000/month for basic social media management and scale based on your goals. Ad budgets (Meta Ads, Google Ads) are separate and depend on how aggressively you want to grow. As an affordable digital marketing agency in Gorakhpur, we build a plan around your business — never a one-size-fits-all package. Transparent pricing, no hidden charges, no lock-ins.",
+    category: "billing",
   },
   {
     id: "faq15",
-    question: "How much does it cost to develop a website in India?",
-    answer: "Website development costs in India typically range from ₹10,000 to ₹1,00,000+ depending on the number of pages, features, e-commerce functionality, and design quality. A simple business website with 5–8 pages starts around ₹15,000, while custom web applications and e-commerce stores cost more. We give transparent quotes based on exactly what your business needs — no hidden charges, no surprise bills.",
+    question: "Are you an affordable digital marketing agency?",
+    answer:
+      "Yes — we are proud to be the most affordable digital marketing agency in Gorakhpur delivering enterprise-grade strategy for local business budgets. Our packages start from ₹5,000/month. We believe price should never stop a good business from growing. You get a dedicated account manager, in-house creative team, transparent reporting, and no long-term contracts. Best value digital marketing in Gorakhpur and Uttar Pradesh.",
     category: "billing",
   },
   {
     id: "faq16",
-    question: "How long does it take to build a website?",
-    answer: "A standard business website takes 2–4 weeks from design to launch. A landing page can be live in as little as 5–7 days. E-commerce websites and custom web applications take 4–8 weeks depending on complexity. We deliver in phases so you can see progress and feedback early, and we never compromise on speed or performance.",
-    category: "website",
+    question: "What is the minimum investment to start digital marketing?",
+    answer:
+      "You can start with as little as ₹5,000–₹10,000/month including ad spend. We recommend starting focused on one or two channels that match your business type, tracking results rigorously, and scaling the winners. Our digital marketing agency Gorakhpur will help you avoid wasting money on channels that won't convert for your industry.",
+    category: "billing",
   },
   {
     id: "faq17",
-    question: "Do you provide website management and maintenance services?",
-    answer: "Yes. Our website management services cover security updates, backups, speed optimisation, content updates, plugin management, uptime monitoring, and bug fixes. Many business owners need a reliable team to manage their website so they can focus on running their business. Our monthly maintenance plans keep your site fast, secure, and up to date.",
-    category: "website",
+    question: "Can I pause or cancel my digital marketing plan?",
+    answer:
+      "Yes, absolutely. We do not lock clients into long contracts. You can pause or cancel with 30 days written notice. All your ad accounts, assets, content, and data are yours — we hand everything over cleanly. Our results are what keep clients with us, not paperwork. This is the Nexus commitment as the best digital marketing agency Gorakhpur trusts.",
+    category: "billing",
   },
+
+  /* ── PROCESS ── */
   {
     id: "faq18",
-    question: "Will my website be mobile-friendly and rank on Google?",
-    answer: "Absolutely. Every website we build is fully responsive (mobile-friendly), fast-loading, and built with SEO best practices from day one. Google ranks mobile-first, so a slow or broken mobile experience destroys rankings. We build on performance and SEO foundations — proper meta tags, schema markup, image optimisation, and Core Web Vitals — so your site is ready to rank the moment it launches.",
-    category: "website",
+    question: "What is your onboarding process?",
+    answer:
+      "Our onboarding takes 3–5 business days: (1) Strategy kick-off call, (2) Brand asset and access collection, (3) Audience and competitor research, (4) Campaign/content strategy presentation, (5) Campaign launch. As a professional digital marketing agency in Gorakhpur, we are thorough because proper setup is the foundation of great results. You never get thrown into the deep end.",
+    category: "process",
   },
   {
     id: "faq19",
-    question: "Can you redesign or fix my existing website?",
-    answer: "Yes. We regularly take over existing websites that are slow, outdated, or not generating leads. We audit the site, fix performance and security issues, modernise the design, and optimise it for conversions and SEO. Whether it's a complete redesign or targeted improvements, we'll make your website work hard for your business.",
-    category: "website",
+    question: "Will I have a dedicated account manager?",
+    answer:
+      "Yes. Every client at our digital marketing agency in Gorakhpur gets a dedicated account manager who is your single point of contact. They coordinate all specialists — paid ads, content, SEO, web development — to deliver a seamless experience. No juniors, no hand-offs, no confusion. You speak directly with the people doing the work.",
+    category: "process",
   },
   {
     id: "faq20",
-    question: "How do you get clients for a local business with local SEO?",
-    answer: "Local SEO puts your business on the map — literally. We optimise your Google Business Profile, build local citations, manage reviews, and target keywords like 'best plumber near me' or 'digital marketing agency in Gorakhpur'. This drives qualified local customers straight to your door or WhatsApp. It's the highest ROI channel for local businesses, and we are experts at it.",
-    category: "marketing",
+    question: "How do you measure and report campaign success?",
+    answer:
+      "We provide detailed monthly reports covering all KPIs: traffic, leads, cost per lead, ROAS, conversion rate, engagement, and search rankings. Paid campaigns also get weekly snapshots. As the best digital marketing agency in Gorakhpur, we believe in radical transparency — no vanity metrics, only the numbers that matter to your business bottom line.",
+    category: "process",
   },
   {
     id: "faq21",
-    question: "What makes your digital marketing agency different from others?",
-    answer: "We are a results-first, no-lock-in digital marketing company. You get a dedicated account manager, transparent monthly reporting, in-house creative and development teams, and strategies built for small and medium businesses in India. We treat your budget like our own money, we don't force long contracts, and we focus on measurable growth — not vanity metrics. That's why clients trust us as their long-term growth partner.",
-    category: "general",
+    question: "Do you create ad creatives and content in-house?",
+    answer:
+      "Yes. Our in-house team handles graphic design, video editing, copywriting, and social media content creation. You never need to source creatives externally. We develop content based on your brand guidelines and our proven creative frameworks — tested across dozens of campaigns across Gorakhpur, UP, and India.",
+    category: "process",
   },
+
+  /* ── WEBSITE DEVELOPMENT ── */
   {
     id: "faq22",
-    question: "What is the minimum investment to start digital marketing?",
-    answer: "You can start digital marketing for your business from as little as ₹5,000–₹10,000 per month including ads. We recommend starting with one or two channels that match your goal, tracking results, and scaling the winners. We help you avoid wasting money on channels that won't work for your industry.",
-    category: "billing",
+    question: "How much does website development cost in India?",
+    answer:
+      "A basic business website (5–8 pages) starts around ₹15,000. E-commerce stores and custom web applications range from ₹30,000 to ₹1,00,000+ depending on features and complexity. As the top digital marketing company in Gorakhpur, we give transparent, itemised quotes — no hidden charges. Every website we build is fast, mobile-first, and SEO-optimised from day one.",
+    category: "website",
   },
   {
     id: "faq23",
-    question: "Do you provide digital marketing for hospitals in Gorakhpur?",
-    answer: "Yes. We are a trusted digital marketing agency for hospitals in Gorakhpur and one of the best healthcare digital marketing services in UP. We help hospitals, clinics, and doctors book more consultations through local SEO, Google Business Profile optimisation, patient reviews, Meta & Google Ads, and lead generation services designed for healthcare.",
-    category: "marketing",
+    question: "How long does it take to build a website?",
+    answer:
+      "A standard business website takes 2–4 weeks from design to launch. A landing page can be live in 5–7 days. E-commerce and custom web apps take 4–8 weeks. We deliver in phases so you can review progress early and provide feedback — and we never compromise speed or quality. See our work at gorakhpurmission.in and radhe-radhe-blood-bank.vercel.app for examples.",
+    category: "website",
   },
   {
     id: "faq24",
-    question: "Can you generate leads for real estate developers in Gorakhpur?",
-    answer: "Absolutely. As a digital marketing agency for real estate in Gorakhpur, we build tailored campaigns for builders, brokers, and property portals. We run targeted Meta Ads and Google Ads, build lead-funnels with landing pages, and use local SEO to rank for terms like 'flats in Gorakhpur' or 'plots in Gorakhpur', so you get qualified enquiries from serious buyers.",
-    category: "marketing",
+    question: "Do you provide website maintenance and management services?",
+    answer:
+      "Yes. Our website management services cover security updates, daily backups, speed optimisation, content updates, plugin management, uptime monitoring, and bug fixes. Monthly maintenance plans from our digital marketing agency Gorakhpur keep your site fast, secure, and up to date — so you can focus on running your business.",
+    category: "website",
   },
   {
     id: "faq25",
-    question: "Are you an affordable digital marketing agency?",
-    answer: "Yes, we take pride in being an affordable digital marketing agency in Gorakhpur and across UP. Our packages start from just ₹5,000 per month, so even small local businesses can access professional digital marketing services in Gorakhpur. You get premium strategy, transparent pricing, and no hidden charges — the best value in local digital marketing.",
-    category: "billing",
+    question: "Can you redesign or fix my existing website?",
+    answer:
+      "Yes. We regularly take over slow, outdated websites that are not generating leads. We audit the site, fix performance and security issues, modernise the design, and optimise for conversions and SEO. Whether it is a complete redesign or targeted improvements, our digital marketing agency Gorakhpur makes your website work hard for your business.",
+    category: "website",
   },
   {
     id: "faq26",
-    question: "Do you offer digital marketing services across Uttar Pradesh?",
-    answer: "Yes. Beyond Gorakhpur, we are a top digital marketing company in UP serving Lucknow, Varanasi, Kanpur, Prayagraj, and every city in the state. Our digital marketing agency in Uttar Pradesh delivers local SEO services in Uttar Pradesh, Google Ads PPC, social media management, lead generation, and B2B digital marketing services for clients across India.",
-    category: "general",
+    question: "Will my website rank on Google and be mobile-friendly?",
+    answer:
+      "Absolutely. Every website we build is fully responsive (mobile-first), fast-loading (Core Web Vitals optimised), and built with on-page SEO from day one — proper meta tags, schema markup, image optimisation, and semantic structure. Google ranks mobile-first, so a broken mobile experience destroys rankings. Our websites are engineered to rank from launch.",
+    category: "website",
   },
+
+  /* ── LOCAL SERVICES ── */
   {
     id: "faq27",
-    question: "Digital marketing meri business growth me kaise help kar sakti hai?",
-    answer: "Digital Marketing aapke business ko target audience tak pahunchane, online leads generate karne, brand awareness badhane aur overall sales grow karne me madad karti hai. Traditional marketing ke mukabla iska ROI measurable aur budget-friendly hota hai.",
+    question: "Do you provide digital marketing for hospitals and healthcare in Gorakhpur?",
+    answer:
+      "Yes. We are a trusted digital marketing agency for hospitals and healthcare providers in Gorakhpur and UP. We help hospitals, clinics, doctors, and diagnostic centres book more consultations through Local SEO, Google Business Profile optimisation, patient review management, Meta & Google Ads, and healthcare-specific lead generation. Our work with Gorakhpur Mission Rehab is a testament to our healthcare expertise.",
     category: "marketing",
   },
   {
     id: "faq28",
-    question: "Digital Marketing services ka kitna cost aata hai?",
-    answer: "Cost aapke business goals, targeting aur chosen services (SEO, Meta Ads, Google Ads) par depend karta hai. Hum small businesses aur growing startups ke liye customizable monthly retainer packages offer karte hain.",
-    category: "billing",
+    question: "Can you generate leads for real estate developers and agents in Gorakhpur?",
+    answer:
+      "Absolutely. As a digital marketing agency for real estate in Gorakhpur, we build tailored campaigns for builders, brokers, and property portals. We run targeted Meta Ads and Google Ads with dedicated landing pages, and use local SEO to rank for terms like 'flats in Gorakhpur' and 'plots in Gorakhpur' — so you receive qualified enquiries from serious buyers.",
+    category: "marketing",
   },
   {
     id: "faq29",
-    question: "Google par top position par rank hone me kitna time lagta hai?",
-    answer: "Regular Organic SEO ke results dikhne me lagbhag 3 se 6 mahine ka samay lagta hai. Local SEO (Google My Business / Maps) me results thode fast mil sakte hain.",
-    category: "results",
-  },
-  {
-    id: "faq30",
-    question: "Organic SEO aur Paid Ads (PPC) me kya difference hai?",
-    answer: "SEO se aap Google me bina ad lagaye organically top rank karte ho (long-term strategy). Paid Ads (Google/Meta Ads) se aapko immediate traffic aur targeted leads milna start ho jata hai.",
-    category: "marketing",
-  },
-  {
-    id: "faq31",
-    question: "Kya mere business ke liye sabhi Social Media platforms par hona zaroori hai?",
-    answer: "Nahi, aapko sirf un platforms par focus karna chahiye jahan aapki target audience active hai. Examples: B2C/Local Retail ke liye Instagram/Facebook aur B2B services ke liye LinkedIn.",
+    question: "Do you offer digital marketing services across Uttar Pradesh?",
+    answer:
+      "Yes. Beyond Gorakhpur, our digital marketing agency in Uttar Pradesh serves Lucknow, Varanasi, Kanpur, Prayagraj, Ayodhya, Bareilly, Agra, Meerut, and every city in UP. We deliver Local SEO, Google Ads PPC, social media management, lead generation, and B2B digital marketing services for clients across the state — with the same hands-on, founder-led service.",
     category: "general",
   },
   {
+    id: "faq30",
+    question: "What is the best digital marketing agency in Uttar Pradesh?",
+    answer:
+      "Nexus Digital has earned recognition as the best digital marketing agency in Uttar Pradesh by consistently delivering measurable ROI for businesses across the state. From our base in Gorakhpur, we serve clients across UP with the full range of digital marketing services — SEO, paid advertising, social media, web development, and lead generation — backed by transparent reporting and a no-lock-in promise.",
+    category: "general",
+  },
+
+  /* ── HINDI LANGUAGE FAQs ── */
+  {
+    id: "faq31",
+    question: "Digital marketing meri business ko kaise grow kar sakti hai?",
+    answer:
+      "Digital Marketing aapke business ko target audience tak pahunchane, online leads generate karne, brand awareness badhane aur overall sales grow karne mein madad karti hai. Best digital marketing agency in Gorakhpur ke roop mein, hum aapke liye SEO, Google Ads, Meta Ads aur social media strategies design karte hain jo measurable results deliver karte hain. Traditional marketing ke mukable iska ROI transparent aur budget-friendly hota hai.",
+    category: "marketing",
+  },
+  {
     id: "faq32",
-    question: "Hum apne marketing campaign ka result kaise track kar sakte hain?",
-    answer: "Hum aapko Monthly Performance Reports aur Live Dashboard sharing pradan karte hain. Aap Google Analytics aur Ads Manager ke zariye clicks, leads, impressions aur ROI monitor kar sakte hain.",
-    category: "reporting",
+    question: "Gorakhpur mein best digital marketing agency kaun hai?",
+    answer:
+      "Nexus Digital ko Gorakhpur ki best digital marketing agency mana jaata hai. Hum results-first approach ke saath kaam karte hain — SEO, Google Ads, Meta Ads, website development aur lead generation mein. Hamara founder-led team aapke business ko personally samajhta hai aur dedicated account manager ke through transparent reporting deliver karta hai. Jo bhi businesses Gorakhpur mein online grow karna chahti hain, unke liye hum pehli choice hain.",
+    category: "general",
   },
   {
     id: "faq33",
-    question: "Kya aap local businesses ke liye Google Map / Local SEO services provide karte hain?",
-    answer: "Haan, hum Google Business Profile setup, Google Maps ranking, local keyword optimization aur local citation building jaisi complete Local SEO services dete hain.",
+    question: "Google par top rank hone mein kitna time lagta hai?",
+    answer:
+      "Organic SEO se significant rankings typically 3–6 mahine mein aati hain. Local SEO (Google Maps / Business Profile) ke results isse thode fast aa sakte hain — kuch cases mein 4–8 hafte mein bhi. Paid ads (Google/Meta) se aapko immediately traffic aur leads milna shuru ho jaata hai. Digital marketing agency Gorakhpur ke roop mein, hum dono strategies combine karte hain taaki aapko short-term aur long-term dono results milein.",
+    category: "results",
+  },
+  {
+    id: "faq34",
+    question: "Kya aap local businesses ke liye Google Maps aur Local SEO services provide karte hain?",
+    answer:
+      "Haan. Hum Google Business Profile setup, Google Maps ranking optimisation, local keyword targeting, review management, aur local citation building jaisi complete Local SEO services provide karte hain. Hamari digital marketing agency Gorakhpur ne kai local businesses ko Google Maps par top position dilai hai — jisse unke direct calls aur store visits mein significant increase hua hai.",
     category: "marketing",
+  },
+  {
+    id: "faq35",
+    question: "Hum apne digital marketing campaign ka result kaise track karein?",
+    answer:
+      "Hum aapko monthly performance reports aur live dashboard access dete hain. Google Analytics, Search Console, aur Ads Manager ke through aap clicks, leads, impressions, keyword rankings aur ROI monitor kar sakte hain. Hamari best digital marketing agency Gorakhpur ka commitment hai — no black boxes, no hidden data. Aap hamesha jaante hain ki aapka budget kahan ja raha hai aur kya return aa raha hai.",
+    category: "reporting",
   },
 ];

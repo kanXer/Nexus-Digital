@@ -24,11 +24,11 @@ async function ensureIndexes(db: Db) {
       { expireAfterSeconds: 0 }
     );
 
-    // Prevent double-recording the same PayPal order/subscription (idempotency).
+    // Idempotency for Paytm transactions.
     await db
       .collection("payments")
       .createIndex(
-        { paypalOrderId: 1 },
+        { merchantTransactionId: 1 },
         { unique: true, sparse: true, background: true }
       )
       .catch(() => {});

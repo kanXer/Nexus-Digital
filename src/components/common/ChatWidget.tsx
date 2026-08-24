@@ -96,20 +96,25 @@ function linkify(text: string): ReactNode {
   while ((m = urlRe.exec(text)) !== null) {
     if (m.index > last) out.push(text.slice(last, m.index));
     const token = m[0];
-    const href = token.startsWith("http")
-      ? token
-      : `https://nexusdigitalmarketing.shop${token}`;
+    const cleanToken = token.replace(/[.,!?)]+$/, "");
+    const trailingPunctuation = token.slice(cleanToken.length);
+    const href = cleanToken.startsWith("http")
+      ? cleanToken
+      : `https://nexusdigitalmarketing.shop${cleanToken}`;
     out.push(
       <a
         key={i++}
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-brand-blue-light underline underline-offset-2 hover:text-white break-words"
+        className="text-red-400 underline underline-offset-2 hover:text-red-300 hover:brightness-125 transition-colors break-words font-medium"
       >
-        {token}
+        {cleanToken}
       </a>
     );
+    if (trailingPunctuation) {
+      out.push(trailingPunctuation);
+    }
     last = m.index + token.length;
   }
   if (last < text.length) out.push(text.slice(last));
@@ -697,7 +702,7 @@ const clearHistory = () => {
                 <div
                   ref={scrollRef}
                   onScroll={handleScroll}
-                  className="flex-1 overflow-y-auto chat-scrollbar p-4 flex flex-col gap-3.5"
+                  className="flex-1 overflow-y-auto overflow-x-hidden chat-scrollbar p-4 flex flex-col gap-3.5"
                 >
                   <div className="pointer-events-none absolute inset-0 chat-overlay" />
 
@@ -707,13 +712,13 @@ const clearHistory = () => {
                       initial={{ opacity: 0, y: 10, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       transition={{ type: "spring", stiffness: 350, damping: 26 }}
-                      className={`flex items-end gap-2 ${
+                      className={`flex items-end gap-2 max-w-full ${
                         m.role === "user" ? "justify-end" : "justify-start"
                       }`}
                     >
                       {m.role === "assistant" && <FridayAvatar />}
                       <div
-                        className={`relative max-w-[85%] sm:max-w-[75%] md:max-w-[480px] lg:max-w-[520px] px-4 py-2.5 text-[14px] leading-[1.5] whitespace-pre-wrap break-words backdrop-blur-md ${
+                        className={`relative max-w-[calc(100%-3.25rem)] sm:max-w-[80%] min-w-0 px-4 py-2.5 text-[14px] leading-[1.5] whitespace-pre-wrap break-words [overflow-wrap:anywhere] backdrop-blur-md ${
                           m.role === "user"
                             ? "bg-gradient-brand chat-user-text rounded-2xl rounded-br-sm shadow-[0_8px_24px_rgba(220,38,38,0.35)] border border-white/15"
                             : "bg-blue-500/12 border border-blue-400/25 text-white rounded-2xl rounded-bl-sm shadow-card"

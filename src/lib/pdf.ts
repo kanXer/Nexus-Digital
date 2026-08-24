@@ -12,7 +12,7 @@ export interface InvoiceData {
   planName: string;
   amount: number;
   currency: string;
-  paypalOrderId: string;
+  paymentRef: string;
 }
 
 function toAscii(s: string): string {
@@ -63,7 +63,7 @@ export function generateInvoicePdf(d: InvoiceData): Blob {
   add("TAX INVOICE", 16, true);
   add(`Invoice No : ${d.billNumber}`, 11, false);
   add(`Date       : ${d.date}`, 11, false);
-  add(`PayPal Ref : ${d.paypalOrderId || "N/A"}`, 11, false);
+  add(`Payment Ref : ${d.paymentRef || "N/A"}`, 11, false);
   rule();
 
   add("Billed To", 12, true);
