@@ -76,67 +76,95 @@ export default function ServicesPage() {
       </div>
 
       {serviceCategories.map((cat, catIdx) => (
-        <section
-          key={cat.id}
-          id={cat.id}
-          className={`section-padding ${catIdx % 2 === 1 ? "bg-white/2" : ""} border-b border-white/6 relative`}
-        >
-          <div className={`absolute inset-0 pointer-events-none ${catIdx % 2 === 1 ? "noise-bg opacity-30" : ""}`} />
-          <div className="max-w-7xl mx-auto relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
-              className={`flex items-start gap-5 mb-12 p-6 rounded-2xl bg-gradient-to-br ${cat.color} border border-white/8`}
-            >
-              <div className="w-14 h-14 rounded-2xl bg-white/8 border border-white/12 flex items-center justify-center shrink-0">
-                <DynamicIcon name={cat.icon} className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{cat.title}</h2>
-                <p className="text-white/55">{cat.subtitle}</p>
-              </div>
-            </motion.div>
+        <div key={cat.id}>
+          <section
+            id={cat.id}
+            className={`section-padding ${catIdx % 2 === 1 ? "bg-white/2" : ""} border-b border-white/6 relative`}
+          >
+            <div className={`absolute inset-0 pointer-events-none ${catIdx % 2 === 1 ? "noise-bg opacity-30" : ""}`} />
+            <div className="max-w-7xl mx-auto relative z-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
+                className={`flex items-start gap-5 mb-12 p-6 rounded-2xl bg-gradient-to-br ${cat.color} border border-white/8`}
+              >
+                <div className="w-14 h-14 rounded-2xl bg-white/8 border border-white/12 flex items-center justify-center shrink-0">
+                  <DynamicIcon name={cat.icon} className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{cat.title}</h2>
+                  <p className="text-white/55">{cat.subtitle}</p>
+                </div>
+              </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {cat.services.map((service, i) => (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.07, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
-                  whileHover={{ y: -5 }}
-                  className="group relative overflow-hidden glass-card rounded-2xl p-6 flex flex-col gap-4 hover:border-white/15 transition-all duration-300"
-                >
-                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-brand-blue/5 rounded-full blur-2xl group-hover:bg-brand-blue/10 transition-all duration-500" />
-                  <div className="relative z-10">
-                    <div className="w-11 h-11 rounded-xl bg-brand-blue/12 border border-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue/20 group-hover:scale-110 transition-all duration-300">
-                      <DynamicIcon name={service.icon} className="w-5 h-5 text-brand-blue-light" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {cat.services.map((service, i) => (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.07, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
+                    whileHover={{ y: -5 }}
+                    className="group relative overflow-hidden glass-card rounded-2xl p-6 flex flex-col gap-4 hover:border-white/15 transition-all duration-300"
+                  >
+                    <div className="absolute -top-12 -right-12 w-24 h-24 bg-brand-blue/5 rounded-full blur-2xl group-hover:bg-brand-blue/10 transition-all duration-500" />
+                    <div className="relative z-10">
+                      <div className="w-11 h-11 rounded-xl bg-brand-blue/12 border border-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue/20 group-hover:scale-110 transition-all duration-300">
+                        <DynamicIcon name={service.icon} className="w-5 h-5 text-brand-blue-light" />
+                      </div>
+                      <h3 className="text-white font-semibold text-lg leading-snug mt-4">{service.title}</h3>
+                      <p className="text-white/45 text-sm leading-relaxed mt-2">{service.description}</p>
+                      <ul className="space-y-1.5 mt-4">
+                        {service.benefits.map((b) => (
+                          <li key={b} className="flex items-center gap-2 text-xs text-white/55">
+                            <CheckCircle className="w-3.5 h-3.5 text-brand-blue-light shrink-0" />
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                      <Link
+                        href="/contact#book-consultation"
+                        className="mt-4 inline-flex items-center gap-1.5 text-brand-blue-light text-sm font-semibold group/link hover:gap-3 transition-all"
+                      >
+                        Get Started <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1" />
+                      </Link>
                     </div>
-                    <h3 className="text-white font-semibold text-lg leading-snug mt-4">{service.title}</h3>
-                    <p className="text-white/45 text-sm leading-relaxed mt-2">{service.description}</p>
-                    <ul className="space-y-1.5 mt-4">
-                      {service.benefits.map((b) => (
-                        <li key={b} className="flex items-center gap-2 text-xs text-white/55">
-                          <CheckCircle className="w-3.5 h-3.5 text-brand-blue-light shrink-0" />
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link
-                      href="/contact#book-consultation"
-                      className="mt-4 inline-flex items-center gap-1.5 text-brand-blue-light text-sm font-semibold group/link hover:gap-3 transition-all"
-                    >
-                      Get Started <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1" />
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+          
+          {/* Mid-Page Interceptor Block (Only after the 2nd category) */}
+          {catIdx === 1 && (
+            <section key="mid-page-interceptor" className="py-16 px-4 relative overflow-hidden bg-brand-red/10 border-y border-brand-red/30 my-8">
+              <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-red-600/20 via-rose-600/20 to-orange-600/20 blur-3xl" />
+              <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
+                <span className="bg-red-500/20 text-red-300 border border-red-500/30 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 animate-pulse">
+                  Stop Losing to Competitors
+                </span>
+                <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+                  Tired of marketing that doesn't generate leads? Let us fix it.
+                </h2>
+                <p className="text-white/70 mb-8 max-w-2xl text-sm md:text-base">
+                  We're a top digital marketing agency in Gorakhpur that actually focuses on ROI. We take a limited number of new clients per month to ensure quality. Secure your spot today.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/pricing" className="btn-primary px-8 py-3.5 shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-pulse-slow font-bold">
+                    View Our Packages
+                  </Link>
+                  <Link href="/enquiry#enquiry-form" className="btn-secondary px-8 py-3.5 border-red-500/50 hover:bg-red-500/10">
+                    Get Free Audit
+                  </Link>
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
       ))}
 
       <section className="py-24 px-4 text-center relative overflow-hidden">

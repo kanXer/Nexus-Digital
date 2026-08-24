@@ -6,12 +6,13 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
 
 
-const categories = ["All", "Websites"];
+const categories = ["All", "Websites", "Healthcare", "Social Impact"];
 
 const portfolioItems = [
   { id: 1, title: "Gorakhpur Mission Rehab", category: "Websites", tag: "Healthcare", color: "from-teal-500/30 to-cyan-500/20", emoji: "🩺", url: "https://gorakhpurmission.in/", result: "Local SEO · Online Leads" },
   { id: 2, title: "1st Poultry Conclave Gorakhpur 2026", category: "Websites", tag: "Event", color: "from-amber-500/30 to-yellow-500/20", emoji: "🐔", url: "https://poultry-conclave.vercel.app/", result: "Event Registrations" },
   { id: 3, title: "KHABRI.IN — News Decode", category: "Websites", tag: "News / Media", color: "from-blue-500/30 to-indigo-500/20", emoji: "📰", url: "https://khabari-in.vercel.app/", result: "AI News Platform · Real-time Updates" },
+  { id: 4, title: "Radhey Radhey Charitable Blood & Component Centre", category: "Websites", tag: "Blood Bank", color: "from-red-500/30 to-rose-500/20", emoji: "🩸", url: "https://radhe-radhe-blood-bank.vercel.app/", result: "Online Presence · Community Reach" },
 ];
 
 export default function PortfolioPage() {
@@ -100,15 +101,23 @@ export default function PortfolioPage() {
                     )}
                   </div>
 
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-semibold text-brand-blue-light bg-brand-blue/10 px-2 py-0.5 rounded-full border border-brand-blue/20">
-                        {item.tag}
-                      </span>
-                      <span className="text-xs text-white/40">{item.category}</span>
+                  <div className="p-4 border-t border-white/5 flex flex-col justify-between flex-1">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-semibold text-brand-blue-light bg-brand-blue/10 px-2 py-0.5 rounded-full border border-brand-blue/20">
+                          {item.tag}
+                        </span>
+                        <span className="text-xs text-white/40">{item.category}</span>
+                      </div>
+                      <h3 className="text-white font-semibold text-sm mb-2">{item.title}</h3>
                     </div>
-                    <h3 className="text-white font-semibold text-sm mb-1">{item.title}</h3>
-                    <p className="text-green-400 text-xs font-medium">✦ {item.result}</p>
+                    <div>
+                      <p className="text-green-400 text-[11px] font-bold uppercase tracking-wider bg-green-400/10 inline-block px-2 py-1 rounded mb-3">✦ {item.result}</p>
+                      <Link href="/enquiry#enquiry-form" className="flex items-center justify-between w-full text-xs font-semibold text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-2 rounded transition-colors group/link">
+                        Want these results?
+                        <ArrowRight className="w-3.5 h-3.5 text-brand-blue-light transition-transform group-hover/link:translate-x-1" />
+                      </Link>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -118,16 +127,24 @@ export default function PortfolioPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 text-center bg-white/2 border-t border-white/6">
-        <div className="max-w-2xl mx-auto">
+      <section className="py-20 px-4 text-center bg-brand-red/10 border-t border-brand-red/30 relative overflow-hidden">
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-red-600/20 via-rose-600/20 to-orange-600/20 blur-3xl" />
+        <div className="max-w-3xl mx-auto relative z-10 flex flex-col items-center">
+          <span className="bg-red-500/20 text-red-300 border border-red-500/30 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 animate-pulse">
+            Your Business Could Be Next
+          </span>
           <AnimatedTitle
             as="h2"
-            title="Want Results Like These?"
-            className="text-3xl font-black text-white mb-4"
+            title="Ready to dominate your market?"
+            className="text-3xl md:text-5xl font-black text-white mb-6"
             initialDelay={0.1}
           />
-          <p className="text-white/50 mb-8">Let&apos;s build your next success story together.</p>
-          <Link href="/contact#book-consultation" className="btn-primary px-8 py-4">Start Your Project <ArrowRight className="w-5 h-5" /></Link>
+          <p className="text-white/70 mb-8 max-w-xl text-lg">Stop admiring your competitors' results. Let's build your success story today.</p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/pricing" className="btn-primary px-8 py-4 shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-pulse-slow text-base font-bold">See Packages <ArrowRight className="w-5 h-5 ml-1" /></Link>
+            <Link href="/contact" className="btn-secondary px-8 py-4 text-base">Book Free Audit</Link>
+          </div>
         </div>
       </section>
     </div>

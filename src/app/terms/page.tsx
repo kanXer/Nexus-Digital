@@ -1,36 +1,285 @@
 import { Metadata } from "next";
 import { config } from "@/lib/config";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: `Terms and conditions for using ${config.name}'s services and website.`,
+  title: `Terms of Service & Digital Marketing Glossary | ${config.name}`,
+  description: `Terms and conditions for using ${config.name}'s digital marketing services. Also includes a glossary of key digital marketing terms — SEO, PPC, ROAS, Local SEO, Meta Ads, and more — defined clearly for business owners across Gorakhpur & Uttar Pradesh.`,
+  keywords: [
+    "best digital marketing agency in gorakhpur",
+    "digital marketing agency in gorakhpur",
+    "digital marketing agency gorakhpur",
+    "digital marketing terms",
+    "digital marketing glossary",
+    "what is seo",
+    "what is ppc",
+    "what is roas",
+    "what is local seo",
+    "what is meta ads",
+    "digital marketing website gorakhpur",
+    "terms of service digital marketing",
+    "best digital marketing agency uttar pradesh",
+  ],
 };
+
+const glossaryTerms = [
+  {
+    term: "Digital Marketing",
+    definition:
+      "The promotion of products, services, or brands through digital channels such as search engines (Google), social media platforms (Facebook, Instagram), email, and websites. As the best digital marketing agency in Gorakhpur, we use digital marketing to generate leads and grow businesses across Uttar Pradesh and India.",
+  },
+  {
+    term: "Digital Marketing Agency",
+    definition:
+      "A company that specialises in planning and executing digital marketing strategies for businesses. A digital marketing agency like Nexus Digital provides services including SEO, paid advertising, social media management, website development, and lead generation — all under one roof.",
+  },
+  {
+    term: "SEO (Search Engine Optimisation)",
+    definition:
+      "The process of optimising a website to rank higher on Google for relevant search queries (e.g. 'best digital marketing agency in Gorakhpur'). SEO includes keyword research, on-page content, technical fixes, link building, and Local SEO. Higher rankings = more organic traffic = more leads.",
+  },
+  {
+    term: "Local SEO",
+    definition:
+      "A branch of SEO that focuses on making a business visible in local search results — Google Maps, 'near me' searches, and local keyword rankings. Essential for brick-and-mortar businesses across Gorakhpur and Uttar Pradesh who want to attract customers from their area.",
+  },
+  {
+    term: "PPC (Pay-Per-Click)",
+    definition:
+      "A paid advertising model where you pay only when someone clicks on your ad. Google Ads and Meta Ads operate on a PPC model. PPC is ideal for generating immediate traffic and leads while your SEO strategy builds long-term organic rankings.",
+  },
+  {
+    term: "Meta Ads",
+    definition:
+      "Paid advertising on Meta platforms (Facebook and Instagram). Meta Ads are powerful for brand awareness, retargeting warm audiences, and driving leads for products and services with visual appeal. Our digital marketing agency in Gorakhpur specialises in high-ROAS Meta Ads campaigns.",
+  },
+  {
+    term: "Google Ads",
+    definition:
+      "Google's pay-per-click advertising platform that places your business at the top of search results when users search for your service. Google Ads are best for high-intent searches like 'digital marketing agency near me in Gorakhpur' — where the user is already looking to buy.",
+  },
+  {
+    term: "ROAS (Return on Ad Spend)",
+    definition:
+      "A key performance metric that measures revenue generated for every rupee spent on advertising. A 3X ROAS means you earn ₹3 for every ₹1 spent. The best digital marketing agencies track ROAS rigorously to optimise your ad budget and maximise profit.",
+  },
+  {
+    term: "Lead Generation",
+    definition:
+      "The process of attracting and converting potential customers (leads) into interested prospects for your product or service. Effective lead generation uses a combination of landing pages, ads, SEO, WhatsApp automation, and CRM to capture and nurture high-intent buyers.",
+  },
+  {
+    term: "Digital Marketing Website",
+    definition:
+      "A website specifically built to perform as a marketing engine — fast, mobile-first, SEO-ready, and conversion-optimised. Unlike a brochure site, a digital marketing website is designed to rank on Google, capture visitor data, and convert traffic into enquiries and sales.",
+  },
+  {
+    term: "Google Business Profile (GBP)",
+    definition:
+      "A free Google tool that lets businesses manage how they appear on Google Search and Maps. Optimising your GBP is the #1 Local SEO action for Gorakhpur businesses — it drives direct calls, map directions, and enquiries from local customers searching nearby.",
+  },
+  {
+    term: "Social Media Marketing",
+    definition:
+      "Using social media platforms (Instagram, Facebook, LinkedIn, YouTube) to promote a brand, build community, and generate leads. Social media marketing includes organic content creation, paid ads, influencer collaborations, and community management.",
+  },
+  {
+    term: "WhatsApp Marketing Automation",
+    definition:
+      "Using WhatsApp Business API to automate lead nurturing, appointment reminders, follow-ups, and customer communication. Highly effective for Indian businesses as WhatsApp is the #1 communication app in India. Our digital marketing agency Gorakhpur integrates this into complete lead funnels.",
+  },
+  {
+    term: "Conversion Rate",
+    definition:
+      "The percentage of website visitors or ad viewers who take the desired action (fill a form, call, purchase). Improving conversion rate is as important as driving traffic — a 2% conversion rate on 1,000 visitors = 20 leads. Our agency focuses relentlessly on conversion optimisation.",
+  },
+  {
+    term: "Core Web Vitals",
+    definition:
+      "Google's set of user experience metrics (Largest Contentful Paint, First Input Delay, Cumulative Layout Shift) that measure a website's loading speed, interactivity, and visual stability. Sites with excellent Core Web Vitals get ranking advantages — which is why every website we build passes these tests.",
+  },
+];
 
 export default function Terms() {
   return (
     <div className="bg-black min-h-screen">
-      <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      {/* Hero */}
+      <section className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
-        <div className="max-w-3xl mx-auto relative z-10">
-          <AnimatedTitle as="h1" title="Terms of Service" className="text-4xl font-black text-white mb-2" />
-          <p className="text-white/40 text-sm mb-8">Last updated: January 2025</p>
-          <div className="space-y-6 text-white/65 text-sm leading-relaxed">
-            <p>By accessing or using the {config.name} website and services, you agree to be bound by these Terms of Service. If you do not agree, please do not use our services.</p>
-            <h2 className="text-white font-bold text-lg mt-8">Services</h2>
-            <p>{config.name} provides digital marketing services including but not limited to social media management, paid advertising, SEO, web development, and marketing automation. The specific scope of services will be outlined in your service agreement.</p>
-            <h2 className="text-white font-bold text-lg">Payment Terms</h2>
-            <p>Fees for services are as outlined in your chosen plan or custom quote. Payments are due on the agreed schedule. Late payments may result in service suspension. All fees are exclusive of applicable taxes.</p>
-            <h2 className="text-white font-bold text-lg">Client Responsibilities</h2>
-            <p>You agree to provide timely access to necessary accounts, assets, and information required for us to deliver our services. You are responsible for the accuracy of information provided.</p>
-            <h2 className="text-white font-bold text-lg">Intellectual Property</h2>
-            <p>All content, creatives, and strategies developed by {config.name} remain our intellectual property until full payment is received. Upon full payment, clients receive full usage rights for deliverables created specifically for them.</p>
-            <h2 className="text-white font-bold text-lg">Limitation of Liability</h2>
-            <p>{config.name} shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services. Our total liability is limited to the amount paid for the specific service giving rise to the claim.</p>
-            <h2 className="text-white font-bold text-lg">Termination</h2>
-            <p>Either party may terminate the service agreement with 30 days written notice. Upon termination, you will receive a final report and access to all accounts and assets managed during the engagement.</p>
-            <h2 className="text-white font-bold text-lg">Contact</h2>
-            <p>For questions about these terms, contact us at {config.email}.</p>
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+        <div className="max-w-3xl mx-auto relative z-10 text-center">
+          <span className="tag-badge mb-5 inline-flex">Legal & Glossary</span>
+          <AnimatedTitle as="h1" title="Terms of Service & Digital Marketing Glossary" className="text-4xl font-black text-white mb-4 leading-tight" />
+          <p className="text-white/45 text-sm">
+            Transparent legal terms — and a bonus glossary defining every digital marketing term your business needs to know.
+            From the{" "}
+            <Link href="/about" className="text-brand-blue-light hover:underline">
+              best digital marketing agency in Gorakhpur
+            </Link>
+            , Nexus Digital.
+          </p>
+        </div>
+      </section>
+
+      {/* Terms of Service */}
+      <section className="px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="max-w-3xl mx-auto">
+          <div className="glass-card rounded-2xl p-8 border border-white/8">
+            <h2 className="text-white font-bold text-2xl mb-1">Terms of Service</h2>
+            <p className="text-white/30 text-xs mb-8">Last updated: August 2026</p>
+            <div className="space-y-6 text-white/60 text-sm leading-relaxed">
+              <p>
+                By accessing or using the {config.name} website and services, you agree to be bound by these Terms of Service.
+                If you do not agree, please do not use our services.
+              </p>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">1. Services</h3>
+                <p>
+                  {config.name} provides professional digital marketing services including social media management, paid
+                  advertising (Meta Ads & Google Ads), SEO & Local SEO, website design and development, lead generation,
+                  WhatsApp marketing automation, and monthly reporting. The specific scope of services will be outlined in
+                  your service agreement or selected pricing plan.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">2. Payment Terms</h3>
+                <p>
+                  Fees for services are as outlined in your chosen plan or custom quote. Monthly retainer payments are due on
+                  the agreed billing date. Late payments may result in temporary service suspension. All fees are exclusive of
+                  applicable GST and taxes. Ad spends (Meta Ads, Google Ads budgets) are billed separately and are the
+                  client&apos;s direct expenditure to the respective platforms.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">3. Client Responsibilities</h3>
+                <p>
+                  You agree to provide timely access to necessary accounts (Google Ads, Meta Business Manager, website admin,
+                  etc.), brand assets, and information required for us to deliver our services. You are responsible for the
+                  accuracy of all information provided and for maintaining the security of your own login credentials.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">4. Intellectual Property</h3>
+                <p>
+                  All content, creatives, strategies, and code developed by {config.name} remain our intellectual property
+                  until full payment is received. Upon full payment, clients receive complete usage and ownership rights for
+                  all deliverables created specifically for their business — including ad creatives, website code, and content.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">5. Results & Guarantees</h3>
+                <p>
+                  Digital marketing outcomes are influenced by many factors including market competition, ad budget, and
+                  platform algorithm changes. While we apply best practices and are committed to delivering results, {config.name}{" "}
+                  cannot guarantee specific outcomes such as a fixed number of leads or a specific Google ranking. We report
+                  transparently on all campaigns and optimise continuously.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">6. Limitation of Liability</h3>
+                <p>
+                  {config.name} shall not be liable for any indirect, incidental, or consequential damages arising from the
+                  use of our services. Our total liability is limited to the amount paid for the specific service giving rise
+                  to the claim in the three months preceding the dispute.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">7. Cancellation & Termination</h3>
+                <p>
+                  Either party may terminate the service agreement with 30 days written notice. We do not believe in locking
+                  clients in — our results are what retain clients. Upon termination, you will receive a final performance
+                  report and full access to all ad accounts, content, analytics, and assets managed during the engagement.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">8. Confidentiality</h3>
+                <p>
+                  Both parties agree to keep all shared business information, strategies, campaign data, and pricing
+                  confidential. We will never share your business data with third parties without explicit written consent,
+                  except where required by law.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">9. Governing Law</h3>
+                <p>
+                  These terms are governed by the laws of India. Any disputes shall be resolved under the jurisdiction of
+                  courts in Gorakhpur, Uttar Pradesh.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">10. Contact</h3>
+                <p>
+                  For questions about these terms, reach us at{" "}
+                  <a href={`mailto:${config.email}`} className="text-brand-blue-light hover:underline">
+                    {config.email}
+                  </a>{" "}
+                  or call{" "}
+                  <a href={`tel:${config.phone}`} className="text-brand-blue-light hover:underline">
+                    {config.phone}
+                  </a>
+                  .
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Digital Marketing Glossary */}
+      <section className="px-4 sm:px-6 lg:px-8 pb-24">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <span className="tag-badge mb-4 inline-flex">Bonus Resource</span>
+            <h2 className="text-3xl font-black text-white mb-3 leading-tight">
+              Digital Marketing{" "}
+              <span className="gradient-text">Defined Terms</span>
+            </h2>
+            <p className="text-white/45 text-sm max-w-xl mx-auto">
+              Every digital marketing term your business needs to know — explained simply, by the{" "}
+              <strong className="text-white">best digital marketing agency in Gorakhpur & Uttar Pradesh</strong>.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {glossaryTerms.map((item, i) => (
+              <div
+                key={item.term}
+                className="glass-card rounded-xl p-5 border border-white/8 hover:border-brand-blue/25 transition-all duration-300"
+                style={{ animationDelay: `${i * 0.05}s` }}
+              >
+                <h3 className="text-brand-blue-light font-bold text-sm mb-2">{item.term}</h3>
+                <p className="text-white/50 text-xs leading-relaxed">{item.definition}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center glass-card rounded-2xl p-8 border border-white/8">
+            <p className="text-white/60 text-sm mb-4">
+              Want to put these terms into action for your business?
+            </p>
+            <p className="text-white font-bold text-xl mb-6">
+              Talk to the{" "}
+              <span className="gradient-text">Best Digital Marketing Agency in Gorakhpur</span>
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/enquiry#enquiry-form" className="btn-primary px-7 py-3 text-sm">
+                Send an Enquiry
+              </Link>
+              <Link href="/faq" className="btn-secondary px-7 py-3 text-sm">
+                Read Our FAQ
+              </Link>
+            </div>
           </div>
         </div>
       </section>

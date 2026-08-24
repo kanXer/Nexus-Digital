@@ -1,12 +1,61 @@
 "use client";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { Star, ExternalLink } from "lucide-react";
 
 import { config } from "@/lib/config";
 
 import { TestimonialCard } from "@/components/ui/TestimonialCard";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { testimonials } from "@/data/testimonials";
+
+const featuredProjects = [
+  {
+    id: "p1",
+    name: "Gorakhpur Mission Rehab",
+    desc: "Neuro physiotherapy clinic ranked #1 locally. Custom website + Google Business Profile + Local SEO delivering real patient enquiries.",
+    url: "https://gorakhpurmission.in/",
+    tag: "Healthcare",
+    emoji: "🩺",
+    result: "Local SEO · Online Leads",
+    color: "from-teal-500/20 to-cyan-500/10",
+    border: "hover:border-teal-500/30",
+  },
+  {
+    id: "p2",
+    name: "1st Poultry Conclave Gorakhpur",
+    desc: "Mega poultry event website for UP Government's Animal Husbandry dept — online registrations, exhibitor listings & sponsor pages.",
+    url: "https://poultry-conclave.vercel.app/",
+    tag: "Event",
+    emoji: "🐔",
+    result: "Event Registrations",
+    color: "from-amber-500/20 to-yellow-500/10",
+    border: "hover:border-amber-500/30",
+  },
+  {
+    id: "p3",
+    name: "KHABRI.IN — News Decode",
+    desc: "AI-powered bilingual news platform (Hindi + English) with real-time updates, category sections, and search — built for speed & SEO.",
+    url: "https://khabari-in.vercel.app/",
+    tag: "News / Media",
+    emoji: "📰",
+    result: "AI News Platform · Real-time",
+    color: "from-blue-500/20 to-indigo-500/10",
+    border: "hover:border-blue-500/30",
+  },
+  {
+    id: "p4",
+    name: "Radhey Radhey Charitable Blood & Component Centre",
+    desc: "A purpose-driven blood bank web platform for Gorakhpur — enabling communities to find, request, and donate blood online with ease.",
+    url: "https://radhe-radhe-blood-bank.vercel.app/",
+    tag: "Blood Bank",
+    emoji: "🩸",
+    result: "Online Presence · Community Reach",
+    color: "from-red-500/20 to-rose-500/10",
+    border: "hover:border-red-500/30",
+  },
+];
+
 
 const stats = [
   { value: "10+", label: "Happy Clients" },
@@ -48,7 +97,55 @@ export default function TestimonialsPage() {
         </div>
       </section>
 
-      {/* All testimonials */}
+      {/* Featured Projects */}
+      <section className="pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <SectionHeading
+            badge="Our Work"
+            title="Projects That "
+            highlight="Speak Volumes"
+            subtitle="Real websites and digital platforms we've built — delivering growth, visibility, and impact for businesses across Gorakhpur & India."
+          />
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {featuredProjects.map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
+                whileHover={{ y: -6 }}
+                className={`group relative overflow-hidden glass-card rounded-2xl border border-white/8 ${p.border} transition-all duration-300`}
+              >
+                <div className={`h-36 bg-gradient-to-br ${p.color} flex items-center justify-center relative`}>
+                  <span className="text-5xl">{p.emoji}</span>
+                  <a
+                    href={p.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Visit ${p.name}`}
+                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center">
+                      <ExternalLink className="w-4 h-4 text-white" />
+                    </div>
+                  </a>
+                </div>
+                <div className="p-4">
+                  <span className="text-xs font-semibold text-brand-blue-light bg-brand-blue/10 px-2 py-0.5 rounded-full border border-brand-blue/20">
+                    {p.tag}
+                  </span>
+                  <h3 className="text-white font-semibold text-sm mt-2 mb-1 leading-snug">{p.name}</h3>
+                  <p className="text-white/40 text-xs leading-relaxed mb-2">{p.desc}</p>
+                  <p className="text-green-400 text-xs font-medium">✦ {p.result}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       <section className="px-4 sm:px-6 lg:px-8 pb-24">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {testimonials.map((t, i) => (

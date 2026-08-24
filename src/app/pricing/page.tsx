@@ -8,10 +8,11 @@ import { config } from "@/lib/config";
 import { FAQItem } from "@/components/ui/FAQItem";
 import { pricingPlans, pricingFaqs } from "@/data/pricing";
 import { servicePricing } from "@/data/servicePricing";
-import PayPalButton from "@/components/payment/PayPalButton";
 import ServiceItemBuyer from "@/components/pricing/ServiceItemBuyer";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PricingPage() {
+  const { addToCart } = useAuth();
   return (
     <div className="bg-black min-h-screen">
       <section className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -34,6 +35,16 @@ export default function PricingPage() {
 
       <section className="px-4 sm:px-6 lg:px-8 pb-24">
         <div className="max-w-6xl mx-auto">
+          {/* Urgency Alert */}
+          <div className="max-w-3xl mx-auto bg-brand-red/10 border border-brand-red/30 rounded-lg p-4 mb-10 flex items-center gap-4 animate-pulse-slow">
+            <div className="w-10 h-10 rounded-full bg-brand-red/20 flex items-center justify-center shrink-0">
+              <span className="text-xl">🔥</span>
+            </div>
+            <div>
+              <p className="text-white font-bold text-sm">High Demand Alert: Only 3 Spots Left This Month</p>
+              <p className="text-white/60 text-xs">We limit our client intake to maintain quality. Lock in your current pricing and secure your spot today before we close onboarding.</p>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
             {pricingPlans.map((plan, i) => (
               <motion.div
@@ -77,18 +88,33 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href={plan.ctaLink} className={`${plan.highlight ? "btn-primary" : "btn-secondary"} justify-center text-sm py-3`}>
-                  {plan.cta}
-                </Link>
-                <div className="mt-4">
-                  <p className="text-center text-[11px] uppercase tracking-wider text-white/30 mb-2">
-                    Or pay securely &amp; instantly
-                  </p>
-                  <PayPalButton planId={plan.id} planName={plan.name} priceInr={plan.priceInr} recurring />
-                  <p className="text-center text-[11px] text-white/25 mt-3">
-                    🔥 Join 200+ businesses growing with us — live in 24h
-                  </p>
+                <div className="space-y-2.5">
+                  <button
+                    onClick={() => {
+                      addToCart({
+                        id: plan.id,
+                        title: plan.name,
+                        price: plan.priceRange,
+                        numericPrice: plan.priceInr,
+                        description: plan.tagline,
+                      });
+                    }}
+                    className={`w-full ${plan.highlight ? "btn-primary" : "btn-secondary"} justify-center text-sm py-3 font-bold`}
+                  >
+                    🛒 Add to Cart
+                  </button>
+
+                  <Link
+                    href="/cart"
+                    className="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 transition-all"
+                  >
+                    View Cart <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
+
+                <p className="text-center text-[11px] text-white/30 mt-3">
+                  🔥 Join 200+ businesses growing with us — live in 24h
+                </p>
               </motion.div>
             ))}
           </div>
