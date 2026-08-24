@@ -1,0 +1,34 @@
+NEXUS DIGITAL — 2025 DIGITAL MARKETING CHECKLIST
+================================================
+
+Use this before launching any campaign. Score 1 point per item you have locked in.
+
+SEO & LOCAL SEO
+- [ ] Google Business Profile claimed + 100% complete
+- [ ] NAP (Name/Address/Phone) consistent across directories
+- [ ] Local citations built (10+ high-quality)
+- [ ] Schema markup on key pages
+- [ ] Primary keyword mapped per page
+- [ ] Page speed < 2.5s on mobile
+
+AD ACCOUNT STRUCTURE
+- [ ] Separate campaigns by objective (leads / sales / awareness)
+- [ ] Tight ad groups (1 theme each)
+- [ ] Negative keyword list active
+- [ ] Conversion tracking + pixel verified
+- [ ] UTM parameters on every link
+
+LANDING PAGE CRO
+- [ ] One clear CTA above the fold
+- [ ] Social proof (reviews, logos)
+- [ ] Mobile-first layout tested
+- [ ] Form fields minimized (<= 4)
+- [ ] Retargeting pixel installed
+
+WHATSAPP AUTOMATION
+- [ ] Welcome message live
+- [ ] Abandoned-cart / lead follow-up sequence
+- [ ] Business hours + quick replies
+- [ ] CRM / sheet sync for new leads
+
+Need help? Book a free audit at nexusdigitalmarketing.shop

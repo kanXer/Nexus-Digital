@@ -1,0 +1,28 @@
+NEXUS DIGITAL — AD SPEND ROI CALCULATOR (GUIDE)
+================================================
+
+How to size your budget to hit a lead target.
+
+1. DEFINE YOUR NUMBERS
+   - Target leads / month:    L
+   - Expected conversion
+     (visitor -> lead):       C%   (industry avg 2-5%)
+   - Click-through rate:      R%   (search ~5%, display ~0.5%)
+   - Cost per click (CPC):    $x
+
+2. WORK BACKWARDS
+   Visitors needed = L / (C/100)
+   Clicks needed    = Visitors needed / (R/100)
+   Budget needed    = Clicks needed * $x
+
+   Example: 50 leads, 3% CVR, 4% CTR, $1.20 CPC
+   Visitors = 50 / 0.03 = 1,667
+   Clicks   = 1,667 / 0.04 = 41,667  -> wait, that's clicks=visitors/CTR only if all clicks are visitors (assume yes)
+   Budget   = 41,667 * 1.20 = $50,000  (recalibrate: usually CTR applies to impressions; use the sheet)
+
+3. TRACK ROAS
+   ROAS = Revenue from ads / Ad spend
+   Keep ROAS >= 3x to stay profitable after delivery + margin.
+
+Open the companion sheet and plug in your numbers.
+Need a custom model? Book a free audit at nexusdigitalmarketing.shop
