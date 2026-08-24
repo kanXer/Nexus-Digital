@@ -128,6 +128,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Complete passwordless email-link sign-in when the user returns from the email link
+  useEffect(() => {
+    if (!isSignInWithEmailLink(auth, window.location.href)) return;
+
+    const finishSignIn = async () => {
+      let email = localStorage.getItem("nexus_emailForSignIn");
+      if (!email) {
+        email = window.prompt("Confirm your email address to finish signing in:");
+      }
+      if (!email) return;
+      try {
+        await signInWithEmailLink(auth, email, window.location.href);
+        localStorage.removeItem("nexus_emailForSignIn");
+        // Clean the oobCode / apiKey params from the address bar
+        window.history.replaceState({}, "", window.location.pathname);
+      } catch (err: any) {
+        console.error("Email link sign-in failed:", err?.code || err?.message);
+      }
+    };
+    finishSignIn();
+  }, []);
+
   // Listen for Firebase Auth & sync with Firestore Database
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -309,30 +331,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const actionCodeSettings = {
-        url: typeof window !== "undefined" ? window.location.href : "https://nexusdigitalmarketing.shop",
+        url: typeof window !== "undefined"
+          ? window.location.origin + window.location.pathname
+          : "https://nexusdigitalmarketing.shop",
         handleCodeInApp: true,
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       localStorage.setItem("nexus_emailForSignIn", email);
       setUserProfile((prev) => ({ ...prev, email }));
     } catch (err: any) {
-      console.warn("Firebase Email Link notice:", err?.code || err?.message);
-      if (err?.code === "auth/configuration-not-found" || err?.message?.includes("configuration-not-found") || err?.code === "auth/operation-not-allowed") {
-        const mockUser = {
-          uid: "demo_email_user_123",
-          email: email,
-          displayName: email.split("@")[0],
-        } as unknown as User;
-        setUser(mockUser);
-        setUserProfile((prev) => ({
-          ...prev,
-          name: prev.name || email.split("@")[0],
-          email: email,
-        }));
-        closeAuthModal();
-      } else {
-        throw new Error(err?.message || "Failed to send email sign-in link.");
+      const code = err?.code || "";
+      let msg = err?.message || "Failed to send email sign-in link.";
+      if (code.includes("configuration-not-found") || code.includes("operation-not-allowed")) {
+        msg = "Passwordless email sign-in is not enabled in the Firebase Console yet (Authentication → Sign-in method → Email link).";
+      } else if (code.includes("unauthorized-domain")) {
+        msg = "This website domain is not added under Firebase Console → Authentication → Settings → Authorized domains.";
+      } else if (code.includes("invalid-email") || code.includes("missing-email")) {
+        msg = "Please enter a valid email address.";
       }
+      throw new Error(msg);
     }
   };
 
