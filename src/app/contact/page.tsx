@@ -20,13 +20,36 @@ const emptyBooking: BookingFormData = {
   service: "", budget: "", date: "", time: "", message: "",
 };
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function ContactPage() {
+  const { userProfile, user } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bookingSubmitted, setBookingSubmitted] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", business: "", service: "", budget: "", message: "" });
   const [bookingData, setBookingData] = useState<BookingFormData>(emptyBooking);
+
+  useEffect(() => {
+    if (!user) return;
+    if (userProfile.name || userProfile.email || userProfile.phone || userProfile.company) {
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || userProfile.name || "",
+        email: prev.email || userProfile.email || "",
+        phone: prev.phone || userProfile.phone || "",
+        business: prev.business || userProfile.company || "",
+      }));
+      setBookingData((prev) => ({
+        ...prev,
+        name: prev.name || userProfile.name || "",
+        email: prev.email || userProfile.email || "",
+        phone: prev.phone || userProfile.phone || "",
+        business: prev.business || userProfile.company || "",
+      }));
+    }
+  }, [user, userProfile]);
 
   useEffect(() => {
     if (window.location.hash === "#book-consultation") {
@@ -173,7 +196,14 @@ export default function ContactPage() {
                     <div className="w-10 h-10 rounded-xl bg-brand-blue/15 border border-brand-blue/25 flex items-center justify-center shrink-0"><LifeBuoy className="w-5 h-5 text-brand-blue-light" /></div>
                     <h3 className="text-white font-bold text-xl">Need Help? We&apos;re Here for You</h3>
                   </div>
-                  <p className="text-white/45 text-sm mb-6">Koi bhi problem, sawaal ya help chahiye? Form bharo — hum 24 hours ke andar reply karenge. Best digital marketing agency in Gorakhpur and India ki complete services ke liye contact karein.</p>
+                  <p className="text-white/45 text-sm mb-4">Koi bhi problem, sawaal ya help chahiye? Form bharo — hum 24 hours ke andar reply karenge. Best digital marketing agency in Gorakhpur and India ki complete services ke liye contact karein.</p>
+                  <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/20 px-3 py-2 rounded-lg mb-6">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    <p className="text-xs text-green-400 font-semibold">⚡ Fast Response: We usually reply within 5 minutes on WhatsApp.</p>
+                  </div>
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
@@ -252,7 +282,11 @@ export default function ContactPage() {
                   initialDelay={0.1}
                 />
                 </div>
-                <p className="text-white/45 text-sm mb-6">Pick a date &amp; time that works for you. The team at our digital marketing company in Gorakhpur will join the call with a custom growth plan — 100% free.</p>
+                <p className="text-white/45 text-sm mb-4">Pick a date &amp; time that works for you. The team at our digital marketing company in Gorakhpur will join the call with a custom growth plan — 100% free.</p>
+                <div className="flex items-center gap-2 bg-brand-blue/10 border border-brand-blue/20 px-3 py-2 rounded-lg mb-6">
+                  <Star className="w-4 h-4 text-brand-blue-light" />
+                  <p className="text-xs text-brand-blue-light font-semibold">No commitment required. Just 30 minutes of actionable strategy.</p>
+                </div>
                 <form onSubmit={handleBookingSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>

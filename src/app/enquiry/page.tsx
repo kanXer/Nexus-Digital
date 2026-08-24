@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, Loader2, MessageCircle, Send, Phone, Mail } from "lucide-react";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
@@ -29,10 +29,26 @@ const empty: EnquiryFormData = {
   name: "", email: "", phone: "", business: "", service: "", budget: "", message: "",
 };
 
+import { useAuth } from "@/context/AuthContext";
+
 export default function EnquiryPage() {
+  const { userProfile, user } = useAuth();
   const [form, setForm] = useState<EnquiryFormData>(empty);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    if (userProfile.name || userProfile.email || userProfile.phone || userProfile.company) {
+      setForm((prev) => ({
+        ...prev,
+        name: prev.name || userProfile.name || "",
+        email: prev.email || userProfile.email || "",
+        phone: prev.phone || userProfile.phone || "",
+        business: prev.business || userProfile.company || "",
+      }));
+    }
+  }, [user, userProfile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));

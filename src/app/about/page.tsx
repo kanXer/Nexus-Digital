@@ -33,7 +33,7 @@ export default function AboutPage() {
             className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
           />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 max-w-2xl mx-auto leading-relaxed">
-            As the top digital marketing agency gorakhpur businesses count on, {config.name} is the best digital marketing agency in Gorakhpur &amp; Uttar Pradesh. We are a results-driven team at Nexus Digital Marketing Agency Gorakhpur, functioning as an affordable digital marketing agency in Gorakhpur that combines data, creativity, and technology to deliver measurable digital marketing results for clients across Gorakhpur, Lucknow, Uttar Pradesh, and all of India.
+            We are the <strong className="text-white">best digital marketing agency in Gorakhpur</strong> — and the most results-obsessed. Nexus Digital is a premier <strong className="text-white">digital marketing agency in Gorakhpur &amp; Uttar Pradesh</strong> built on one belief: every business deserves marketing that actually works. We are a digital marketing agency gorakhpur businesses grow with — combining data, creativity, and technology to generate real leads, real revenue, and real brand authority across Gorakhpur, Lucknow, Uttar Pradesh, and all of India.
           </motion.p>
         </div>
       </section>
@@ -42,8 +42,8 @@ export default function AboutPage() {
         <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
           {[
-            { label: "Our Mission", title: "Help small businesses across India win at digital", desc: "We believe every business — regardless of size or budget — deserves marketing that works. Our mission is to deliver honest, hands-on digital marketing that generates real results for businesses across India." },
-            { label: "Our Vision", title: "The most trusted growth partner for local businesses", desc: "To be the digital marketing agency local businesses across India trust for their growth. We measure our success not by campaigns run, but by the results and impact we create for our clients." },
+            { label: "Our Mission", title: "Turn every rupee of your marketing budget into measurable business growth", desc: "We are a digital marketing agency in Gorakhpur on a mission: help every business — from a local shop in Gorakhpur to a growing brand across Uttar Pradesh — compete, grow, and win online. We deliver honest, data-driven digital marketing that generates real leads, real customers, and real revenue. No vanity metrics. No black boxes. Just growth." },
+            { label: "Our Vision", title: "The most trusted digital marketing agency in Uttar Pradesh and beyond", desc: "To be the digital marketing agency gorakhpur, Uttar Pradesh, and India trust for their long-term growth. We measure our success by the businesses we've helped rank #1 on Google, the leads we've generated, the websites we've launched — like Gorakhpur Mission Rehab, KHABRI.IN, 1st Poultry Conclave, and Radhey Radhey Charitable Blood &amp; Component Centre — and the clients who call us their growth partner, not just a vendor." },
           ].map((item, i) => (
             <motion.div key={item.label} {...fadeUp(i)} className="glass-card rounded-2xl p-8 border border-white/10">
               <span className="tag-badge mb-4 inline-flex">{item.label}</span>
@@ -76,6 +76,31 @@ export default function AboutPage() {
                 </motion.div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mid-Page Interceptor Block */}
+      <section className="py-16 px-4 relative overflow-hidden bg-brand-red/10 border-y border-brand-red/30">
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-red-600/20 via-rose-600/20 to-orange-600/20 blur-3xl" />
+        <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
+          <span className="bg-red-500/20 text-red-300 border border-red-500/30 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 animate-pulse">
+            Exclusive Partnership
+          </span>
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+            We don't take everyone. Are we a fit?
+          </h2>
+          <p className="text-white/70 mb-8 max-w-2xl text-sm md:text-base">
+            We partner with ambitious businesses ready to scale. If you want measurable growth, stop wasting time and let's talk strategy.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/enquiry#enquiry-form" className="btn-primary px-8 py-3.5 shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-pulse-slow font-bold">
+              Book a Strategy Session
+            </Link>
+            <Link href="/pricing" className="btn-secondary px-8 py-3.5 border-red-500/50 hover:bg-red-500/10">
+              View Pricing
+            </Link>
           </div>
         </div>
       </section>

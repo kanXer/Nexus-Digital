@@ -626,8 +626,8 @@ ${siteInfo}
 ${context || "(no page content available)"}
 
 ## FINAL REMINDER (highest priority — overrides everything above)
-Max 2-3 short sentences (~30 words). NO bullet lists, NO headings, NO plan dumps. For buying intent, end with a nudge linking the FULL URL: "You can grab a plan and pay instantly here: https://nexusdigitalmarketing.shop/pricing." For other questions, a brief enquiry-form offer is fine.
-Example — Q: "How much is the Growth plan?" A: "Growth is ₹15k–20k/month — ads, SEO and a landing page included. Start it instantly here: https://nexusdigitalmarketing.shop/pricing."`;
+Max 2-3 short sentences (~30 words). NO bullet lists, NO headings, NO plan dumps. For buying intent, end with a nudge linking the FULL URL: "You can grab a plan and pay instantly here: https://nexusdigitalmarketing.shop/pricing ". For other questions, a brief enquiry-form offer is fine.
+Example — Q: "How much is the Growth plan?" A: "Growth is ₹15k–20k/month — ads, SEO and a landing page included. Start it instantly here: https://nexusdigitalmarketing.shop/pricing ";`;
 
     const messages = [
       { role: "system", content: systemPrompt },
