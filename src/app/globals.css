@@ -107,7 +107,8 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-::selection { background-color: rgba(220, 38, 38, 0.5); color: #fff; }
+::selection { background-color: #DC2626; color: #ffffff; }
+::-moz-selection { background-color: #DC2626; color: #ffffff; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--bg-secondary); }
@@ -622,11 +623,11 @@ textarea.input-field { min-height: 7rem; resize: vertical; }
 /* Chat window text selection — distinct from the site's red selection so it
    stands out inside the chat regardless of the surrounding theme. */
 .chat-window *::selection {
-  background-color: #7C3AED;
+  background-color: #DC2626;
   color: #ffffff;
 }
 .chat-window ::-moz-selection {
-  background-color: #7C3AED;
+  background-color: #DC2626;
   color: #ffffff;
 }
 
@@ -720,5 +721,60 @@ img {
   0% { transform: rotate(0deg); opacity: 1; }
   50% { transform: rotate(180deg) scale(0.8); opacity: 0.5; }
   100% { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+
+/* ═══ PAYTM CHECKOUT CARD — premium dark surface in both themes ═══ */
+.paytm-checkout-card {
+  background-image: linear-gradient(135deg, #062a3a 0%, #08202e 55%, #0b0b0d 100%);
+}
+
+[data-theme="light"] .paytm-checkout-card {
+  border-color: rgba(0, 186, 242, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 186, 242, 0.18);
+}
+
+[data-theme="light"] .paytm-checkout-card .bg-black\/40 {
+  background-color: rgba(0, 0, 0, 0.45);
+}
+
+[data-theme="light"] .paytm-checkout-card .text-\[\#7fe3ff\] {
+  color: #7fe3ff;
+}
+
+/* ═══ CART DRAWER — theme-aware (pale bg + dark fonts in light mode) ═══ */
+.cart-drawer {
+  box-shadow: -30px 0 80px rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="light"] .cart-drawer {
+  background-color: #fafafa;
+  box-shadow: -30px 0 80px rgba(15, 23, 42, 0.18);
+}
+
+[data-theme="light"] .cart-drawer .bg-white\/\[0\.03\],
+[data-theme="light"] .cart-drawer .bg-white\/\[0\.04\],
+[data-theme="light"] .cart-drawer .bg-white\/\[0\.05\] {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .cart-drawer .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+/* ═══ AUTH / PROFILE / ORDERS MODALS — theme-aware backdrop & shadow ═══ */
+.auth-backdrop {
+  background-color: rgba(0, 0, 0, 0.78);
+}
+
+[data-theme="light"] .auth-backdrop {
+  background-color: rgba(15, 23, 42, 0.5);
+}
+
+.auth-modal-card {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="light"] .auth-modal-card {
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.28);
 }
 

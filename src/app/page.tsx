@@ -96,24 +96,32 @@ export default function HomePage() {
                 We are a top digital marketing company in Gorakhpur &amp; Uttar Pradesh — the best digital marketing agency in Gorakhpur — helping businesses across India generate more leads, sales, and revenue through Social Media Marketing, SEO, Google Ads, and Website Development.
               </motion.p>
 
-              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-8">
-                <Link href="/enquiry#enquiry-form" className="btn-primary text-base px-7 py-3.5 group">
-                  Send an Enquiry
-                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-6">
+                <Link href="/enquiry#enquiry-form" className="btn-primary text-base px-7 py-3.5 group relative overflow-hidden shadow-[0_0_20px_rgba(220,38,38,0.3)] animate-pulse-slow">
+                  <span className="relative z-10 flex items-center font-bold">
+                    Start Growing Today 🚀
+                    <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
                 </Link>
-                <Link href="/pricing" className="btn-secondary text-base px-7 py-3.5">
-                  <Play className="w-4 h-4" />
-                  View Pricing
+                <Link href="/pricing" className="btn-secondary text-base px-7 py-3.5 group">
+                  <Play className="w-4 h-4 text-brand-red group-hover:text-white transition-colors" />
+                  See Our Packages
                 </Link>
               </motion.div>
 
-              <motion.div variants={itemVariants} className="flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-2">
-                {["No long-term contracts", "Free strategy session", "Results in 30 days"].map((t) => (
-                  <span key={t} className="flex items-center gap-1.5 text-xs text-white/45">
-                    <CheckCircle className="w-3 h-3 text-green-400" />
-                    {t}
-                  </span>
-                ))}
+              <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center sm:items-start justify-center lg:justify-start gap-4 mb-8">
+                <div className="flex items-center gap-1 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+                  <span className="flex text-yellow-400 text-[10px]">★★★★★</span>
+                  <span className="text-white/60 text-xs font-semibold ml-1">5.0 Google Rating</span>
+                </div>
+                <div className="flex flex-wrap justify-center lg:justify-start gap-x-4 gap-y-2 pt-1.5">
+                  {["Trusted by 200+ Businesses", "Results in 30 days"].map((t) => (
+                    <span key={t} className="flex items-center gap-1.5 text-xs text-white/45 font-medium">
+                      <CheckCircle className="w-3 h-3 text-green-400" />
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </motion.div>
             </motion.div>
 
