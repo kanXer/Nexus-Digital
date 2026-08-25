@@ -62,10 +62,12 @@ function SuccessContent() {
     const billNumber = `INV-${orderId || txnId}`;
     const blob = generateInvoicePdf({
       billNumber,
-      date: `${displayOrder.date} ${displayOrder.purchaseTime ? "at " + displayOrder.purchaseTime : ""}`,
+      date: displayOrder.date,
+      time: displayOrder.purchaseTime || "",
       agencyName: config.name,
       agencyEmail: config.email,
       agencyAddress: config.address,
+      agencyWebsite: config.website,
       clientName: userProfile.name || user?.displayName || "Customer",
       clientEmail: userProfile.email || user?.email || "",
       planName: displayOrder.title,

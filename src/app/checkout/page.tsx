@@ -123,10 +123,11 @@ function CheckoutContent() {
   return (
     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8">
       {/* Left Column: Order Summary & Billing Info */}
-      <div className="md:col-span-7 space-y-6">
+      <div className="md:col-span-7 space-y-6 relative z-10">
         {/* Selected Plan Summary */}
-        <div className="glass-card rounded-3xl p-6 border border-white/12 relative overflow-hidden">
-          <div className="flex items-center justify-between mb-4">
+        <div className="glass-card-brand rounded-3xl p-6 border border-brand-blue/30 shadow-[0_0_40px_rgba(109,94,252,0.12)] relative overflow-hidden group hover:border-brand-blue/50 transition-colors duration-500">
+          <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-blue/10 rounded-full blur-2xl group-hover:bg-brand-blue/20 transition-all duration-500" />
+          <div className="flex items-center justify-between mb-4 relative z-10">
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-brand-blue/20 text-brand-blue-light border border-brand-blue/30">
               Selected Package
             </span>
@@ -217,11 +218,11 @@ function CheckoutContent() {
       </div>
 
       {/* Right Column: Payment Gateway */}
-      <div className="md:col-span-5 space-y-6">
+      <div className="md:col-span-5 space-y-6 relative z-10">
         {billingComplete ? (
-          <div className="payment-checkout-card always-dark relative overflow-hidden rounded-3xl p-6 border space-y-5 bg-gradient-to-br from-[#0d0a2e] via-[#120f38] to-[#0b0b0d] border-[#6d5efc]/30 shadow-[0_0_40px_rgba(109,94,252,0.18)]">
+          <div className="payment-checkout-card always-dark relative overflow-hidden rounded-3xl p-6 border space-y-5 bg-gradient-to-br from-[#0d0a2e] via-[#120f38] to-[#0b0b0d] border-[#6d5efc]/30 shadow-[0_0_50px_rgba(109,94,252,0.25)] hover:shadow-[0_0_70px_rgba(109,94,252,0.35)] transition-shadow duration-500">
             {/* Ambient glow */}
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-36 bg-[#6d5efc]/15 rounded-full blur-[90px] pointer-events-none" />
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-36 bg-[#6d5efc]/25 rounded-full blur-[70px] pointer-events-none" />
 
             {!cashfreeLive && (
               <div className="relative flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
@@ -308,8 +309,13 @@ function CheckoutContent() {
 export default function CheckoutPage() {
   return (
     <RequireAuth>
-      <div className="bg-black min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto mb-8">
+      <div className="bg-black min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Ambient Glows */}
+        <div className="absolute top-10 left-1/4 w-[500px] h-[500px] bg-brand-blue/10 rounded-full blur-[130px] pointer-events-none mix-blend-screen opacity-60" />
+        <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-brand-red/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen opacity-60" />
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+        
+        <div className="max-w-4xl mx-auto mb-8 relative z-10">
           <Link href="/pricing" className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to Packages & Pricing
           </Link>

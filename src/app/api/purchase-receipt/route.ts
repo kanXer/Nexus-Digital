@@ -6,6 +6,8 @@ import {
   type PurchaseReceiptData,
 } from "@/lib/mail";
 import { getProduct } from "@/lib/products";
+import { generateInvoicePdfBuffer } from "@/lib/pdf";
+import { config } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +47,29 @@ export async function POST(req: Request) {
       purchaseTime: String(body?.purchaseTime || ""),
       expiryDate: body?.expiryDate ? String(body.expiryDate) : undefined,
     };
+
+    let pdfBuffer: Buffer | undefined;
+    try {
+      pdfBuffer = generateInvoicePdfBuffer({
+        billNumber: `INV-${data.orderId}`,
+        date: data.purchaseDate,
+        time: data.purchaseTime,
+        agencyName: config.name,
+        agencyEmail: config.email,
+        agencyAddress: config.address,
+        agencyWebsite: config.website,
+        clientName: data.customerName || "Customer",
+        clientEmail: data.customerEmail,
+        planName: data.planName,
+        amount: data.amountInr || 0,
+        currency: "INR",
+        paymentRef: data.orderId,
+      });
+    } catch (pdfErr) {
+      console.error("Failed to generate PDF buffer for email:", pdfErr);
+    }
+
+    data.invoicePdfBuffer = pdfBuffer;
 
     await sendPurchaseReceipt(data);
     await notifyAdminPurchase(data).catch(() => {});

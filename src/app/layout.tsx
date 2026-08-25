@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins, Unbounded } from "next/font/google";
+import { Plus_Jakarta_Sans, Outfit } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 import "./globals.css";
@@ -10,19 +10,20 @@ import AuthModal from "@/components/auth/AuthModal";
 import UserProfileModal from "@/components/auth/UserProfileModal";
 import CartDrawer from "@/components/auth/CartDrawer";
 import OrdersModal from "@/components/auth/OrdersModal";
+import { Toaster } from "react-hot-toast";
 
-const poppins = Poppins({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   style: ["normal", "italic"],
-  variable: "--font-poppins",
+  variable: "--font-body",
   display: "swap",
 });
 
-const unbounded = Unbounded({
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-unbounded",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-heading",
   display: "swap",
 });
 
@@ -254,7 +255,7 @@ const schemaMarkup = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-      <html lang="en" className={`${poppins.variable} ${unbounded.variable}`} data-theme="light" suppressHydrationWarning>
+      <html lang="en" className={`${jakarta.variable} ${outfit.variable}`} data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -291,6 +292,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <UserProfileModal />
           <CartDrawer />
           <OrdersModal />
+          <Toaster 
+            position="bottom-center"
+            toastOptions={{
+              style: {
+                background: '#111',
+                color: '#fff',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '16px',
+                fontSize: '14px',
+              },
+            }}
+          />
         </AuthProvider>
       </body>
     </html>

@@ -53,12 +53,18 @@ export default function PricingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
                 whileHover={{ y: -6 }}
-                className={`relative rounded-3xl p-7 flex flex-col transition-all duration-300 ${
+                className={`relative rounded-3xl p-7 flex flex-col transition-all duration-500 group ${
                   plan.highlight
-                    ? "glass-card-brand border-brand-blue/50 shadow-[0_0_60px_rgba(220,38,38,0.25)] scale-[1.02] md:scale-105"
-                    : "glass-card border-white/8"
+                    ? "glass-card-brand border-brand-blue/50 shadow-[0_0_60px_rgba(220,38,38,0.25)] scale-[1.02] md:scale-105 hover:shadow-[0_0_90px_rgba(220,38,38,0.4)]"
+                    : "glass-card border-white/8 hover:border-brand-blue/50 hover:shadow-[0_0_50px_rgba(220,38,38,0.2)]"
                 }`}
               >
+                {/* Dynamic Glow inside Card (contained) */}
+                <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+                  <div className={`absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] transition-all duration-700 opacity-0 group-hover:opacity-100 ${plan.highlight ? "bg-brand-blue/60" : "bg-brand-blue/40"}`} />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                </div>
+
                 {plan.badge && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                     <span className="px-5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-brand-blue-dark via-brand-blue to-brand-blue-light text-white shadow-[0_4px_20px_rgba(220,38,38,0.4)] inline-flex items-center gap-1.5 whitespace-nowrap">
@@ -160,9 +166,11 @@ export default function PricingPage() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
-                      className="glass-card border-white/8 rounded-3xl p-6 flex flex-col hover:border-brand-blue/40 hover:shadow-glow-sm transition-all duration-300"
+                      className="glass-card border-white/8 rounded-3xl p-6 flex flex-col hover:border-brand-blue/60 hover:shadow-[0_0_50px_rgba(220,38,38,0.2)] transition-all duration-500 group relative overflow-hidden"
                     >
-                      <h4 className="text-[15px] font-bold text-white leading-snug mb-4">{item.serviceName}</h4>
+                      <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[70px] pointer-events-none transition-all duration-700 opacity-0 group-hover:opacity-100 bg-brand-blue/40" />
+                      
+                      <h4 className="text-[15px] font-bold text-white leading-snug mb-4 relative z-10">{item.serviceName}</h4>
                       <ul className="space-y-2 flex-1 mb-5">
                         {item.deliverables.map((d) => (
                           <li key={d} className="flex items-start gap-2 text-[13px] text-white/60">

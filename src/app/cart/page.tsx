@@ -56,8 +56,13 @@ export default function CartPage() {
 
   return (
     <RequireAuth>
-      <div className="bg-black min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="bg-black min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Ambient Glows */}
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-brand-blue/10 rounded-full blur-[150px] pointer-events-none mix-blend-screen opacity-70" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-brand-red/10 rounded-full blur-[150px] pointer-events-none mix-blend-screen opacity-70" />
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
           {/* Header */}
           <div className="mb-10">
             <Link href="/pricing" className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors mb-4">
@@ -66,7 +71,7 @@ export default function CartPage() {
             <div className="flex items-end justify-between flex-wrap gap-4">
               <div>
                 <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
-                  Your Marketing Cart 🛒
+                  Your Marketing Cart
                   {cart.length > 0 && (
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-blue/15 border border-brand-blue/30 text-brand-blue-light align-middle">
                       {cart.length} {cart.length === 1 ? "item" : "items"}
@@ -116,7 +121,7 @@ export default function CartPage() {
                         href={`https://wa.me/${"919696262007"}?text=${encodeURIComponent("Hi! I want a custom marketing package.")}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 text-white/75 font-semibold text-sm border border-white/10 transition-all inline-flex items-center justify-center gap-2"
+                        className="py-3 px-6 rounded-xl bg-white/5 hover:bg-white/10 font-semibold text-sm border border-white/10 transition-all inline-flex items-center justify-center gap-2"
                       >
                         <MessageCircle className="w-4 h-4 text-green-400" /> Talk to Us
                       </a>
@@ -134,12 +139,12 @@ export default function CartPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: -30, height: 0, marginBottom: 0 }}
                         transition={{ delay: i * 0.06, duration: 0.35 }}
-                        className="glass-card rounded-3xl p-5 border border-white/10 hover:border-brand-blue/25 transition-all"
+                        className="glass-card rounded-3xl p-5 border border-white/10 hover:border-brand-blue/40 hover:shadow-[0_0_30px_rgba(109,94,252,0.15)] transition-all duration-300 group"
                       >
                         <div className="flex items-start gap-4">
                           {/* Icon */}
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-blue/25 to-brand-blue-dark/15 border border-brand-blue/30 flex items-center justify-center shrink-0">
-                            <IconComp className="w-6 h-6 text-brand-blue-light" />
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-blue/20 to-brand-blue-dark/20 border border-brand-blue/40 flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
+                            <IconComp className="w-6 h-6 text-brand-blue-light drop-shadow-glow" />
                           </div>
 
                           {/* Info */}
@@ -232,7 +237,7 @@ export default function CartPage() {
                 Order Summary
               </h2>
 
-              <div className="glass-card rounded-3xl border border-white/12 overflow-hidden sticky top-24">
+              <div className="glass-card-brand rounded-3xl border border-brand-blue/30 shadow-[0_0_50px_rgba(109,94,252,0.1)] overflow-hidden sticky top-24 backdrop-blur-xl">
                 {/* Mini list */}
                 <div className="p-5 space-y-2.5 max-h-[34vh] overflow-y-auto">
                   <AnimatePresence initial={false}>
