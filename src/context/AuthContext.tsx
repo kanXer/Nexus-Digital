@@ -522,7 +522,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     lastOrderGuardRef.current = { planId: orderData.planId, at: Date.now(), order: newOrder };
 
     // Fire-and-forget: save order to MongoDB for admin visibility
-    fetch("/api/admin/orders/save", {
+    fetch("/api/admin/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -535,7 +535,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         date: formattedDate,
         time: formattedTime,
       }),
-    }).catch(() => {});
+    }).catch((e) => console.warn("MongoDB order save failed:", e));
 
     // Fire-and-forget: email the buyer a success message + itemized bill,
     // and notify the agency. Never blocks or breaks the purchase flow.
