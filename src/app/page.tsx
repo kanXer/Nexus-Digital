@@ -99,7 +99,7 @@ export default function HomePage() {
               <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-6">
                 <Link href="/enquiry#enquiry-form" className="btn-primary text-base px-7 py-3.5 group relative overflow-hidden shadow-[0_0_20px_rgba(220,38,38,0.3)] animate-pulse-slow">
                   <span className="relative z-10 flex items-center font-bold">
-                    Start Growing Today 🚀
+                    Start Growing Today
                     <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                   </span>
                 </Link>
