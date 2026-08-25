@@ -16,7 +16,7 @@ import { config } from "@/lib/config";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, userProfile, orders, recordNewOrder } = useAuth();
+  const { user, userProfile, orders, recordNewOrder, openOrders } = useAuth();
   const [copied, setCopied] = useState(false);
   const [verifyError, setVerifyError] = useState(false);
   const recordedRef = useRef(false);
@@ -246,6 +246,13 @@ function SuccessContent() {
           className="w-full btn-primary py-3.5 rounded-xl justify-center font-bold text-sm"
         >
           <Download className="w-4 h-4 mr-2" /> Download Invoice / Bill
+        </button>
+
+        <button
+          onClick={openOrders}
+          className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-sm border border-white/15 transition-all"
+        >
+          <Receipt className="w-4 h-4" /> View My Orders
         </button>
 
         <Link href="/" className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 font-semibold text-sm border border-white/10 transition-all">
