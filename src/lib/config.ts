@@ -1,0 +1,17 @@
+export const config = {
+  name: process.env.NEXT_PUBLIC_AGENCY_NAME || "Nexus Digital",
+  tagline: process.env.NEXT_PUBLIC_AGENCY_TAGLINE || "Digital Marketing Agency in India",
+  email: process.env.NEXT_PUBLIC_AGENCY_EMAIL || "hello@nexusdigital.in",
+  phone: process.env.NEXT_PUBLIC_AGENCY_PHONE || "+91-XXXXXXXXXX",
+  phoneRaw: (process.env.NEXT_PUBLIC_AGENCY_PHONE || "+91-XXXXXXXXXX").replace(/[^0-9]/g, "").replace(/^91/, ""),
+  whatsapp: process.env.NEXT_PUBLIC_AGENCY_WHATSAPP || "91XXXXXXXXXX",
+  address: process.env.NEXT_PUBLIC_AGENCY_ADDRESS || "Gorakhpur, Uttar Pradesh, India",
+  website: process.env.NEXT_PUBLIC_AGENCY_WEBSITE || "https://nexusdigitalmarketing.shop",
+  logo: process.env.NEXT_PUBLIC_AGENCY_LOGO || "NexusDigital",
+  shortName: process.env.NEXT_PUBLIC_AGENCY_SHORT_NAME || "Nexus",
+  gmbName: process.env.NEXT_PUBLIC_AGENCY_GMB_NAME || "Nexus Digital Marketing Agency",
+  gmbUrl: process.env.NEXT_PUBLIC_AGENCY_GMB_URL || "https://maps.google.com/?q=Nexus+Digital+Marketing+Agency+Gorakhpur",
+  gmbRating: process.env.NEXT_PUBLIC_AGENCY_GMB_RATING || "5.0",
+  gmbReviewCount: process.env.NEXT_PUBLIC_AGENCY_GMB_REVIEW_COUNT || "10",
+  ogImage: `${process.env.NEXT_PUBLIC_AGENCY_WEBSITE || "https://nexusdigitalmarketing.shop"}/og-image-whatsapp.jpg?v=2`,
+};
