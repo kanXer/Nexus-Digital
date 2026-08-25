@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
 import {
   auth,
   db,
@@ -107,23 +107,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<UserOrder[]>([]);
 
+  // Guards against double-submitting the same purchase (rapid double-click
+  // or re-render races) creating duplicate order entries.
+  const lastOrderGuardRef = useRef<{ planId?: string; at: number; order: UserOrder | null }>({ at: 0, order: null });
+
   // Modals visibility
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
 
-  // Load from LocalStorage as fast initial state
+  // Load cached profile from LocalStorage as fast initial state.
+  // Cart & Orders are PER-USER — they load only after auth resolves, so a
+  // logged-out visitor (or another account) never sees anyone else's items.
   useEffect(() => {
     try {
       const savedProfile = localStorage.getItem("nexus_user_profile");
       if (savedProfile) setUserProfile(JSON.parse(savedProfile));
-
-      const savedCart = localStorage.getItem("nexus_user_cart");
-      if (savedCart) setCart(JSON.parse(savedCart));
-
-      const savedOrders = localStorage.getItem("nexus_user_orders");
-      if (savedOrders) setOrders(JSON.parse(savedOrders));
+      // Purge legacy shared/global keys from older versions of the app
+      localStorage.removeItem("nexus_user_cart");
+      localStorage.removeItem("nexus_user_orders");
     } catch (e) {
       console.error("Error loading local auth state:", e);
     }
@@ -186,6 +189,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
+        // Per-user cached cart/orders (fast paint) — keyed by uid so
+        // different accounts never share data.
+        try {
+          const lc = localStorage.getItem(`nexus_cart_${currentUser.uid}`);
+          const lo = localStorage.getItem(`nexus_orders_${currentUser.uid}`);
+          if (lc) setCart(JSON.parse(lc));
+          if (lo) setOrders(JSON.parse(lo));
+        } catch {
+          /* corrupted cache — ignore, Firestore will re-sync */
+        }
+
         // Load User Profile from Firestore DB if available
         try {
           const userDocRef = doc(db, "users", currentUser.uid);
@@ -239,12 +253,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               numericAmount: d.numericAmount,
             });
           });
-          if (fetchedOrders.length > 0) {
-            setOrders(fetchedOrders);
+          // Dedupe any historical duplicate docs (same plan + date + time)
+          const seen = new Set<string>();
+          const deduped = fetchedOrders.filter((o) => {
+            const key = `${o.planId || o.title}|${o.date}|${o.purchaseTime}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          if (deduped.length > 0) {
+            setOrders(deduped);
+          } else {
+            // Firestore is authoritative — a user with no purchases must
+            // see an empty orders list (never stale cached entries).
+            setOrders([]);
           }
         } catch (dbErr) {
           console.warn("Firestore sync notice (Database may be in test mode):", dbErr);
         }
+      } else {
+        // Signed out / visitor: nothing personal lingers in the UI
+        setCart([]);
+        setOrders([]);
+        setUserProfile(DEFAULT_PROFILE);
       }
       setLoading(false);
     });
@@ -260,15 +291,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [userProfile]);
 
   useEffect(() => {
-    localStorage.setItem("nexus_user_cart", JSON.stringify(cart));
     if (user) {
+      localStorage.setItem(`nexus_cart_${user.uid}`, JSON.stringify(cart));
       setDoc(doc(db, "carts", user.uid), { items: cart, updatedAt: new Date().toISOString() }, { merge: true }).catch(() => {});
     }
   }, [cart, user]);
 
   useEffect(() => {
-    localStorage.setItem("nexus_user_orders", JSON.stringify(orders));
-  }, [orders]);
+    if (user && orders.length > 0) {
+      localStorage.setItem(`nexus_orders_${user.uid}`, JSON.stringify(orders));
+    }
+  }, [orders, user]);
 
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
@@ -430,6 +463,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const recordNewOrder = async (orderData: { title: string; amount: string; planId?: string; isSubscription?: boolean; numericAmount?: number }): Promise<UserOrder> => {
+    // Duplicate-submit guard: same plan recorded within the last 8 seconds
+    // returns the original order instead of creating a duplicate entry.
+    const g = lastOrderGuardRef.current;
+    if (orderData.planId && g.planId === orderData.planId && Date.now() - g.at < 8000 && g.order) {
+      return g.order;
+    }
+
     const now = new Date();
     const formattedDate = now.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
     const formattedTime = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
@@ -453,6 +493,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setOrders((prev) => [newOrder, ...prev]);
 
+    // Auto-remove the purchased package from the cart after successful order
+    if (orderData.planId) {
+      removeFromCart(orderData.planId);
+    }
+
     if (user) {
       try {
         await addDoc(collection(db, "orders"), {
@@ -474,6 +519,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    lastOrderGuardRef.current = { planId: orderData.planId, at: Date.now(), order: newOrder };
+
     // Fire-and-forget: email the buyer a success message + itemized bill,
     // and notify the agency. Never blocks or breaks the purchase flow.
     fetch("/api/purchase-receipt", {
@@ -493,7 +540,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         purchaseTime: formattedTime,
         expiryDate: formattedExpiryDate,
       }),
-    }).catch((e) => console.warn("Receipt email skipped:", e));
+    })
+      .then(async (r) => {
+        if (!r.ok) console.error("Receipt email failed:", r.status, await r.text().catch(() => ""));
+        else console.log("Receipt email sent ✓");
+      })
+      .catch((e) => console.warn("Receipt email skipped:", e));
 
     return newOrder;
   };

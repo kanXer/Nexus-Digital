@@ -179,7 +179,7 @@ export default function Navbar() {
                 className="relative w-9 h-9 rounded-lg glass-card border border-white/8 flex items-center justify-center text-white/70 hover:text-brand-blue-light hover:border-brand-blue/40 hover:bg-brand-blue/10 transition-all duration-300 cursor-pointer"
               >
                 <ShoppingCart className="w-4 h-4" />
-                {cart.length > 0 && (
+                {user && cart.length > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-brand-blue-light text-white text-[10px] font-extrabold flex items-center justify-center shadow-[0_0_8px_rgba(220,38,38,0.8)]">
                     {cart.length}
                   </span>
@@ -247,7 +247,7 @@ export default function Navbar() {
                           <span className="flex items-center gap-2">
                             <ShoppingCart className="w-4 h-4 text-brand-blue-light" /> My Cart
                           </span>
-                          {cart.length > 0 && (
+                          {user && cart.length > 0 && (
                             <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-blue-light text-white">
                               {cart.length}
                             </span>
@@ -375,7 +375,7 @@ export default function Navbar() {
                       <span className="flex items-center gap-3">
                         <ShoppingCart className="w-4 h-4 text-brand-blue-light" /> My Cart
                       </span>
-                      {cart.length > 0 && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-brand-blue-light">{cart.length}</span>}
+                      {user && cart.length > 0 && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-brand-blue-light">{cart.length}</span>}
                     </button>
                     <button
                       onClick={() => { setMobileOpen(false); openOrders(); }}

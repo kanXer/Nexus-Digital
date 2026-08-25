@@ -296,21 +296,21 @@ export interface PurchaseReceiptData {
 export async function sendPurchaseReceipt(d: PurchaseReceiptData) {
   const invoiceNo = `INV-${d.orderId}`;
   const base = d.amountInr && d.amountInr > 0 ? d.amountInr : 0;
-  const gst = Math.round(base * 0.18 * 100) / 100;
-  const total = base + gst;
   const fmt = (n: number) => n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+  // Bill reflects the EXACT amount the gateway collected — no phantom GST
+  // added on top. Taxes are stated as included, matching the "+GST" pricing
+  // shown on the site.
   const billRows = [
     { label: "Invoice No.", value: invoiceNo },
     { label: "Order ID", value: d.orderId },
     { label: "Service / Plan", value: `${d.planName}${d.isSubscription ? " (Monthly)" : " (One-time)"}` },
     ...(base > 0
       ? [
-          { label: "Service Fee", value: `\u20B9${fmt(base)}` },
-          { label: "GST (18%)", value: `\u20B9${fmt(gst)}` },
+          { label: "Amount Paid", value: `\u20B9${fmt(base)}`, bold: true },
+          { label: "Taxes", value: "Inclusive of all applicable taxes" },
         ]
-      : [{ label: "Amount", value: d.amountDisplay }]),
-    { label: "Total Payable", value: base > 0 ? `\u20B9${fmt(total)}` : d.amountDisplay, bold: true },
+      : [{ label: "Amount Paid", value: d.amountDisplay || "Paid", bold: true }]),
     { label: "Purchase Date", value: `${d.purchaseDate} at ${d.purchaseTime}` },
     ...(d.isSubscription && d.expiryDate ? [{ label: "Next Billing Date", value: d.expiryDate }] : []),
     { label: "Status", value: "PAID ✅" },
