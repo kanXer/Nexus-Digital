@@ -91,7 +91,10 @@ export default function CashfreeButton({
       // /payment-success when done via the order's return_url).
       const CashfreeCtor = await loadCashfreeSdk();
       const mode =
-        process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ? "production" : "sandbox";
+        process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
+        process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true"
+          ? "production"
+          : "sandbox";
       const cashfree = new CashfreeCtor({ mode });
       cashfree.checkout({
         paymentSessionId: data.paymentSessionId,
