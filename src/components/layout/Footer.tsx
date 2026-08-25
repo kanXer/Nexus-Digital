@@ -249,6 +249,7 @@ export default function Footer() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             <Link href="/privacy-policy" className="text-xs text-white/25 hover:text-white/50 transition-colors">Privacy Policy</Link>
+            <Link href="/refund-cancellation" className="text-xs text-white/25 hover:text-white/50 transition-colors">Refund &amp; Cancellation</Link>
             <Link href="/terms" className="text-xs text-white/25 hover:text-white/50 transition-colors">Terms of Service</Link>
             <Link href="/sitemap.xml" className="text-xs text-white/25 hover:text-white/50 transition-colors">Sitemap</Link>
           </div>

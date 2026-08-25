@@ -21,6 +21,7 @@ import {
   where,
   type User,
 } from "@/lib/firebase";
+import { updateProfile as updateFirebaseProfile } from "firebase/auth";
 
 export interface UserProfile {
   name: string;
@@ -143,6 +144,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem("nexus_emailForSignIn");
         // Clean the oobCode / apiKey params from the address bar
         window.history.replaceState({}, "", window.location.pathname);
+
+        // Passwordless users have no provider profile — derive a display
+        // name from the email and assign an initials avatar so the DP and
+        // basic info show up everywhere (navbar, checkout, invoices).
+        const u = auth.currentUser;
+        if (u && !u.displayName) {
+          const derivedName =
+            email
+              .split("@")[0]
+              .split(/[._\-+]+/)
+              .filter(Boolean)
+              .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+              .join(" ") || "Nexus Client";
+          const initials = derivedName
+            .split(" ")
+            .map((w) => w.charAt(0))
+            .join("")
+            .slice(0, 2)
+            .toUpperCase();
+          const photoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=DC2626&color=ffffff&bold=true&length=2`;
+          try {
+            await updateFirebaseProfile(u, { displayName: derivedName, photoURL });
+            setUser({ ...u });
+            // Keep the Firestore profile doc in sync if it was created empty
+            await setDoc(doc(db, "users", u.uid), { name: derivedName }, { merge: true });
+            setUserProfile((prev) => ({ ...prev, name: prev.name || derivedName }));
+          } catch {
+            /* non-fatal */
+          }
+        }
       } catch (err: any) {
         console.error("Email link sign-in failed:", err?.code || err?.message);
       }
@@ -165,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } else {
             // First time user in Firestore: save initial profile
             const initProfile: UserProfile = {
-              name: currentUser.displayName || "",
+              name: currentUser.displayName || currentUser.email?.split("@")[0] || "",
               email: currentUser.email || "",
               phone: currentUser.phoneNumber || "",
               company: "",
