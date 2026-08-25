@@ -521,6 +521,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     lastOrderGuardRef.current = { planId: orderData.planId, at: Date.now(), order: newOrder };
 
+    // Fire-and-forget: save order to MongoDB for admin visibility
+    fetch("/api/admin/orders/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: userProfile.name || user?.displayName || "",
+        email: userProfile.email || user?.email || "",
+        amount: orderData.numericAmount || 0,
+        planName: orderData.title,
+        orderId: newOrder.id,
+        status: "Completed",
+        date: formattedDate,
+        time: formattedTime,
+      }),
+    }).catch(() => {});
+
     // Fire-and-forget: email the buyer a success message + itemized bill,
     // and notify the agency. Never blocks or breaks the purchase flow.
     fetch("/api/purchase-receipt", {

@@ -46,3 +46,24 @@ export async function saveSubmission(type: "contact" | "booking" | "enquiry" | "
     console.error("Mongo save error:", err);
   }
 }
+
+export async function saveOrder(data: {
+  name: string;
+  email: string;
+  amount: number;
+  planName: string;
+  orderId: string;
+  status: string;
+  date: string;
+  time: string;
+}) {
+  try {
+    const db = await getDb();
+    await db.collection("orders").insertOne({
+      ...data,
+      createdAt: new Date(),
+    });
+  } catch (err) {
+    console.error("Mongo save order error:", err);
+  }
+}

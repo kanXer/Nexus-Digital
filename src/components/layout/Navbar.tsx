@@ -46,6 +46,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const mobileUserMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -65,7 +66,16 @@ export default function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        userMenuRef.current && !userMenuRef.current.contains(target) &&
+        mobileUserMenuRef.current && !mobileUserMenuRef.current.contains(target)
+      ) {
+        setUserMenuOpen(false);
+      } else if (
+        userMenuRef.current && !userMenuRef.current.contains(target) &&
+        !mobileUserMenuRef.current
+      ) {
         setUserMenuOpen(false);
       }
     };
@@ -181,20 +191,6 @@ export default function Navbar() {
                 Calculator
               </button>
 
-              {/* Cart Button */}
-              {/* <button
-                onClick={openCart}
-                title="Shopping Cart"
-                className="relative w-9 h-9 rounded-lg glass-card border border-white/8 flex items-center justify-center text-white/70 hover:text-brand-blue-light hover:border-brand-blue/40 hover:bg-brand-blue/10 transition-all duration-300 cursor-pointer"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                {user && cart.length > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-brand-blue-light text-white text-[10px] font-extrabold flex items-center justify-center shadow-[0_0_8px_rgba(220,38,38,0.8)]">
-                    {cart.length}
-                  </span>
-                )}
-              </button>*/}
-
               <ThemeToggle />
 
               {/* User Account / Auth Dropdown */}
@@ -295,13 +291,96 @@ export default function Navbar() {
               </Link>
             </div>
 
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
-              aria-label="Toggle menu"
-            >
-              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            {/* Mobile: Profile pic + hamburger */}
+            <div className="lg:hidden flex items-center gap-2">
+              {user ? (
+                <div className="relative" ref={mobileUserMenuRef}>
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-brand-blue/40 hover:ring-brand-blue-light/60 transition-all"
+                  >
+                    {user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt={userProfile.name || "User"}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-brand flex items-center justify-center text-[11px] font-bold text-white uppercase">
+                        {userProfile.name ? userProfile.name.slice(0, 2) : user.email ? user.email.slice(0, 2) : "U"}
+                      </div>
+                    )}
+                  </button>
+
+                  <AnimatePresence>
+                    {userMenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full mt-2 right-0 w-52 rounded-xl p-1.5 nav-dropdown border border-white/12 shadow-2xl z-50"
+                      >
+                        <div className="px-3 py-2.5 border-b border-white/8 mb-1 flex items-center gap-2.5">
+                          {user.photoURL ? (
+                            <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-blue/30 shrink-0" referrerPolicy="no-referrer" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gradient-brand flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
+                              {userProfile.name ? userProfile.name.slice(0, 2) : "U"}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="text-white font-bold text-xs truncate">{userProfile.name || user.displayName || "Logged In"}</p>
+                            <p className="text-white/40 text-[11px] truncate">{user.email}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => { setUserMenuOpen(false); openProfileModal(); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors text-left"
+                        >
+                          <User className="w-4 h-4 text-brand-blue-light" /> My Profile
+                        </button>
+                        <Link
+                          href="/cart"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors"
+                        >
+                          <span className="flex items-center gap-2">
+                            <ShoppingCart className="w-4 h-4 text-brand-blue-light" /> My Cart
+                          </span>
+                          {user && cart.length > 0 && (
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-blue-light text-white">
+                              {cart.length}
+                            </span>
+                          )}
+                        </Link>
+                        <button
+                          onClick={() => { setUserMenuOpen(false); openOrders(); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors text-left"
+                        >
+                          <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders & Plans
+                        </button>
+                        <div className="border-t border-white/8 my-1" />
+                        <button
+                          onClick={() => { setUserMenuOpen(false); logout(); }}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors text-left"
+                        >
+                          <LogOut className="w-4 h-4" /> Sign Out
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : null}
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                aria-label="Toggle menu"
+              >
+                {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
       </motion.header>
