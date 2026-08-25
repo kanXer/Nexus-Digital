@@ -277,7 +277,7 @@ function CheckoutContent() {
 
             <div className="relative flex items-center justify-center gap-1.5 text-[11px] text-white/40 pt-1">
               <ShieldCheck className="w-4 h-4 text-green-400" />
-              30-Day Money Back Satisfaction Guarantee
+              Payments Processed via Authorized Payment Gateway
             </div>
           </div>
         ) : (

@@ -135,27 +135,86 @@ export default function Terms() {
               </p>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">1. Services</h3>
+                <h3 className="text-white font-semibold text-base mb-2">1. About Us — Business Description</h3>
                 <p>
-                  {config.name} provides professional digital marketing services including social media management, paid
-                  advertising (Meta Ads & Google Ads), SEO & Local SEO, website design and development, lead generation,
-                  WhatsApp marketing automation, and monthly reporting. The specific scope of services will be outlined in
-                  your service agreement or selected pricing plan.
+                  {config.name} is a professional digital marketing and web development agency providing technology-driven
+                  digital solutions to businesses, startups, and organizations.
+                </p>
+                <p className="mt-2">
+                  Our services include website design and development, search engine optimization (SEO), social media
+                  management, digital advertising management, content strategy, branding, analytics, and digital marketing
+                  consulting. We provide customized professional services based on the client&apos;s business requirements. We
+                  do not sell customer databases, email lists, personal information, or unsolicited marketing lists.
                 </p>
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">2. Payment Terms</h3>
-                <p>
-                  Fees for services are as outlined in your chosen plan or custom quote. Monthly retainer payments are due on
-                  the agreed billing date. Late payments may result in temporary service suspension. All fees are exclusive of
-                  applicable GST and taxes. Ad spends (Meta Ads, Google Ads budgets) are billed separately and are the
-                  client&apos;s direct expenditure to the respective platforms.
+                <h3 className="text-white font-semibold text-base mb-2">2. Our Services</h3>
+                <p>We offer the following service categories:</p>
+                <ul className="list-disc pl-5 space-y-1.5 mt-2">
+                  <li><strong className="text-white/80">Website Design &amp; Development</strong> — business websites, landing pages, e-commerce websites, website maintenance and optimization.</li>
+                  <li><strong className="text-white/80">Search Engine Optimization (SEO)</strong> — technical SEO, on-page SEO, content optimization, search visibility improvement, SEO reporting and analytics.</li>
+                  <li><strong className="text-white/80">Social Media Marketing</strong> — social media strategy, content planning, creative design, account management, performance reporting.</li>
+                  <li><strong className="text-white/80">Digital Advertising</strong> — campaign planning and management, search advertising, social media advertising, conversion tracking, campaign analytics and reporting.</li>
+                  <li><strong className="text-white/80">Digital Marketing Consulting</strong> — digital strategy, competitor research, online presence analysis, conversion optimization, marketing performance analysis.</li>
+                  <li><strong className="text-white/80">Branding &amp; Creative Services</strong> — brand identity, social media creatives, marketing graphics, digital campaign creatives.</li>
+                </ul>
+                <p className="mt-2">
+                  The specific scope of services will be outlined in your quotation, proposal, or selected pricing plan.
                 </p>
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">3. Client Responsibilities</h3>
+                <h3 className="text-white font-semibold text-base mb-2">3. Important Service Clarification</h3>
+                <p>
+                  {config.name} provides professional marketing strategy, consulting, campaign management, creative,
+                  analytics, and technology services. We do <strong className="text-white/80">not</strong>:
+                </p>
+                <ul className="list-disc pl-5 space-y-1 mt-2">
+                  <li>Sell or rent email databases.</li>
+                  <li>Sell or rent phone-number databases.</li>
+                  <li>Sell personal/customer information.</li>
+                  <li>Provide unsolicited bulk messaging services.</li>
+                  <li>Sell scraped customer lists.</li>
+                  <li>Guarantee leads, sales, rankings, clicks, or advertising results.</li>
+                  <li>Process payments on behalf of unrelated third-party businesses.</li>
+                </ul>
+                <p className="mt-2">
+                  All marketing activities are performed according to applicable laws, platform policies, and client
+                  requirements.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">4. Payment / Order Process</h3>
+                <p>Clients select a service or customized package based on their requirements. After confirmation:</p>
+                <ol className="list-decimal pl-5 space-y-1 mt-2">
+                  <li>A quotation/proposal is provided.</li>
+                  <li>The client receives an invoice or payment request.</li>
+                  <li>The client makes the agreed advance/full payment.</li>
+                  <li>Work begins after payment confirmation and required information/assets are received.</li>
+                  <li>Deliverables are provided according to the agreed scope and timeline.</li>
+                </ol>
+                <p className="mt-2">
+                  For recurring services, billing is performed according to the agreed monthly or periodic service plan.
+                  Monthly retainer payments are due on the agreed billing date. Late payments may result in temporary service
+                  suspension. All fees are exclusive of applicable GST and taxes. Ad spends (Meta Ads, Google Ads budgets)
+                  are billed separately and are the client&apos;s direct expenditure to the respective platforms.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">5. Delivery Policy</h3>
+                <p>
+                  Digital services are delivered electronically through email, cloud storage, project management tools,
+                  communication platforms, or other agreed digital channels. Typical delivery timelines depend on the
+                  selected service and project scope. The estimated timeline is communicated to the client before work
+                  begins.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-white font-semibold text-base mb-2">6. Client Responsibilities</h3>
                 <p>
                   You agree to provide timely access to necessary accounts (Google Ads, Meta Business Manager, website admin,
                   etc.), brand assets, and information required for us to deliver our services. You are responsible for the
@@ -164,7 +223,7 @@ export default function Terms() {
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">4. Intellectual Property</h3>
+                <h3 className="text-white font-semibold text-base mb-2">7. Intellectual Property</h3>
                 <p>
                   All content, creatives, strategies, and code developed by {config.name} remain our intellectual property
                   until full payment is received. Upon full payment, clients receive complete usage and ownership rights for
@@ -173,7 +232,7 @@ export default function Terms() {
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">5. Results & Guarantees</h3>
+                <h3 className="text-white font-semibold text-base mb-2">8. Results &amp; No Guarantees</h3>
                 <p>
                   Digital marketing outcomes are influenced by many factors including market competition, ad budget, and
                   platform algorithm changes. While we apply best practices and are committed to delivering results, {config.name}{" "}
@@ -183,7 +242,7 @@ export default function Terms() {
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">6. Limitation of Liability</h3>
+                <h3 className="text-white font-semibold text-base mb-2">9. Limitation of Liability</h3>
                 <p>
                   {config.name} shall not be liable for any indirect, incidental, or consequential damages arising from the
                   use of our services. Our total liability is limited to the amount paid for the specific service giving rise
@@ -192,16 +251,20 @@ export default function Terms() {
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">7. Cancellation & Termination</h3>
+                <h3 className="text-white font-semibold text-base mb-2">10. Cancellation &amp; Termination</h3>
                 <p>
-                  Either party may terminate the service agreement with 30 days written notice. We do not believe in locking
-                  clients in — our results are what retain clients. Upon termination, you will receive a final performance
-                  report and full access to all ad accounts, content, analytics, and assets managed during the engagement.
+                  Either party may terminate the service agreement with 30 days written notice. Upon termination, you will
+                  receive a final performance report and full access to all ad accounts, content, analytics, and assets
+                  managed during the engagement. Refunds and cancellations are handled according to our{" "}
+                  <Link href="/refund-cancellation" className="text-brand-blue-light hover:underline">
+                    Refund &amp; Cancellation Policy
+                  </Link>
+                  .
                 </p>
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">8. Confidentiality</h3>
+                <h3 className="text-white font-semibold text-base mb-2">11. Confidentiality</h3>
                 <p>
                   Both parties agree to keep all shared business information, strategies, campaign data, and pricing
                   confidential. We will never share your business data with third parties without explicit written consent,
@@ -210,7 +273,7 @@ export default function Terms() {
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">9. Governing Law</h3>
+                <h3 className="text-white font-semibold text-base mb-2">12. Governing Law</h3>
                 <p>
                   These terms are governed by the laws of India. Any disputes shall be resolved under the jurisdiction of
                   courts in Gorakhpur, Uttar Pradesh.
@@ -218,9 +281,13 @@ export default function Terms() {
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">10. Contact</h3>
+                <h3 className="text-white font-semibold text-base mb-2">13. Contact</h3>
                 <p>
-                  For questions about these terms, reach us at{" "}
+                  Website:{" "}
+                  <a href="https://nexusdigitalmarketing.shop" className="text-brand-blue-light hover:underline">
+                    https://nexusdigitalmarketing.shop
+                  </a>
+                  . For service enquiries, billing questions, project support, or refund-related requests, reach us at{" "}
                   <a href={`mailto:${config.email}`} className="text-brand-blue-light hover:underline">
                     {config.email}
                   </a>{" "}

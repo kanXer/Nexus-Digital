@@ -243,7 +243,7 @@ export default function CartPage() {
 
             {/* Trust Badges */}
             <div className="glass-card rounded-2xl p-4 border border-white/8 space-y-2 text-xs text-white/50">
-              {["30-Day Money-Back Guarantee", "Cancel or Pause Anytime", "Live in 24 Hours After Payment"].map((t) => (
+              {["Secure Payments via Authorized Gateway", "Refunds per Refund & Cancellation Policy", "Clear Timeline Before Work Begins"].map((t) => (
                 <div key={t} className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-green-400 shrink-0" />
                   <span>{t}</span>

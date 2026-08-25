@@ -14,15 +14,20 @@ export default function PrivacyPolicy() {
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="max-w-3xl mx-auto relative z-10">
           <AnimatedTitle as="h1" title="Privacy Policy" className="text-4xl font-black text-white mb-2" />
-          <p className="text-white/40 text-sm mb-8">Last updated: January 2025</p>
+          <p className="text-white/40 text-sm mb-8">Last updated: August 2026</p>
           <div className="prose prose-invert prose-sm max-w-none space-y-6 text-white/65">
             <p>{config.name} (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
+            <h2 className="text-white font-bold text-lg mt-8">Our Privacy Commitment</h2>
+            <p>We respect customer privacy and use customer information only for legitimate business, communication, service delivery, billing, and support purposes.</p>
+            <p>We do not sell or rent customer personal information or marketing databases.</p>
             <h2 className="text-white font-bold text-lg mt-8">Information We Collect</h2>
             <p>We may collect personal information that you voluntarily provide when you fill out a contact form, subscribe to our newsletter, or book a consultation. This may include your name, email address, phone number, and business details.</p>
             <h2 className="text-white font-bold text-lg">How We Use Your Information</h2>
             <p>We use the information we collect to: respond to your inquiries, provide our services, send marketing communications (with your consent), improve our website and services, and comply with legal obligations.</p>
             <h2 className="text-white font-bold text-lg">Data Protection</h2>
             <p>We implement appropriate security measures to protect your personal information. However, no method of transmission over the Internet is 100% secure. We retain your data only as long as necessary for the purposes outlined in this policy.</p>
+            <h2 className="text-white font-bold text-lg mt-8">Payments</h2>
+            <p>Payment information is processed through authorized payment service providers. {config.name} does not store sensitive payment credentials such as card numbers or CVV information on its own systems unless explicitly supported by a compliant payment provider.</p>
             <h2 className="text-white font-bold text-lg">Third-Party Services</h2>
             <p>We may use third-party services such as Google Analytics, Meta Pixel, and email marketing platforms. These services have their own privacy policies governing data use.</p>
             <h2 className="text-white font-bold text-lg">Your Rights</h2>
