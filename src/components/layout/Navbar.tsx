@@ -13,17 +13,17 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/services", label: "Services" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/portfolio", label: "Portfolio" },
   {
     label: "Company",
     children: [
+      { href: "/contact", label: "Contact" },
       { href: "/about", label: "About Us" },
+      { href: "/portfolio", label: "Portfolio" },
       { href: "/case-studies", label: "Case Studies" },
       { href: "/testimonials", label: "Testimonials" },
       { href: "/faq", label: "FAQ" },
     ],
-  },
-  { href: "/contact", label: "Contact" },
+  }
 ];
 
 export default function Navbar() {
@@ -65,9 +65,22 @@ export default function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setDropdownOpen(false);
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, []);
 
   useEffect(() => {
@@ -90,11 +103,10 @@ export default function Navbar() {
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className={`fixed top-0 lg:top-9 left-0 right-0 z-50 will-change-transform transition-[border-color,box-shadow] duration-500 ${
-          scrolled
-            ? "bg-black border-b border-white/8 shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
-            : "bg-black"
-        }`}
+        className={`fixed top-0 lg:top-9 left-0 right-0 z-50 will-change-transform transition-[border-color,box-shadow] duration-500 ${scrolled
+          ? "bg-black border-b border-white/8 shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
+          : "bg-black"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
@@ -114,9 +126,8 @@ export default function Navbar() {
                   <div key={link.label} className="relative" ref={dropdownRef}>
                     <button
                       onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className={`flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        dropdownOpen ? "text-white bg-white/8" : "text-white/60 hover:text-white hover:bg-white/5"
-                      }`}
+                      className={`flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${dropdownOpen ? "text-white bg-white/8" : "text-white/60 hover:text-white hover:bg-white/5"
+                        }`}
                     >
                       {link.label}
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
@@ -134,9 +145,8 @@ export default function Navbar() {
                             <Link
                               key={child.href}
                               href={child.href}
-                              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                                pathname === child.href ? "text-brand-blue-light bg-brand-blue/10" : "text-white/60 hover:text-white hover:bg-white/5"
-                              }`}
+                              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${pathname === child.href ? "text-brand-blue-light bg-brand-blue/10" : "text-white/60 hover:text-white hover:bg-white/5"
+                                }`}
                             >
                               {child.label}
                             </Link>
@@ -149,11 +159,10 @@ export default function Navbar() {
                   <Link
                     key={link.href}
                     href={link.href!}
-                    className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      pathname === link.href
-                        ? "text-white bg-white/8"
-                        : "text-white/60 hover:text-white hover:bg-white/5"
-                    }`}
+                    className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${pathname === link.href
+                      ? "text-white bg-white/8"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      }`}
                   >
                     {link.label}
                   </Link>
@@ -171,9 +180,9 @@ export default function Navbar() {
                 <Calculator className="w-4 h-4 text-brand-blue-light" />
                 Calculator
               </button>
-              
+
               {/* Cart Button */}
-              <button
+              {/* <button
                 onClick={openCart}
                 title="Shopping Cart"
                 className="relative w-9 h-9 rounded-lg glass-card border border-white/8 flex items-center justify-center text-white/70 hover:text-brand-blue-light hover:border-brand-blue/40 hover:bg-brand-blue/10 transition-all duration-300 cursor-pointer"
@@ -184,7 +193,7 @@ export default function Navbar() {
                     {cart.length}
                   </span>
                 )}
-              </button>
+              </button>*/}
 
               <ThemeToggle />
 
@@ -337,9 +346,8 @@ export default function Navbar() {
                         <Link
                           key={child.href}
                           href={child.href}
-                          className={`block px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                            pathname === child.href ? "text-brand-blue-light bg-brand-blue/10" : "text-white/60 hover:text-white hover:bg-white/5"
-                          }`}
+                          className={`block px-4 py-3 rounded-xl text-sm font-medium transition-colors ${pathname === child.href ? "text-brand-blue-light bg-brand-blue/10" : "text-white/60 hover:text-white hover:bg-white/5"
+                            }`}
                         >
                           {child.label}
                         </Link>
@@ -349,9 +357,8 @@ export default function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href!}
-                      className={`block px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                        pathname === link.href ? "text-white bg-white/8" : "text-white/60 hover:text-white hover:bg-white/5"
-                      }`}
+                      className={`block px-4 py-3 rounded-xl text-sm font-medium transition-colors ${pathname === link.href ? "text-white bg-white/8" : "text-white/60 hover:text-white hover:bg-white/5"
+                        }`}
                     >
                       {link.label}
                     </Link>

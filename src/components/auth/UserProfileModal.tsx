@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, User, Mail, Phone, Building2, MapPin, CheckCircle, Save, CreditCard, ShieldCheck } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 
 export default function UserProfileModal() {
@@ -19,6 +20,10 @@ export default function UserProfileModal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await updateProfile(formData);
+    toast.success("Profile & Billing details saved successfully!", {
+      duration: 3000,
+      icon: '✨',
+    });
     setSaved(true);
     setTimeout(() => {
       setSaved(false);

@@ -506,7 +506,7 @@ const clearHistory = () => {
     <>
       {/* Hint bubble + launcher */}
       <div
-        className="fixed right-6 z-50 flex flex-col items-end gap-3 always-dark transition-transform duration-300 will-change-transform"
+        className="fixed right-6 z-40 flex flex-col items-end gap-3 always-dark transition-transform duration-300 will-change-transform"
         style={{ bottom: 0, transform: `translateY(-${launcherBottom}px)` }}
       >
         <AnimatePresence>

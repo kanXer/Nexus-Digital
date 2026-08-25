@@ -291,6 +291,7 @@ export interface PurchaseReceiptData {
   purchaseDate: string;
   purchaseTime: string;
   expiryDate?: string;
+  invoicePdfBuffer?: Buffer;
 }
 
 export async function sendPurchaseReceipt(d: PurchaseReceiptData) {
@@ -357,7 +358,21 @@ export async function sendPurchaseReceipt(d: PurchaseReceiptData) {
   </td></tr></table>
 </body>
 </html>`;
-  await sendMail(d.customerEmail, `Payment Received — ${d.planName} (${invoiceNo})`, html);
+
+  if (d.invoicePdfBuffer) {
+    await sendInvoiceEmail({
+      to: d.customerEmail,
+      subject: `Payment Received — ${d.planName} (${invoiceNo})`,
+      html,
+      attachment: {
+        filename: `${invoiceNo}.pdf`,
+        content: d.invoicePdfBuffer,
+        contentType: "application/pdf"
+      }
+    });
+  } else {
+    await sendMail(d.customerEmail, `Payment Received — ${d.planName} (${invoiceNo})`, html);
+  }
 }
 
 export async function notifyAdminPurchase(d: PurchaseReceiptData) {

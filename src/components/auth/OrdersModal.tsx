@@ -17,10 +17,12 @@ export default function OrdersModal() {
     const billNumber = `INV-${order.id}`;
     const blob = generateInvoicePdf({
       billNumber,
-      date: `${order.date}${order.purchaseTime ? " at " + order.purchaseTime : ""}`,
+      date: order.date,
+      time: order.purchaseTime || "",
       agencyName: config.name,
       agencyEmail: config.email,
       agencyAddress: config.address,
+      agencyWebsite: config.website,
       clientName: userProfile.name || "Customer",
       clientEmail: userProfile.email || "",
       planName: order.title,
