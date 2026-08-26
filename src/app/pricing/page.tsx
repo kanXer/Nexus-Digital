@@ -11,8 +11,28 @@ import { servicePricing } from "@/data/servicePricing";
 import ServiceItemBuyer from "@/components/pricing/ServiceItemBuyer";
 import { useAuth } from "@/context/AuthContext";
 
+const testServiceGroup = {
+  category: "Test & Verification",
+  items: [
+    {
+      id: "test-service-1inr",
+      serviceName: "Test Service (₹1)",
+      deliverables: [
+        "Instant checkout flow test",
+        "Payment gateway verification",
+      ],
+      freelanceInr: 1,
+      agencyInr: 1,
+      cycle: "one-time",
+      disclaimer: "Testing package for checkout verification.",
+    },
+  ],
+};
+
 export default function PricingPage() {
   const { addToCart } = useAuth();
+  const allServicePricing = [...servicePricing, testServiceGroup];
+
   return (
     <div className="bg-black min-h-screen">
       <section className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -44,7 +64,7 @@ export default function PricingPage() {
             subtitle="Transparent service-fee pricing for each offering — available as both freelance and full agency rates."
           />
           <div className="mt-14 space-y-14">
-            {servicePricing.map((group, gi) => (
+            {allServicePricing.map((group, gi) => (
               <div key={group.category}>
                 <motion.h3
                   initial={{ opacity: 0, x: -20 }}
