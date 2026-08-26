@@ -1,12 +1,12 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Check, X, Phone, Star } from "lucide-react";
+import { ArrowRight, Check, Phone } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
 import { config } from "@/lib/config";
 import { FAQItem } from "@/components/ui/FAQItem";
-import { pricingPlans, pricingFaqs } from "@/data/pricing";
+import { pricingFaqs } from "@/data/pricing";
 import { servicePricing } from "@/data/servicePricing";
 import ServiceItemBuyer from "@/components/pricing/ServiceItemBuyer";
 import { useAuth } from "@/context/AuthContext";
@@ -29,106 +29,6 @@ export default function PricingPage() {
           />
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 leading-relaxed">
             Looking for an affordable digital marketing agency in Gorakhpur? As the top digital marketing agency gorakhpur businesses trust, Nexus Digital Marketing Agency Gorakhpur offers clear, budget-friendly packages. Explore our digital marketing services in Gorakhpur with transparent rates, no hidden fees, and zero long-term lock-ins.
-          </motion.p>
-        </div>
-      </section>
-
-      <section className="px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="max-w-6xl mx-auto">
-          {/* Urgency Alert */}
-          <div className="max-w-3xl mx-auto bg-brand-red/10 border border-brand-red/30 rounded-lg p-4 mb-10 flex items-center gap-4 animate-pulse-slow">
-            <div className="w-10 h-10 rounded-full bg-brand-red/20 flex items-center justify-center shrink-0">
-              <span className="text-xl">🔥</span>
-            </div>
-            <div>
-              <p className="text-white font-bold text-sm">High Demand Alert: Only 3 Spots Left This Month</p>
-              <p className="text-white/60 text-xs">We limit our client intake to maintain quality. Lock in your current pricing and secure your spot today before we close onboarding.</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-            {pricingPlans.map((plan, i) => (
-              <motion.div
-                key={plan.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
-                whileHover={{ y: -6 }}
-                className={`relative rounded-3xl p-7 flex flex-col transition-all duration-500 group ${
-                  plan.highlight
-                    ? "glass-card-brand border-brand-blue/50 shadow-[0_0_60px_rgba(220,38,38,0.25)] scale-[1.02] md:scale-105 hover:shadow-[0_0_90px_rgba(220,38,38,0.4)]"
-                    : "glass-card border-white/8 hover:border-brand-blue/50 hover:shadow-[0_0_50px_rgba(220,38,38,0.2)]"
-                }`}
-              >
-                {/* Dynamic Glow inside Card (contained) */}
-                <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
-                  <div className={`absolute -top-32 -right-32 w-64 h-64 rounded-full blur-[100px] transition-all duration-700 opacity-0 group-hover:opacity-100 ${plan.highlight ? "bg-brand-blue/60" : "bg-brand-blue/40"}`} />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
-
-                {plan.badge && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                    <span className="px-5 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-brand-blue-dark via-brand-blue to-brand-blue-light text-white shadow-[0_4px_20px_rgba(220,38,38,0.4)] inline-flex items-center gap-1.5 whitespace-nowrap">
-                      <Star className="w-3 h-3 fill-white" /> {plan.badge}
-                    </span>
-                  </div>
-                )}
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-white mb-1">{plan.name}</h2>
-                  <p className="text-white/45 text-sm">{plan.tagline}</p>
-                </div>
-                <div className="mb-8 pb-8 border-b border-white/8">
-                  <div className="flex items-baseline gap-1 flex-wrap">
-                    <span className="text-3xl md:text-4xl font-black text-white">{plan.priceRange}</span>
-                    <span className="text-white/40 text-sm">{plan.period}</span>
-                  </div>
-                  <p className="text-xs text-white/25 mt-2">+ applicable GST</p>
-                </div>
-                <ul className="space-y-3 flex-1 mb-8">
-                  {plan.features.map((f) => (
-                    <li key={f.text} className={`flex items-start gap-3 text-sm ${f.included ? "text-white/70" : "text-white/25"}`}>
-                      {f.included
-                        ? <Check className="w-4 h-4 text-brand-blue-light shrink-0 mt-0.5" />
-                        : <X className="w-4 h-4 text-white/20 shrink-0 mt-0.5" />
-                      }
-                      <span className={f.included ? "" : "line-through"}>{f.text}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="space-y-2.5">
-                  <button
-                    onClick={() => {
-                      addToCart({
-                        id: plan.id,
-                        title: plan.name,
-                        price: plan.priceRange,
-                        numericPrice: plan.priceInr,
-                        description: plan.tagline,
-                      });
-                    }}
-                    className={`w-full ${plan.highlight ? "btn-primary" : "btn-secondary"} justify-center text-sm py-3 font-bold`}
-                  >
-                    🛒 Add to Cart
-                  </button>
-
-                  <Link
-                    href="/cart"
-                    className="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-white/80 font-semibold text-xs flex items-center justify-center gap-2 border border-white/10 transition-all"
-                  >
-                    View Cart <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-
-                <p className="text-center text-[11px] text-white/30 mt-3">
-                  🔥 Join 200+ businesses growing with us — live in 24h
-                </p>
-              </motion.div>
-            ))}
-          </div>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-center text-white/30 text-sm mt-10">
-            All plans include onboarding, strategy session, and a dedicated account manager. Prices may vary based on scope.
-          </motion.p>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-center text-white/25 text-xs mt-3">
-            *Note: Ad budgets are paid directly to platforms and are not included in service fees.
           </motion.p>
         </div>
       </section>
@@ -190,11 +90,11 @@ export default function PricingPage() {
                           <p className="text-lg font-black text-white">₹{item.agencyInr.toLocaleString("en-IN")}</p>
                           <p className="text-[10px] text-white/35">{item.cycle === "monthly" ? "per month" : "one-time"}</p>
                         </div>
-                  </div>
-                  <ServiceItemBuyer item={item} />
-                  <p className="text-[11px] text-white/35 leading-relaxed border-t border-white/6 pt-3">
-                    {item.disclaimer}
-                  </p>
+                      </div>
+                      <ServiceItemBuyer item={item} />
+                      <p className="text-[11px] text-white/35 leading-relaxed border-t border-white/6 pt-3">
+                        {item.disclaimer}
+                      </p>
                     </motion.div>
                   ))}
                 </div>
