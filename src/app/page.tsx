@@ -55,7 +55,7 @@ export default function HomePage() {
                 </span>
               </motion.div>
 
-              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.4rem,5.5vw,2.3rem)] font-bold text-white leading-[1.2] tracking-[-0.03em] mb-5 break-words">
+              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.8rem,6vw,2.3rem)] font-bold text-white leading-[1.2] tracking-[-0.03em] mb-5 break-words">
                 <motion.span
                   initial="hidden"
                   animate="show"
