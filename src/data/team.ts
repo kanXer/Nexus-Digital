@@ -73,25 +73,6 @@ export const teamMembers: TeamMember[] = [
       instagram: "https://www.instagram.com/pandit_amitabh",
     },
   },
-  {
-    id: "sakshi",
-    name: "Sakshi Mishra",
-    role: "Social Media Influencer & Brand Voice",
-    bio: "Giving your brand a powerful voice and authentic face through engaging reels, on-camera presence, and high-converting influencer campaigns.",
-    avatar: "SM",
-    photo: "/team/sakshi.jpeg",
-    email: "sakshimishra.nexus@gmail.com",
-    phone: "+919696262007",
-    skills: [
-      "Brand Voice & Face",
-      "Reels & On-Camera",
-      "Influencer Marketing",
-      "Social Engagement",
-    ],
-    socials: {
-      instagram: "https://www.instagram.com/sakshigkp25",
-    },
-  },
 ];
 
 export const coreValues = [
