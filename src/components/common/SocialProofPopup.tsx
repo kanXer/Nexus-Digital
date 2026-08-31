@@ -143,14 +143,14 @@ export function SocialProofPopup() {
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={{ opacity: 0, x: -30, scale: 0.94 }}
           transition={{ type: "spring", stiffness: 340, damping: 28 }}
-          className="always-dark fixed bottom-6 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs lg:max-w-none lg:w-[310px]"
+          className="fixed bottom-6 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs lg:max-w-none lg:w-[310px]"
         >
           <Link
             href="/enquiry#enquiry-form"
             className="block relative rounded-2xl overflow-hidden group cursor-pointer"
             style={{
-              background: "linear-gradient(135deg, rgba(20, 20, 25, 0.98) 0%, rgba(10, 10, 15, 0.98) 100%)",
-              border: "1px solid rgba(255,255,255,0.1)",
+              background: "linear-gradient(135deg, rgba(20,20,25,0.98) 0%, rgba(10,10,15,0.98) 100%)",
+              border: "1px solid rgba(255,255,255,0.12)",
               boxShadow: `0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05), 0 4px 20px ${ev.glow}`,
             }}
           >
@@ -177,7 +177,19 @@ export function SocialProofPopup() {
                 e.stopPropagation();
                 setDismissed(true);
               }}
-              className="absolute top-2.5 right-2.5 z-20 w-5 h-5 rounded-full bg-white/8 flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/15 transition-all"
+              className="absolute top-2.5 right-2.5 z-20 w-5 h-5 rounded-full flex items-center justify-center transition-all"
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                color: "rgba(255,255,255,0.4)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "rgba(255,255,255,0.8)";
+                e.currentTarget.style.background = "rgba(255,255,255,0.16)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "rgba(255,255,255,0.4)";
+                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+              }}
             >
               <X className="w-3 h-3" />
             </button>
@@ -187,7 +199,7 @@ export function SocialProofPopup() {
               <div className="flex items-start gap-3">
                 {/* Icon avatar */}
                 <div
-                  className="relative shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+                  className="relative shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{
                     background: `linear-gradient(135deg, ${ev.color}22, ${ev.color}44)`,
                     border: `1px solid ${ev.color}55`,
@@ -197,8 +209,8 @@ export function SocialProofPopup() {
                   <Icon className="w-5 h-5" style={{ color: ev.color }} />
                   {/* Live pulse dot */}
                   <span
-                    className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-[#0f0f14]"
-                    style={{ background: ev.color }}
+                    className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2"
+                    style={{ background: ev.color, borderColor: "#0f0f14" }}
                   >
                     <span
                       className="absolute inset-0 rounded-full animate-ping opacity-75"
@@ -209,12 +221,12 @@ export function SocialProofPopup() {
 
                 {/* Text content */}
                 <div className="min-w-0 flex-1 pr-4">
-                  <p className="text-[12px] leading-snug text-white/60">
-                    <span className="font-semibold text-white">{ev.name}</span>
+                  <p className="text-[12px] leading-snug" style={{ color: "rgba(255,255,255,0.65)" }}>
+                    <span className="font-semibold" style={{ color: "#ffffff" }}>{ev.name}</span>
                     {" "}from{" "}
                     <span style={{ color: ev.color }} className="font-medium">{ev.city}</span>
                   </p>
-                  <p className="text-[12.5px] font-semibold text-white mt-0.5 leading-snug">
+                  <p className="text-[12.5px] font-semibold mt-0.5 leading-snug" style={{ color: "#ffffff" }}>
                     {ev.action}
                   </p>
                 </div>
@@ -232,11 +244,12 @@ export function SocialProofPopup() {
                   ✦ {ev.result}
                 </span>
                 <span
-                  className="flex items-center gap-1 text-[10px] font-semibold text-white/40 group-hover:text-white/70 transition-colors"
+                  className="flex items-center gap-1 text-[10px] font-semibold transition-colors"
+                  style={{ color: "rgba(255,255,255,0.45)" }}
                 >
                   Start now
                   <ArrowUpRight
-                    className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                    className="w-3 h-3"
                     style={{ color: ev.color }}
                   />
                 </span>
@@ -244,8 +257,8 @@ export function SocialProofPopup() {
 
               {/* Timestamp + progress */}
               <div className="mt-2.5 flex items-center justify-between">
-                <span className="text-[10px] text-white/25">{ev.ago}</span>
-                <span className="text-[10px] text-white/25 flex items-center gap-1">
+                <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.28)" }}>{ev.ago}</span>
+                <span className="text-[10px] flex items-center gap-1" style={{ color: "rgba(255,255,255,0.28)" }}>
                   <span
                     className="inline-block w-1.5 h-1.5 rounded-full animate-pulse"
                     style={{ background: ev.color }}
@@ -256,7 +269,7 @@ export function SocialProofPopup() {
             </div>
 
             {/* Progress bar at bottom */}
-            <div className="h-[2px] w-full bg-white/5">
+            <div className="h-[2px] w-full" style={{ background: "rgba(255,255,255,0.08)" }}>
               <motion.div
                 className="h-full"
                 style={{ width: `${progress}%`, background: ev.color }}
