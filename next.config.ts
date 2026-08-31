@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://ui-avatars.com https://*.firebasestorage.app https://www.google-analytics.com https://www.gstatic.com https://lh3.googleusercontent.com https://*.googleusercontent.com",
               "font-src 'self' data:",
               "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://*.firebaseio.com https://*.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://sdk.cashfree.com https://*.cloudfunctions.net https://www.google.com https://vercel.live wss: wss://*.firebaseio.com",
-              "frame-src https://sdk.cashfree.com https://checkout.cashfree.com https://*.firebaseapp.com https://accounts.google.com https://accounts.youtube.com https://vercel.live",
+              "frame-src https://sdk.cashfree.com https://checkout.cashfree.com https://payments.cashfree.com https://*.firebaseapp.com https://accounts.google.com https://accounts.youtube.com https://vercel.live",
               "media-src 'self' blob: data:",
             ].join("; "),
           },
