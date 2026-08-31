@@ -48,15 +48,7 @@ export async function POST(req: Request) {
       returnUrl,
     });
 
-    // Cashfree hosted checkout URL — production & sandbox both use the same
-    // payments.cashfree.com host (NOT dashboard.cashfree.com).
-    const checkoutUrl = `https://payments.cashfree.com/pay/${order.paymentSessionId}`;
-
-    return NextResponse.json({
-      demo: false,
-      ...order,
-      checkoutUrl,
-    });
+    return NextResponse.json({ demo: false, ...order });
   } catch (e: any) {
     return NextResponse.json(
       { error: e?.message || "Failed to initiate Cashfree payment" },
