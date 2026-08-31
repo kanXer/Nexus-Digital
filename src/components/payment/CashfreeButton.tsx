@@ -133,19 +133,47 @@ export default function CashfreeButton({
           : "sandbox";
 
       const cashfree = CashfreeCtor({ mode });
-      cashfree.checkout({
-        paymentSessionId: data.paymentSessionId,
-        redirectTarget: "_self",
-      });
+      // checkout() returns a Promise; for redirect checkout ("_self") it resolves
+      // when navigation is initiated (result.redirect) or with an error.
+      cashfree
+        .checkout({
+          paymentSessionId: data.paymentSessionId,
+          redirectTarget: "_self",
+        })
+        .then((result: any) => {
+          if (!mountedRef.current) return;
+          if (result?.error) {
+            setStatus("error");
+            setMessage(
+              result.error.message ||
+                result.error.code ||
+                "Checkout could not be opened."
+            );
+          }
+          // result.redirect / result.paymentDetails → navigation happening
+        })
+        .catch((err: any) => {
+          if (!mountedRef.current) return;
+          console.error("Cashfree checkout error:", err);
+          setStatus("error");
+          setMessage(
+            err?.message ||
+              "Checkout could not be opened. If using a live domain, make sure it is whitelisted in the Cashfree dashboard."
+          );
+        });
 
-      // If we get here but no redirect happened shortly after, surface an error
-      // instead of leaving the button stuck on "processing".
-      setTimeout(() => {
+      // Fallback in case navigation never starts (e.g. domain not whitelisted).
+      // Long timeout so a slow checkout page still gets a chance to load.
+      const t = setTimeout(() => {
         if (mountedRef.current) {
           setStatus("error");
-          setMessage("Checkout did not open. Please disable popup blockers and try again.");
+          setMessage(
+            "Checkout did not open. For live payments, verify your domain is whitelisted in the Cashfree dashboard, then try again."
+          );
         }
-      }, 8000);
+      }, 20000);
+      window.addEventListener("pagehide", () => clearTimeout(t));
+      if (sessionStorage) sessionStorage.setItem("__cf_redirecting", "1");
     } catch (e: any) {
       if (!mountedRef.current) return;
       setStatus("error");
