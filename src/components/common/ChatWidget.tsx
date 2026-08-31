@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { Bot, Send, X, Sparkles, MessageCircle, Mail, Phone, Maximize2, Minimize2, Trash2, ArrowDown, User, ChevronDown, ChevronUp } from "lucide-react";
+import { Bot, Send, X, Sparkles, MessageCircle, Mail, Phone, Maximize2, Minimize2, Trash2, ArrowDown, User, ChevronDown, ChevronUp, LogIn } from "lucide-react";
 import { config } from "@/lib/config";
+import { useAuth } from "@/context/AuthContext";
 
 type ChatMsg = { role: "user" | "assistant"; content: string };
 
@@ -47,6 +48,15 @@ const WELCOME: ChatMsg = {
   content:
     "Namaste! I'm Friday, your AI assistant. Want more leads & sales? I can show you a plan you can start paying for instantly — or book a free consultation. What can I help you grow today?",
 };
+
+// Guest "free" message allowance before we ask them to sign in.
+const GUEST_LIMIT = 5;
+const GUEST_KEY = "nexus_chat_guest_count";
+
+// A short, human "login required" prompt shown once a guest uses up their
+// free messages. Kept concise and encouraging, not a hard stop.
+const LOGIN_PROMPT =
+  "You've used your 5 free messages — you've been super helpful to help, so great stuff! 🚀 To keep chatting (and get personalized answers), just sign in — it's free and takes seconds. Your conversation will continue right here.";
 
 // All service categories exactly as shown on the Services page.
 const SERVICE_CATEGORIES = [
@@ -146,6 +156,7 @@ function UserAvatar() {
 }
 
 export function ChatWidget() {
+  const { user, userProfile, openAuthModal } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([WELCOME]);
   const [input, setInput] = useState("");
@@ -165,6 +176,44 @@ export function ChatWidget() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const openedRef = useRef(false);
   const leadCapturedRef = useRef(false);
+
+  // Guest free-message allowance — tracked in localStorage so the limit cannot
+  // be beaten by simply refreshing. Logged-in users are never limited.
+  const [guestCount, setGuestCount] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    const saved = Number(window.localStorage.getItem(GUEST_KEY) || 0);
+    return Number.isFinite(saved) && saved > 0 ? saved : 0;
+  });
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Persist the guest counter; reset it the moment a user signs in.
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(GUEST_KEY, String(guestCount));
+    } catch { /* storage unavailable */ }
+  }, [guestCount]);
+
+  useEffect(() => {
+    if (user) {
+      setGuestCount(0);
+      setShowLoginPrompt(false);
+      try { window.localStorage.removeItem(GUEST_KEY); } catch { /* noop */ }
+    }
+  }, [user]);
+
+  // First name used for a personalized greeting + sent to the AI.
+  const firstName =
+    userProfile.name?.trim().split(/\s+/)[0] ||
+    user?.displayName?.trim().split(/\s+/)[0] ||
+    "";
+
+  const buildWelcome = useCallback((): ChatMsg => {
+    if (!firstName) return WELCOME;
+    return {
+      role: "assistant",
+      content: `Namaste ${firstName}! 👋 I'm Friday, your AI assistant. Great to see you! Want to grow your business with more leads & sales? I can show you a plan you can start paying for instantly — or book a free consultation. How can I help you today, ${firstName}?`,
+    };
+  }, [firstName]);
 
   // Position the launcher just above whichever floating buttons are currently
   // visible, so hidden buttons never leave a dead gap beneath it.
@@ -283,7 +332,7 @@ export function ChatWidget() {
 
 const clearHistory = () => {
   followRef.current = true;
-  setMessages([WELCOME]);
+  setMessages([buildWelcome()]);
   setEnquiry({ active: false, step: 0, data: {} });
   setEnquiryOptions([]);
   setFollowUp(false);
@@ -309,7 +358,7 @@ const clearHistory = () => {
     setOpen((o) => !o);
     if (!openedRef.current) {
       openedRef.current = true;
-      setMessages([WELCOME]);
+      setMessages([buildWelcome()]);
     }
   };
 
@@ -354,6 +403,22 @@ const clearHistory = () => {
     const text = (preset ?? input).trim();
     if (!text || loading) return;
     followRef.current = true; // new message — resume following the bottom
+
+    // ── FREE-MESSAGE LIMIT FOR GUESTS ──
+    // Visitors who haven't signed in get GUEST_LIMIT messages. After that we ask
+    // them to log in, leaving their typed text in the box so they don't lose it.
+    if (!user) {
+      if (guestCount >= GUEST_LIMIT) {
+        setShowLoginPrompt(true);
+        setMessages((m) => {
+          if (m.some((x) => x.role === "assistant" && x.content === LOGIN_PROMPT)) return m;
+          return [...m, { role: "assistant", content: LOGIN_PROMPT }];
+        });
+        return;
+      }
+      setGuestCount((c) => c + 1);
+    }
+
     const next: ChatMsg[] = [...messages, { role: "user", content: text }];
     setMessages(next);
     setInput("");
@@ -386,6 +451,7 @@ const clearHistory = () => {
           history: next.slice(0, -1),
           enquiry,
           stream: true,
+          name: firstName || "",
         }),
       });
 
@@ -665,7 +731,7 @@ const clearHistory = () => {
                   </p>
                   <p className="hidden sm:flex text-[11px] text-white/45 items-center gap-1 mt-0.5">
                     <Sparkles className="w-3 h-3 text-brand-blue-light" />
-                    Digital Marketing Assistant
+                    {firstName ? `Here to help you grow, ${firstName}` : "Digital Marketing Assistant"}
                   </p>
                 </div>
                 <button
@@ -823,7 +889,7 @@ const clearHistory = () => {
               {/* Suggestion chips — quick replies on first screen, contextual follow-ups after each reply.
                   MOBILE ONLY: collapsible via chevron button + single swipeable row.
                   DESKTOP: always visible, wrapped, no toggle (original behaviour). */}
-              {!enquiry.active && !followUp && suggestions.length > 0 && !loading && (
+              {!enquiry.active && !followUp && suggestions.length > 0 && !loading && !showLoginPrompt && (
                 <div className="shrink-0 px-4 pb-2 pt-1">
                   {/* Mobile-only control row */}
                   <div className="flex items-center justify-between gap-2 md:hidden">
@@ -864,20 +930,48 @@ const clearHistory = () => {
 
               {/* Input */}
               <div className="p-3 sm:p-3.5 border-t border-white/10 chat-surface-input shrink-0">
+                {/* Login gate — shown after a guest uses their free messages */}
+                {showLoginPrompt && !user && (
+                  <div className="mb-3 rounded-2xl border border-brand-blue/30 bg-brand-blue/10 p-3 text-center">
+                    <p className="text-[12.5px] text-white/85 mb-2.5 font-medium">
+                      Sign in to keep chatting with Friday
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        type="button"
+                        onClick={openAuthModal}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-gradient-brand text-white text-[13px] font-bold hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <LogIn className="w-4 h-4" />
+                        Log In / Sign Up
+                      </button>
+                      <a
+                        href={WHATSAPP_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold text-green-300 hover:bg-white/10 transition-all"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" fill="currentColor" />
+                        Continue on WhatsApp instead
+                      </a>
+                    </div>
+                  </div>
+                )}
                 <div className="relative flex items-center gap-2 rounded-full chat-field p-1.5 pl-4 transition-all focus-within:border-brand-blue-light/60 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12),0_4px_20px_rgba(220,38,38,0.15)]">
                   <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={onKeyDown}
-                    placeholder="Type your message..."
-                    className="chat-input flex-1 bg-transparent text-[13.5px] text-white focus:outline-none min-w-0"
+                    placeholder={firstName ? `Hi ${firstName}, type your message...` : "Type your message..."}
+                    disabled={showLoginPrompt && !user}
+                    className="chat-input flex-1 bg-transparent text-[13.5px] text-white focus:outline-none min-w-0 disabled:opacity-50"
                     maxLength={1500}
                   />
                   <button
                     type="button"
                     onClick={() => send()}
-                    disabled={loading || !input.trim()}
+                    disabled={loading || !input.trim() || (showLoginPrompt && !user)}
                     aria-label="Send message"
                     className="w-9 h-9 rounded-full bg-gradient-brand flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-90 transition-all cursor-pointer shadow-glow-sm"
                   >

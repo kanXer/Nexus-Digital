@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowRight, CheckCircle, Star, X, CheckIcon, Phone,
-  TrendingUp, Users, Shield, Zap,
+  TrendingUp, Users, Shield, Zap, AlertTriangle, MessageCircle, Target, Rocket,
 } from "lucide-react";
+import { trackEvent, WHATSAPP_AUDIT, waLink } from "@/lib/analytics";
 import { config } from "@/lib/config";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
@@ -107,6 +108,67 @@ export default function HomeBelowFold() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══ PROBLEM → SOLUTION ═══ */}
+      <section className="section-padding relative">
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
+        <div className="container-custom relative z-10">
+          <SectionHeading
+            badge="Sound Familiar?"
+            title="Sick of Spending on Marketing "
+            highlight="That Doesn't Bring Leads?"
+            subtitle="Most local businesses face the same frustrating roadblocks. Here's what goes wrong — and how we fix it."
+          />
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { icon: AlertTriangle, title: "Traffic but no leads", desc: "You get visits, but nobody enquires or buys." },
+              { icon: TrendingUp, title: "Ads costing too much", desc: "Money burns on clicks that never convert to customers." },
+              { icon: Shield, title: "Invisible on Google", desc: "Customers can't find you when they search locally." },
+              { icon: Users, title: "Weak social presence", desc: "Low followers, low engagement, low trust." },
+              { icon: Target, title: "Landing pages that miss", desc: "Good traffic arrives, but the page fails to convert." },
+              { icon: MessageCircle, title: "Manual lead follow-up", desc: "Slow replies lose hot enquiries to competitors." },
+              { icon: Zap, title: "No CRM or automation", desc: "Leads slip through the cracks with no system to catch them." },
+              { icon: Rocket, title: "No clear strategy", desc: "Random marketing with no plan you can measure or scale." },
+            ].map(({ icon: Icon, title, desc }, i) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
+                className="glass-card rounded-2xl p-5 border border-white/8 hover:border-brand-blue/30 transition-all duration-300"
+              >
+                <Icon className="w-5 h-5 text-brand-blue-light mb-3" />
+                <h3 className="text-white font-semibold text-sm mb-1">{title}</h3>
+                <p className="text-white/45 text-xs leading-relaxed">{desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
+            className="mt-10 rounded-2xl border border-brand-blue/30 bg-gradient-to-r from-brand-blue/15 to-purple-600/10 p-6 md:p-8 text-center"
+          >
+            <h3 className="text-xl md:text-2xl font-bold text-white mb-2">The good news? Every one of these is fixable.</h3>
+            <p className="text-white/60 text-sm md:text-base mb-6 max-w-2xl mx-auto leading-relaxed">
+              Nexus Digital builds a complete lead-generation system — ads, SEO, social, website and automation — working together to bring you more enquiries and customers, measurably.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/enquiry#enquiry-form"
+                onClick={() => trackEvent("service_cta_click", { cta: "get_free_growth_audit", location: "problem_solution" })}
+                className="btn-primary px-8 py-3.5 text-sm group"
+              >
+                Get Your Free Growth Audit
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -435,6 +497,48 @@ export default function HomeBelowFold() {
         </div>
       </section>
 
+      {/* ═══ HOW IT WORKS ═══ */}
+      <section className="section-padding bg-white/2 border-y border-white/6 relative overflow-hidden">
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
+        <div className="container-custom relative z-10">
+          <SectionHeading badge="How It Works" title="From First Message to " highlight="Full Growth" subtitle="A clear, fast path — no jargon, no guesswork." />
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+            {[
+              { step: "01", title: "Tell us about your business", desc: "A quick 60-second enquiry — that's all it takes." },
+              { step: "02", title: "Get your growth audit", desc: "We review your online presence and find your opportunities." },
+              { step: "03", title: "Build the strategy", desc: "Ads + SEO + content + automation mapped to your goals." },
+              { step: "04", title: "Launch & optimize", desc: "We ship fast, then continuously improve with real data." },
+              { step: "05", title: "Scale", desc: "We double down on what's working to grow your revenue." },
+            ].map((s, i) => (
+              <motion.div
+                key={s.step}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
+                className="relative glass-card rounded-2xl p-6 text-center hover:border-brand-blue/30 transition-all duration-300"
+              >
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light flex items-center justify-center mx-auto mb-4 font-black text-white text-lg shadow-glow-sm">
+                  {s.step}
+                </div>
+                <h3 className="text-white font-semibold text-sm mb-2">{s.title}</h3>
+                <p className="text-white/45 text-xs leading-relaxed">{s.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link
+              href="/enquiry#enquiry-form"
+              onClick={() => trackEvent("service_cta_click", { cta: "get_free_growth_audit", location: "how_it_works" })}
+              className="btn-primary px-8 py-3.5 text-sm group"
+            >
+              Start Step 1 — Free Audit
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ═══ CTA ═══ */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/20 via-transparent to-purple-600/15" />
@@ -460,15 +564,21 @@ export default function HomeBelowFold() {
             Trusted by 200+ businesses across India 🇮🇳
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/contact#book-consultation" className="btn-secondary text-base px-8 py-4 group">
-              Book Free Consultation
+            <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("hero_cta_click", { cta: "get_free_growth_audit", location: "final_cta" })} className="btn-primary text-base px-8 py-4 group">
+              Get Free Growth Audit
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-            <Link href="/pricing" className="btn-primary text-base px-8 py-4 group">
-              Pay &amp; Get Started
-              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
-            </Link>
-            <a href={`tel:${config.phone}`} className="btn-secondary text-base px-8 py-4">
+            <a
+              href={waLink(WHATSAPP_AUDIT)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent("whatsapp_click", { cta: "whatsapp_us", location: "final_cta" })}
+              className="btn-secondary text-base px-8 py-4 group"
+            >
+              <MessageCircle className="w-4 h-4 text-green-400" />
+              WhatsApp Us
+            </a>
+            <a href={`tel:${config.phone}`} onClick={() => trackEvent("phone_click", { location: "final_cta" })} className="btn-secondary text-base px-8 py-4">
               <Phone className="w-4 h-4" />
               Call Us Now
             </a>

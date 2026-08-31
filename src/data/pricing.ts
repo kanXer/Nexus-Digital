@@ -93,26 +93,6 @@ export const pricingPlans: PricingPlan[] = [
     cta: "Book Free Consultation",
     ctaLink: "/contact#book-consultation",
   },
-  {
-    id: "test",
-    name: "\u20B91 Test Plan",
-    tagline: "Gateway testing plan \u2014 verify checkout end-to-end",
-    priceRange: "\u20B91",
-    period: "/month",
-    priceInr: 1,
-    badge: "Test",
-    highlight: false,
-    features: [
-      { text: "Full checkout + invoice flow", included: true },
-      { text: "Real gateway transaction test (\u20B91)", included: true },
-      { text: "Instant order confirmation", included: true },
-      { text: "Dedicated account manager", included: false },
-      { text: "Ads management", included: false },
-      { text: "SEO optimisation", included: false },
-    ],
-    cta: "Test Checkout \u2014 Pay \u20B91",
-    ctaLink: "/checkout?plan=test",
-  },
 ];
 
 export const pricingFaqs = [

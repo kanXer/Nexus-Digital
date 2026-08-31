@@ -19,7 +19,7 @@ const transporter = SMTP_USER && SMTP_PASS
 
 export interface ContactFormData {
   name: string;
-  email: string;
+  email?: string;
   phone: string;
   business?: string;
   service: string;
@@ -73,7 +73,7 @@ async function sendMail(to: string, subject: string, html: string) {
 export async function notifyAdminContact(data: ContactFormData) {
   const rows = [
     { label: "Name", value: data.name },
-    { label: "Email", value: data.email },
+    { label: "Email", value: data.email || "\u2014" },
     { label: "Phone", value: data.phone },
     ...(data.business ? [{ label: "Business", value: data.business }] : []),
     { label: "Service", value: data.service },
@@ -90,7 +90,7 @@ export async function notifyAdminContact(data: ContactFormData) {
 export async function notifyAdminEnquiry(data: ContactFormData) {
   const rows = [
     { label: "Name", value: data.name },
-    { label: "Email", value: data.email },
+    { label: "Email", value: data.email || "\u2014" },
     { label: "Phone", value: data.phone },
     ...(data.business ? [{ label: "Business", value: data.business }] : []),
     { label: "Service", value: data.service },
@@ -107,7 +107,7 @@ export async function notifyAdminEnquiry(data: ContactFormData) {
 export async function notifyAdminBooking(data: ContactFormData & { date?: string; time?: string }) {
   const rows = [
     { label: "Name", value: data.name },
-    { label: "Email", value: data.email },
+    { label: "Email", value: data.email || "\u2014" },
     { label: "Phone", value: data.phone },
     ...(data.business ? [{ label: "Business", value: data.business }] : []),
     { label: "Service", value: data.service },

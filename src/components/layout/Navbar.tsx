@@ -12,16 +12,17 @@ import { useAuth } from "@/context/AuthContext";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/services", label: "Services" },
+  { href: "/case-studies", label: "Results" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/about", label: "About" },
+  { href: "/faq", label: "FAQ" },
   {
-    label: "Company",
+    label: "More",
     children: [
       { href: "/contact", label: "Contact" },
-      { href: "/about", label: "About Us" },
+      { href: "/enquiry", label: "Get Free Audit" },
       { href: "/portfolio", label: "Portfolio" },
-      { href: "/case-studies", label: "Case Studies" },
       { href: "/testimonials", label: "Testimonials" },
-      { href: "/faq", label: "FAQ" },
     ],
   }
 ];
@@ -208,11 +209,10 @@ export default function Navbar() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center text-[11px] font-bold text-white uppercase">
-                        {userProfile.name ? userProfile.name.slice(0, 2) : user.email ? user.email.slice(0, 2) : "U"}
+                      <div className="w-7 h-7 rounded-full bg-brand-blue flex items-center justify-center text-[11px] font-bold text-white uppercase">
+                        {userProfile.name?.trim().split(" ")[0]?.[0] || user.displayName?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
                       </div>
                     )}
-                    <span className="max-w-[90px] truncate">{userProfile.name || user.displayName?.split(" ")[0] || user.email?.split("@")[0] || "Account"}</span>
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -229,8 +229,8 @@ export default function Navbar() {
                           {user.photoURL ? (
                             <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-blue/30 shrink-0" referrerPolicy="no-referrer" />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-gradient-brand flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
-                              {userProfile.name ? userProfile.name.slice(0, 2) : "U"}
+                            <div className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
+                              {userProfile.name?.trim().split(" ")[0]?.[0] || user.displayName?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
                             </div>
                           )}
                           <div className="min-w-0">
@@ -286,7 +286,7 @@ export default function Navbar() {
               )}
 
               <Link href="/enquiry#enquiry-form" className="btn-primary text-sm px-5 py-2.5 group">
-                Enquiry
+                Get Free Audit
                 <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
               </Link>
             </div>
@@ -307,8 +307,8 @@ export default function Navbar() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-brand flex items-center justify-center text-[11px] font-bold text-white uppercase">
-                        {userProfile.name ? userProfile.name.slice(0, 2) : user.email ? user.email.slice(0, 2) : "U"}
+                      <div className="w-full h-full bg-brand-red flex items-center justify-center text-[12px] font-bold text-white uppercase">
+                        {userProfile.name?.trim().split(" ")[0]?.[0] || user.displayName?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
                       </div>
                     )}
                   </button>
@@ -326,8 +326,8 @@ export default function Navbar() {
                           {user.photoURL ? (
                             <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-blue/30 shrink-0" referrerPolicy="no-referrer" />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-gradient-brand flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
-                              {userProfile.name ? userProfile.name.slice(0, 2) : "U"}
+                            <div className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
+                              {userProfile.name?.trim().split(" ")[0]?.[0] || user.displayName?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
                             </div>
                           )}
                           <div className="min-w-0">

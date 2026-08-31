@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 import { config } from "@/lib/config";
+import { trackEvent, WHATSAPP_DEFAULT } from "@/lib/analytics";
 
 const WHATSAPP_NUMBER = config.whatsapp;
-const WHATSAPP_MESSAGE = "Hi! I'd like to learn more about your digital marketing services.";
+const WHATSAPP_MESSAGE = WHATSAPP_DEFAULT;
 
 // Vertical positions (px from bottom) for the floating button stack.
 // BackToTop sits at 24px (bottom-most) on all screens.
@@ -33,6 +34,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat on WhatsApp"
+      onClick={() => trackEvent("whatsapp_click", { location: "floating_button" })}
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ delay: 2, type: "spring", stiffness: 200, damping: 15 }}

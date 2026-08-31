@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Mail, Phone, MapPin, ArrowRight, CheckCircle, Loader2, X } from "lucide-react";
 import { config } from "@/lib/config";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
+import { trackEvent } from "@/lib/analytics";
 
 const footerLinks = {
   quickLinks: [
@@ -131,11 +132,11 @@ export default function Footer() {
               Get a free consultation and a custom growth plan from the best digital marketing agency in Gorakhpur — no cost, no pressure, no long-term contracts.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/enquiry#enquiry-form" className="btn-primary px-7 py-3 text-sm group">
-                Send an Enquiry
+              <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("hero_cta_click", { cta: "get_free_growth_audit", location: "footer" })} className="btn-primary px-7 py-3 text-sm group">
+                Get Free Growth Audit
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
-              <a href={`tel:${config.phone}`} className="btn-secondary px-7 py-3 text-sm">
+              <a href={`tel:${config.phone}`} onClick={() => trackEvent("phone_click", { location: "footer" })} className="btn-secondary px-7 py-3 text-sm">
                 <Phone className="w-4 h-4" />
                 Call Us Now
               </a>
