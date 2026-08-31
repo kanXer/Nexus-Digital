@@ -48,7 +48,16 @@ export async function POST(req: Request) {
       returnUrl,
     });
 
-    return NextResponse.json({ demo: false, ...order });
+    const checkoutBase =
+      process.env.CASHFREE_ENV === "production"
+        ? "https://dashboard.cashfree.com"
+        : "https://sandbox.cashfree.com";
+
+    return NextResponse.json({
+      demo: false,
+      ...order,
+      checkoutUrl: `${checkoutBase}/pay/${order.paymentSessionId}`,
+    });
   } catch (e: any) {
     return NextResponse.json(
       { error: e?.message || "Failed to initiate Cashfree payment" },
