@@ -48,7 +48,7 @@ interface CheckoutPlan {
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const planKey = (searchParams.get("plan") || "growth").toLowerCase();
-  const { user, loading, userProfile, openAuthModal, openProfileModal, recordNewOrder, cart } = useAuth();
+  const { user, loading, userProfile, openAuthModal, openProfileModal, openOrders, recordNewOrder, cart } = useAuth();
   const router = useRouter();
 
   // While Firebase is resolving the session, show a neutral spinner —
