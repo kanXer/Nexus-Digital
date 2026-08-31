@@ -149,7 +149,7 @@ export function SocialProofPopup() {
             href="/enquiry#enquiry-form"
             className="block relative rounded-2xl overflow-hidden group cursor-pointer"
             style={{
-              background: "linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.97) 100%)",
+              background: "linear-gradient(135deg, rgba(20, 20, 25, 0.98) 0%, rgba(10, 10, 15, 0.98) 100%)",
               border: "1px solid rgba(255,255,255,0.1)",
               boxShadow: `0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05), 0 4px 20px ${ev.glow}`,
             }}
