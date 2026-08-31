@@ -291,8 +291,22 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Mobile: Profile pic + hamburger */}
-            <div className="lg:hidden flex items-center gap-2">
+            {/* Mobile: Top Right Header Items */}
+            <div className="lg:hidden flex items-center gap-1.5">
+              {!user && (
+                <button
+                  onClick={openAuthModal}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-card border border-white/10 hover:border-white/20 text-xs font-bold text-white hover:bg-white/5 transition-all cursor-pointer"
+                >
+                  <User className="w-3.5 h-3.5 text-brand-blue-light" />
+                  <span className="hidden sm:inline">Sign In</span>
+                </button>
+              )}
+              
+              <div className="scale-90 origin-right">
+                <ThemeToggle />
+              </div>
+
               {user ? (
                 <div className="relative" ref={mobileUserMenuRef}>
                   <button
@@ -375,7 +389,7 @@ export default function Navbar() {
               ) : null}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/5 transition-colors"
                 aria-label="Toggle menu"
               >
                 {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -446,7 +460,39 @@ export default function Navbar() {
               </nav>
 
               <div className="p-6 border-t border-white/8 space-y-3">
-                {!user && (
+                {user ? (
+                  <div className="space-y-2">
+                    <p className="px-1 text-xs font-semibold uppercase tracking-[0.15em] text-white/30 mb-2">My Account</p>
+                    <button
+                      onClick={() => { setMobileOpen(false); openProfileModal(); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 hover:bg-white/10 text-white transition-colors"
+                    >
+                      <User className="w-4 h-4 text-brand-blue-light" /> Profile
+                    </button>
+                    <Link
+                      href="/cart"
+                      onClick={() => setMobileOpen(false)}
+                      className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 hover:bg-white/10 text-white transition-colors"
+                    >
+                      <span className="flex items-center gap-3">
+                        <ShoppingCart className="w-4 h-4 text-brand-blue-light" /> My Cart
+                      </span>
+                      {cart.length > 0 && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-brand-blue-light">{cart.length}</span>}
+                    </Link>
+                    <button
+                      onClick={() => { setMobileOpen(false); openOrders(); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 hover:bg-white/10 text-white transition-colors"
+                    >
+                      <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders & Plans
+                    </button>
+                    <button
+                      onClick={() => { setMobileOpen(false); logout(); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" /> Sign Out
+                    </button>
+                  </div>
+                ) : (
                   <button
                     onClick={() => { setMobileOpen(false); openAuthModal(); }}
                     className="w-full btn-primary py-3 rounded-xl justify-center font-bold text-sm"
@@ -454,9 +500,6 @@ export default function Navbar() {
                     <User className="w-4 h-4 mr-1.5" /> Sign In / Register
                   </button>
                 )}
-                <div className="flex items-center gap-2 pt-1">
-                  <ThemeToggle size="md" />
-                </div>
               </div>
             </motion.div>
           </>
