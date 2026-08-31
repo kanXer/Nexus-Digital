@@ -95,7 +95,7 @@ export default function CashfreeButton({
         process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true"
           ? "production"
           : "sandbox";
-      const cashfree = new CashfreeCtor({ mode });
+      const cashfree = CashfreeCtor({ mode });
       cashfree.checkout({
         paymentSessionId: data.paymentSessionId,
         redirectTarget: "_self",
