@@ -143,7 +143,7 @@ export function SocialProofPopup() {
           animate={{ opacity: 1, x: 0, scale: 1 }}
           exit={{ opacity: 0, x: -30, scale: 0.94 }}
           transition={{ type: "spring", stiffness: 340, damping: 28 }}
-          className="fixed bottom-6 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs lg:max-w-none lg:w-[310px]"
+          className="always-dark fixed bottom-6 left-4 z-40 w-[calc(100vw-2rem)] max-w-xs lg:max-w-none lg:w-[310px]"
         >
           <Link
             href="/enquiry#enquiry-form"
