@@ -45,31 +45,44 @@ export async function createCashfreeOrder(args: CashfreeOrderArgs) {
     order_meta: { return_url: args.returnUrl },
   };
 
-  const res = await fetch(`${BASE}/pg/orders`, {
-    method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify(body),
-  });
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok || !json?.payment_session_id) {
-    throw new Error(
-      json?.message || json?.details?.[0]?.description || "Cashfree order creation failed"
-    );
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const res = await fetch(`${BASE}/pg/orders`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json?.payment_session_id) {
+      throw new Error(
+        json?.message || json?.details?.[0]?.description || "Cashfree order creation failed"
+      );
+    }
+    return {
+      orderId: json.order_id as string,
+      paymentSessionId: json.payment_session_id as string,
+    };
+  } finally {
+    clearTimeout(timer);
   }
-  return {
-    orderId: json.order_id as string,
-    paymentSessionId: json.payment_session_id as string,
-  };
 }
 
 export async function getCashfreeOrderStatus(orderId: string) {
-  const res = await fetch(
-    `${BASE}/pg/orders/${encodeURIComponent(orderId)}`,
-    { method: "GET", headers: authHeaders() }
-  );
-  const json = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(json?.message || "Could not fetch Cashfree order status");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(
+      `${BASE}/pg/orders/${encodeURIComponent(orderId)}`,
+      { method: "GET", headers: authHeaders(), signal: controller.signal }
+    );
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(json?.message || "Could not fetch Cashfree order status");
+    }
+    return json;
+  } finally {
+    clearTimeout(timer);
   }
-  return json;
 }
