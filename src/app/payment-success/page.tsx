@@ -112,7 +112,8 @@ function SuccessContent() {
             currency: "INR",
             items: prod?.name || planId,
           });
-          router.replace(`/payment-success?plan=${encodeURIComponent(planId)}&txn=${txnId}`);
+          openOrders();
+          router.replace("/");
         } catch {
           setVerifyError(true);
         }

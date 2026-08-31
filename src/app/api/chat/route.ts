@@ -9,6 +9,11 @@ const NIM_API_KEY = process.env.NVIDIA_NIM_API_KEY || process.env.NIM_API_KEY ||
 const NIM_EMBED_MODEL = process.env.NIM_EMBED_MODEL || "nvidia/nemotron-3-embed-1b";
 const NIM_CHAT_MODEL = process.env.NIM_CHAT_MODEL || "meta/llama-3.1-8b-instruct";
 
+if (!NIM_API_KEY) {
+  console.warn("[chat] NVIDIA NIM API key is NOT set (NVIDIA_NIM_API_KEY / NIM_API_KEY). " +
+    "AI replies will fall back to the static helper message. Add a key to enable the live model.");
+}
+
 const DEFAULT_SITE = process.env.NEXT_PUBLIC_AGENCY_WEBSITE || "https://nexusdigitalmarketing.shop";
 const SITE_URL = DEFAULT_SITE.replace(/\/$/, "");
 
@@ -283,7 +288,7 @@ async function chatCompletion(messages: { role: string; content: string }[]): Pr
       model: NIM_CHAT_MODEL,
       messages,
       temperature: 0.4,
-      max_tokens: 512,
+      max_tokens: 1024,
     }),
     signal: AbortSignal.timeout(180000),
   });
@@ -430,7 +435,7 @@ export async function POST(req: Request) {
     const url = typeof body?.url === "string" ? body.url : DEFAULT_SITE;
     const visitorName = typeof body?.name === "string" ? body.name.trim().slice(0, 60) : "";
     const history: HistoryMsg[] = Array.isArray(body?.history)
-      ? body.history.filter((m: HistoryMsg) => m && typeof m.content === "string").slice(-8)
+      ? body.history.filter((m: HistoryMsg) => m && typeof m.content === "string").slice(-6)
       : [];
     const enquiryIn: EnquiryState = body?.enquiry && typeof body.enquiry === "object"
       ? { active: !!body.enquiry.active, step: Number(body.enquiry.step) || 0, data: body.enquiry.data || {} }
@@ -590,10 +595,10 @@ export async function POST(req: Request) {
         // Embedding unavailable — cheap keyword retrieval instead.
         scored = chunks.map((chunk) => ({ chunk, score: keywordScore(chunk, message) }));
       }
-      // Top 5 relevant slices, trimmed — smaller prompt = faster first token.
+      // Top 3 relevant slices, trimmed — smaller prompt = faster first token.
       context = scored
-        .slice(0, 5)
-        .map((s) => s.chunk.slice(0, 1200))
+        .slice(0, 3)
+        .map((s) => s.chunk.slice(0, 800))
         .join("\n\n");
     }
 

@@ -48,8 +48,19 @@ interface CheckoutPlan {
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const planKey = (searchParams.get("plan") || "growth").toLowerCase();
-  const { user, userProfile, openAuthModal, openProfileModal, recordNewOrder, cart } = useAuth();
+  const { user, loading, userProfile, openAuthModal, openProfileModal, recordNewOrder, cart } = useAuth();
   const router = useRouter();
+
+  // While Firebase is resolving the session, show a neutral spinner —
+  // this prevents the "login required" wall from flashing briefly.
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 gap-4">
+        <div className="w-12 h-12 rounded-full border-2 border-brand-blue/30 border-t-brand-blue-light animate-spin" />
+        <p className="text-sm text-white/40">Loading your checkout…</p>
+      </div>
+    );
+  }
 
   // Resolve the plan being checked out — supports both the 3 main plans and any
   // service/freelance item added to the cart (via its numeric price + cycle).
@@ -85,7 +96,9 @@ function CheckoutContent() {
   const cashfreeLive = process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true";
 
   const goToSuccess = (orderId: string, txn: string) => {
-    router.push(`/payment-success?orderId=${orderId}&plan=${plan.id}&txn=${txn}`);
+    // Open the Orders modal and navigate to home directly, bypassing success page
+    openOrders();
+    router.push("/");
   };
 
   const handleDemoCheckout = async () => {

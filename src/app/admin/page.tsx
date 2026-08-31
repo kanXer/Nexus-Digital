@@ -13,6 +13,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -22,11 +23,13 @@ export default function AdminLoginPage() {
           const data = await res.json();
           if (data.verified) {
             router.replace("/admin/dashboard");
+            return; // Don't set isCheckingAuth to false if we're redirecting
           }
         }
       } catch {
         // ignore — show login form
       }
+      setIsCheckingAuth(false);
     })();
   }, [router]);
 
@@ -62,6 +65,30 @@ export default function AdminLoginPage() {
       setLoading(false);
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="bg-black min-h-screen flex flex-col items-center justify-center gap-5">
+        <motion.div
+          className="relative w-16 h-16"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+        >
+          <div className="absolute inset-0 rounded-full border-2 border-brand-blue/20" />
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-brand-blue-light" />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-center space-y-1"
+        >
+          <p className="text-sm font-semibold text-white/60">Verifying admin session…</p>
+          <p className="text-xs text-white/30">Just a moment</p>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-black min-h-screen">

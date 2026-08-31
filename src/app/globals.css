@@ -663,7 +663,36 @@ textarea.input-field { min-height: 7rem; resize: vertical; }
   background: rgba(0, 0, 0, 0.55);
 }
 
+/* ═══ CHAT LOADING — animated text color sweep ═══ */
+@keyframes chat-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Light mode: black → red color animation */
+@keyframes chat-text-light {
+  0%, 100% { color: #111111; }
+  50%       { color: #DC2626; }
+}
+
+/* Dark mode: red → bright-red pulse */
+@keyframes chat-text-dark {
+  0%, 100% { color: #DC2626; }
+  50%       { color: #ff6b6b; }
+}
+
+.chat-loading-text {
+  animation: chat-text-light 2s ease-in-out infinite;
+}
+
+/* Dark mode override */
+[data-theme="dark"] .chat-loading-text,
+.always-dark .chat-loading-text {
+  animation: chat-text-dark 2s ease-in-out infinite;
+}
+
 /* ═══ PERFORMANCE: TOUCH / GPU / CONTAINMENT ═══ */
+
 *,
 *::before,
 *::after {

@@ -21,7 +21,7 @@ const PLAN_ICONS: Record<string, typeof Rocket> = {
 };
 
 export default function CartPage() {
-  const { user, cart, removeFromCart, clearCart, addToCart, openAuthModal, requireAuthForAction } = useAuth();
+  const { user, loading, cart, removeFromCart, clearCart, addToCart, openAuthModal, requireAuthForAction } = useAuth();
   const router = useRouter();
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
 
@@ -53,6 +53,19 @@ export default function CartPage() {
       router.push(`/checkout?plan=${cart[0].id}`);
     }
   };
+
+  // Wait for Firebase auth to resolve before showing the RequireAuth login wall
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5">
+        <div className="relative w-14 h-14">
+          <div className="absolute inset-0 rounded-full border-2 border-brand-blue/20" />
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-brand-blue-light animate-spin" />
+        </div>
+        <p className="text-sm text-white/40">Loading your cart…</p>
+      </div>
+    );
+  }
 
   return (
     <RequireAuth>
