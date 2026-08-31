@@ -1,7 +1,54 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Wallet, AlertCircle, Loader2 } from "lucide-react";
+
+declare global {
+  interface Window {
+    Cashfree?: any;
+  }
+}
+
+// Loads the official Cashfree web SDK once (v3). Docs:
+// https://sdk.cashfree.com/js/v3/cashfree.js
+function loadCashfreeSdk(): Promise<any> {
+  if (typeof window === "undefined") return Promise.reject(new Error("No window"));
+  if (window.Cashfree) return Promise.resolve(window.Cashfree);
+
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>("script[data-cashfree-sdk]");
+    if (existing) {
+      if (window.Cashfree) return resolve(window.Cashfree);
+      const onLoad = () => resolve(window.Cashfree);
+      existing.addEventListener("load", onLoad);
+      const timer = setTimeout(() => {
+        existing.removeEventListener("load", onLoad);
+        reject(new Error("SDK load timed out"));
+      }, 10000);
+      existing.addEventListener("load", () => clearTimeout(timer));
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+    script.async = true;
+    script.setAttribute("data-cashfree-sdk", "true");
+
+    const timer = setTimeout(() => {
+      reject(new Error("Payment SDK load timed out. Check your connection."));
+    }, 10000);
+
+    script.onload = () => {
+      clearTimeout(timer);
+      resolve(window.Cashfree);
+    };
+    script.onerror = () => {
+      clearTimeout(timer);
+      reject(new Error("Could not load payment SDK. Check your connection."));
+    };
+    document.body.appendChild(script);
+  });
+}
 
 async function fetchWithTimeout(url: string, init: RequestInit, ms = 30000): Promise<Response> {
   const controller = new AbortController();
@@ -34,6 +81,14 @@ export default function CashfreeButton({
 }) {
   const [status, setStatus] = useState<"idle" | "processing" | "error">("idle");
   const [message, setMessage] = useState("");
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const handleClick = useCallback(async () => {
     setStatus("processing");
@@ -63,12 +118,36 @@ export default function CashfreeButton({
         return;
       }
 
-      if (!data.checkoutUrl) {
+      if (!data.paymentSessionId) {
         throw new Error("Payment session not created. Please try again.");
       }
 
-      window.location.href = data.checkoutUrl;
+      // Official Cashfree flow: open the hosted checkout with the JS SDK.
+      // redirectTarget "_self" opens it in the same tab (full-page redirect),
+      // NOT a popup — this is the documented redirect checkout variant.
+      const CashfreeCtor = await loadCashfreeSdk();
+      const mode =
+        process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
+        process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true"
+          ? "production"
+          : "sandbox";
+
+      const cashfree = CashfreeCtor({ mode });
+      cashfree.checkout({
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: "_self",
+      });
+
+      // If we get here but no redirect happened shortly after, surface an error
+      // instead of leaving the button stuck on "processing".
+      setTimeout(() => {
+        if (mountedRef.current) {
+          setStatus("error");
+          setMessage("Checkout did not open. Please disable popup blockers and try again.");
+        }
+      }, 8000);
     } catch (e: any) {
+      if (!mountedRef.current) return;
       setStatus("error");
       if (e?.name === "AbortError") {
         setMessage("Request timed out. Please check your connection and try again.");
