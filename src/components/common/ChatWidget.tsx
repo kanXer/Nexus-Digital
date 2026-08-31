@@ -84,6 +84,20 @@ const WHATSAPP_URL = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent
   "Hi! I just chatted with Friday and want to talk to your team."
 )}`;
 
+// Rotating funny loading messages — shown while AI is processing and generating chunks
+const LOADING_MESSAGES = [
+  { emoji: "🤔", text: "Noodling on that..." },
+  { emoji: "🔍", text: "Searching our knowledge base..." },
+  { emoji: "⚡", text: "Turbo-charging your answer..." },
+  { emoji: "🧠", text: "Generating a thoughtful response..." },
+  { emoji: "✨", text: "Cooking up some digital magic..." },
+  { emoji: "🚀", text: "Friday is on it, hold tight!" },
+  { emoji: "📚", text: "Flipping through our playbook..." },
+  { emoji: "🎯", text: "Targeting the perfect answer..." },
+  { emoji: "💡", text: "Connecting all the dots..." },
+  { emoji: "🌐", text: "Scanning the digital universe..." },
+];
+
 // Rotating hint bubble messages — shown one at a time above the floating
 // chat button, cycling through on each pop-up so it feels conversational.
 const HINT_MESSAGES = [
@@ -134,22 +148,41 @@ function linkify(text: string): ReactNode {
 // Friday AI avatar — site logo image inside a branded ring, with name label.
 function FridayAvatar() {
   return (
-    <div className="flex flex-col items-center gap-0.5 shrink-0 w-9">
-      <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-brand flex items-center justify-center shadow-glow-sm ring-1 ring-white/25">
-        <Image src="/favicon.svg" alt="Friday" width={20} height={20} className="w-5 h-5 object-contain" />
+    <>
+      <div className="flex flex-col items-center gap-0.5 shrink-0 w-9">
+        <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-brand flex items-center justify-center shadow-glow-sm ring-1 ring-white/25">
+          <Image src="/favicon.svg" alt="Friday" width={20} height={20} className="w-5 h-5 object-contain" />
+        </div>
+        <span className="text-[8px] font-bold text-white/45 leading-none">Friday</span>
       </div>
-      <span className="text-[8px] font-bold text-white/45 leading-none">Friday</span>
-    </div>
+    </>
   );
 }
 
-// User avatar — simple person icon with "You" label.
-function UserAvatar() {
+// User avatar — shows profile photo, initials, or fallback icon.
+function UserAvatar({ photoURL, displayName }: { photoURL?: string | null; displayName?: string | null }) {
+  const initials = displayName
+    ? displayName.trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    : "";
+
   return (
     <div className="flex flex-col items-center gap-0.5 shrink-0 w-9">
-      <div className="w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center shadow-sm">
-        <User className="w-3.5 h-3.5 text-white/70" />
-      </div>
+      {photoURL ? (
+        <img
+          src={photoURL}
+          alt={displayName || "You"}
+          className="w-7 h-7 rounded-full object-cover border border-white/20 shadow-sm"
+          referrerPolicy="no-referrer"
+        />
+      ) : initials ? (
+        <div className="w-7 h-7 rounded-full bg-gradient-brand flex items-center justify-center shadow-sm border border-white/15">
+          <span className="text-[9px] font-bold text-white leading-none">{initials}</span>
+        </div>
+      ) : (
+        <div className="w-7 h-7 rounded-full bg-white/10 border border-white/15 flex items-center justify-center shadow-sm">
+          <User className="w-3.5 h-3.5 text-white/70" />
+        </div>
+      )}
       <span className="text-[8px] font-bold text-white/45 leading-none">You</span>
     </div>
   );
@@ -161,6 +194,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<ChatMsg[]>([WELCOME]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [pulse, setPulse] = useState(0);
   const [hint, setHint] = useState(false);
   const [enquiry, setEnquiry] = useState<EnquiryData>({ active: false, step: 0, data: {} });
@@ -242,6 +276,15 @@ export function ChatWidget() {
     const pulseId = setInterval(() => setPulse((p) => p + 1), 7000);
     return () => clearInterval(pulseId);
   }, []);
+
+  // Cycle through funny loading messages while AI is processing
+  useEffect(() => {
+    if (!loading) return;
+    const loadingId = setInterval(() => {
+      setLoadingMessageIndex((i) => (i + 1) % LOADING_MESSAGES.length);
+    }, 2000); // Change message every 2 seconds
+    return () => clearInterval(loadingId);
+  }, [loading]);
 
   // On phones (<640px) the chat always opens as a full-screen sheet that
   // covers every floating button; `immersive` also detaches the window from
@@ -330,19 +373,19 @@ export function ChatWidget() {
     followRef.current = distFromBottom <= 80;
   }, []);
 
-const clearHistory = () => {
-  followRef.current = true;
-  setMessages([buildWelcome()]);
-  setEnquiry({ active: false, step: 0, data: {} });
-  setEnquiryOptions([]);
-  setFollowUp(false);
-  setLastAction("chat");
-  setLoading(false);
-  setInput("");
-  requestAnimationFrame(() => {
-    scrollRef.current?.scrollTo({ top: 0 });
-  });
-};
+  const clearHistory = () => {
+    followRef.current = true;
+    setMessages([buildWelcome()]);
+    setEnquiry({ active: false, step: 0, data: {} });
+    setEnquiryOptions([]);
+    setFollowUp(false);
+    setLastAction("chat");
+    setLoading(false);
+    setInput("");
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({ top: 0 });
+    });
+  };
 
   // Keep the newest message pinned just above the suggestions while streaming,
   // but ONLY while the user hasn't scrolled away (followRef). Instant scrollTop
@@ -434,7 +477,7 @@ const clearHistory = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: lead.name, email: lead.email, message: text }),
       })
-        .then(() => {})
+        .then(() => { })
         .catch(() => {
           leadCapturedRef.current = false; // allow retry on next message
         });
@@ -663,13 +706,12 @@ const clearHistory = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.92 }}
             transition={{ type: "spring", stiffness: 300, damping: 26 }}
-            className={`chat-window fixed z-[60] will-change-transform transition-[opacity,transform] duration-300 ${
-              immersive
+            className={`chat-window fixed z-[60] will-change-transform transition-[opacity,transform] duration-300 ${immersive
                 ? isNarrow
                   ? "inset-0 h-[100dvh] p-0"
                   : "inset-0 p-4 sm:p-6 flex items-center justify-center"
                 : "right-4 left-4 sm:left-auto sm:right-6 sm:w-[400px]"
-            }`}
+              }`}
             style={immersive ? { bottom: isNarrow ? keyboardInset : 0, maxHeight: "none" } : { bottom: launcherBottom + 64, top: 80, maxHeight: `calc(100dvh - 80px - ${launcherBottom + 64}px)` }}
           >
             {/* Dimmed, blurred page backdrop visible around the chat on big screens */}
@@ -686,17 +728,15 @@ const clearHistory = () => {
             </AnimatePresence>
 
             {/* Glow backdrop */}
-            <div className={`absolute inset-0 bg-gradient-to-b from-brand-blue-light/40 via-brand-blue/20 to-transparent blur-[2px] opacity-80 ${
-              fullscreen ? "rounded-3xl" : "rounded-3xl"
-            }`} />
+            <div className={`absolute inset-0 bg-gradient-to-b from-brand-blue-light/40 via-brand-blue/20 to-transparent blur-[2px] opacity-80 ${fullscreen ? "rounded-3xl" : "rounded-3xl"
+              }`} />
 
-            <div className={`relative flex flex-col overflow-hidden backdrop-blur-2xl border border-white/10 shadow-card chat-window-bg ${
-              isNarrow
+            <div className={`relative flex flex-col overflow-hidden backdrop-blur-2xl border border-white/10 shadow-card chat-window-bg ${isNarrow
                 ? "rounded-none h-full w-full"
                 : fullscreen
                   ? "rounded-3xl h-[calc(100vh-2rem)] sm:h-[calc(100vh-3rem)] md:max-h-[85vh] w-full md:w-auto md:min-w-[560px] lg:min-w-[680px]"
                   : "rounded-3xl h-full"
-            }`}>
+              }`}>
               {/* Top gradient bar */}
               <div className="h-[3px] w-full bg-gradient-brand shrink-0" />
 
@@ -708,288 +748,345 @@ const clearHistory = () => {
               {/* Centered content column — keeps the chat focused in the middle on large screens */}
               <div className="relative flex flex-col flex-1 min-h-0 w-full mx-auto max-w-full md:max-w-3xl lg:max-w-4xl">
 
-              {/* Header */}
-              <div className="relative flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-4 bg-gradient-to-r from-brand-blue/20 via-transparent to-transparent border-b border-white/10 shrink-0">
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-gradient-brand blur-md opacity-60" />
-                  <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow ring-2 ring-white/20">
-                    <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <motion.span
-                    className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black"
-                    animate={{ opacity: [1, 0.4, 1], scale: [1, 0.8, 1] }}
-                    transition={{ duration: 2.2, repeat: Infinity }}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-display font-bold text-sm sm:text-[15px] leading-tight flex items-center gap-2 text-white">
-                    Friday
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30 text-emerald-300 text-[9px] font-bold uppercase tracking-wider">
-                      <span className="w-1 h-1 rounded-full bg-emerald-400" />
-                      Online
-                    </span>
-                  </p>
-                  <p className="hidden sm:flex text-[11px] text-white/45 items-center gap-1 mt-0.5">
-                    <Sparkles className="w-3 h-3 text-brand-blue-light" />
-                    {firstName ? `Here to help you grow, ${firstName}` : "Digital Marketing Assistant"}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={clearHistory}
-                  aria-label="Clear chat history"
-                  title="Clear history"
-                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-                {!isNarrow && (
-                  <button
-                    type="button"
-                    onClick={() => setFullscreen((f) => !f)}
-                    aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
-                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
-                  >
-                    {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={toggle}
-                  aria-label="Close chat"
-                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Messages */}
-              <div className="relative flex-1 min-h-0 flex flex-col">
-                <div
-                  ref={scrollRef}
-                  onScroll={handleScroll}
-                  className="flex-1 overflow-y-auto overflow-x-hidden chat-scrollbar p-4 flex flex-col gap-3.5"
-                >
-                  <div className="pointer-events-none absolute inset-0 chat-overlay" />
-
-                  {messages.map((m, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ type: "spring", stiffness: 350, damping: 26 }}
-                      className={`flex items-end gap-2 max-w-full ${
-                        m.role === "user" ? "justify-end" : "justify-start"
-                      }`}
-                    >
-                      {m.role === "assistant" && <FridayAvatar />}
-                      <div
-                        className={`relative max-w-[calc(100%-3.25rem)] sm:max-w-[80%] min-w-0 px-4 py-2.5 text-[14px] leading-[1.5] whitespace-pre-wrap break-words [overflow-wrap:anywhere] backdrop-blur-md ${
-                          m.role === "user"
-                            ? "bg-gradient-brand chat-user-text rounded-2xl rounded-br-sm shadow-[0_8px_24px_rgba(220,38,38,0.35)] border border-white/15"
-                            : "bg-blue-500/12 border border-blue-400/25 text-white rounded-2xl rounded-bl-sm shadow-card"
-                        }`}
-                      >
-                        {m.role === "user" && (
-                          <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-full" />
-                        )}
-                        {linkify(m.content)}
-                      </div>
-                      {m.role === "user" && <UserAvatar />}
-                    </motion.div>
-                  ))}
-                  {lastAction === "contact" && !loading && (
-                    <div className="flex items-end gap-2 justify-start">
-                      <FridayAvatar />
-                      <div className="max-w-[85%] sm:max-w-[75%] md:max-w-[480px]">{ContactButtons}</div>
+                {/* Header */}
+                <div className="relative flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-4 bg-gradient-to-r from-brand-blue/20 via-transparent to-transparent border-b border-white/10 shrink-0">
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-full bg-gradient-brand blur-md opacity-60" />
+                    <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow ring-2 ring-white/20">
+                      <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
-                  )}
-                  {loading && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-end gap-2"
-                    >
-                      <FridayAvatar />
-                      <div className="px-4 py-3 rounded-2xl rounded-bl-sm bg-blue-500/12 border border-blue-400/25 backdrop-blur-md flex items-center gap-1.5">
-                        {[0, 1, 2].map((d) => (
-                          <motion.span
-                            key={d}
-                            className="w-1.5 h-1.5 rounded-full bg-brand-blue-light"
-                            animate={{ opacity: [0.3, 1, 0.3], y: [0, -4, 0], scale: [1, 1.15, 1] }}
-                            transition={{ duration: 0.9, repeat: Infinity, delay: d * 0.15 }}
-                          />
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-
-                {/* Go-to-bottom floating button — anchored to the messages area, stays at bottom even when scrolling up */}
-                <AnimatePresence>
-                  {showGoDown && (
-                    <motion.button
-                      type="button"
-                      onClick={scrollToBottom}
-                      aria-label="Go to latest message"
-                      title="Go to latest message"
-                      initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.8 }}
-                      transition={{ type: "spring", stiffness: 350, damping: 26 }}
-                      className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 w-10 h-10 rounded-full bg-gradient-brand text-white flex items-center justify-center shadow-glow-lg border border-white/20 hover:brightness-110 active:scale-90 transition-all cursor-pointer"
-                    >
-                      <ArrowDown className="w-5 h-5" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Enquiry options — numbered clickable chips for the current step (service/budget) */}
-              {enquiry.active && enquiryOptions.length > 0 && !loading && (
-                <div className="flex flex-wrap gap-2 px-4 pb-2 pt-1 shrink-0">
-                  {enquiryOptions.map((opt, idx) => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => send(String(idx + 1))}
-                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
-                    >
-                      <span className="inline-flex items-center gap-1.5">
-                        <span className="w-4 h-4 rounded-full bg-white/10 group-hover:bg-brand-blue/40 text-[9px] font-bold flex items-center justify-center shrink-0">
-                          {idx + 1}
-                        </span>
-                        {opt}
+                    <motion.span
+                      className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black"
+                      animate={{ opacity: [1, 0.4, 1], scale: [1, 0.8, 1] }}
+                      transition={{ duration: 2.2, repeat: Infinity }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-display font-bold text-sm sm:text-[15px] leading-tight flex items-center gap-2 text-white">
+                      Friday
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30 text-emerald-300 text-[9px] font-bold uppercase tracking-wider">
+                        <span className="w-1 h-1 rounded-full bg-emerald-400" />
+                        Online
                       </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Follow-up options after enquiry is submitted — keep the chat going or start fresh */}
-              {followUp && !loading && (
-                <div className="flex flex-wrap gap-2 px-4 pb-2 pt-1 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setFollowUp(false)}
-                    className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
-                  >
-                    Continue chatting
-                  </button>
+                    </p>
+                    <p className="hidden sm:flex text-[11px] text-white/45 items-center gap-1 mt-0.5">
+                      <Sparkles className="w-3 h-3 text-brand-blue-light" />
+                      {firstName ? `Here to help you grow, ${firstName}` : "Digital Marketing Assistant"}
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={clearHistory}
-                    className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                    aria-label="Clear chat history"
+                    title="Clear history"
+                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
                   >
-                    Start new chat
+                    <Trash2 className="w-4 h-4" />
                   </button>
-                </div>
-              )}
-
-              {/* Suggestion chips — quick replies on first screen, contextual follow-ups after each reply.
-                  MOBILE ONLY: collapsible via chevron button + single swipeable row.
-                  DESKTOP: always visible, wrapped, no toggle (original behaviour). */}
-              {!enquiry.active && !followUp && suggestions.length > 0 && !loading && !showLoginPrompt && (
-                <div className="shrink-0 px-4 pb-2 pt-1">
-                  {/* Mobile-only control row */}
-                  <div className="flex items-center justify-between gap-2 md:hidden">
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/30">
-                      Quick replies
-                    </span>
+                  {!isNarrow && (
                     <button
                       type="button"
-                      onClick={() => setSugOpen((o) => !o)}
-                      aria-label={sugOpen ? "Hide suggestions" : "Show suggestions"}
-                      aria-expanded={sugOpen}
-                      title={sugOpen ? "Hide suggestions" : "Show suggestions"}
-                      className="flex items-center gap-1 text-[10px] font-semibold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-2.5 py-1 transition-all cursor-pointer active:scale-95"
+                      onClick={() => setFullscreen((f) => !f)}
+                      aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
+                      className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
                     >
-                      {sugOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
-                      {sugOpen ? "Hide" : "Show"}
+                      {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
-                  </div>
-                  {/* Chips — swipeable row on mobile, wrapped flow on desktop */}
-                  <div
-                    className={`gap-2 pb-0.5 overflow-x-auto no-scrollbar md:overflow-x-visible md:flex-wrap md:mt-0 ${
-                      sugOpen ? "flex mt-1.5 md:mt-0" : "hidden md:flex"
-                    }`}
+                  )}
+                  <button
+                    type="button"
+                    onClick={toggle}
+                    aria-label="Close chat"
+                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
                   >
-                    {suggestions.map((q) => (
-                      <button
-                        key={q}
-                        type="button"
-                        onClick={() => send(q)}
-                        className="group shrink-0 whitespace-nowrap md:whitespace-normal md:shrink text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Messages */}
+                <div className="relative flex-1 min-h-0 flex flex-col">
+                  <div
+                    ref={scrollRef}
+                    onScroll={handleScroll}
+                    className="flex-1 overflow-y-auto overflow-x-hidden chat-scrollbar p-4 flex flex-col gap-3.5"
+                  >
+                    <div className="pointer-events-none absolute inset-0 chat-overlay" />
+
+                    {messages.map((m, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                        className={`flex items-end gap-2 max-w-full ${m.role === "user" ? "justify-end" : "justify-start"
+                          }`}
                       >
-                        {q}
+                        {m.role === "assistant" && <FridayAvatar />}
+                        <div
+                          className={`relative max-w-[calc(100%-3.25rem)] sm:max-w-[80%] min-w-0 px-4 py-2.5 text-[14px] leading-[1.5] whitespace-pre-wrap break-words [overflow-wrap:anywhere] backdrop-blur-md ${m.role === "user"
+                              ? "bg-gradient-brand chat-user-text rounded-2xl rounded-br-sm shadow-[0_8px_24px_rgba(220,38,38,0.35)] border border-white/15"
+                              : "bg-blue-500/12 border border-blue-400/25 text-white rounded-2xl rounded-bl-sm shadow-card"
+                            }`}
+                        >
+                          {m.role === "user" && (
+                            <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-full" />
+                          )}
+                          {linkify(m.content)}
+                        </div>
+                        {m.role === "user" && (
+                          <UserAvatar
+                            photoURL={user?.photoURL}
+                            displayName={userProfile.name || user?.displayName}
+                          />
+                        )}
+                      </motion.div>
+                    ))}
+                    {lastAction === "contact" && !loading && (
+                      <div className="flex items-end gap-2 justify-start">
+                        <FridayAvatar />
+                        <div className="max-w-[85%] sm:max-w-[75%] md:max-w-[480px]">{ContactButtons}</div>
+                      </div>
+                    )}
+                    {loading && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ type: "spring", stiffness: 340, damping: 26 }}
+                        className="flex items-end gap-2"
+                      >
+                        <FridayAvatar />
+                        {/* Premium loading card */}
+                        <div className="relative max-w-[calc(100%-3.25rem)] sm:max-w-[82%] overflow-hidden">
+                          {/* Animated shimmer border */}
+                          <div
+                            className="absolute inset-0 rounded-2xl rounded-bl-sm"
+                            style={{
+                              background: "linear-gradient(90deg, transparent 0%, rgba(96,165,250,0.35) 40%, rgba(167,139,250,0.35) 60%, transparent 100%)",
+                              backgroundSize: "200% 100%",
+                              animation: "chat-shimmer 1.8s linear infinite",
+                              padding: "1px",
+                              WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                              WebkitMaskComposite: "xor",
+                              maskComposite: "exclude",
+                            }}
+                          />
+                          <div className="relative px-4 py-3 rounded-2xl rounded-bl-sm bg-blue-500/10 border border-blue-400/20 backdrop-blur-md">
+                            {/* Animated dots row */}
+                            <div className="flex items-center gap-3 mb-2.5">
+                              <div className="flex items-center gap-1.5">
+                                {[0, 1, 2].map((i) => (
+                                  <motion.span
+                                    key={i}
+                                    className="block w-2 h-2 rounded-full"
+                                    style={{
+                                      background: i === 0 ? "#60a5fa" : i === 1 ? "#a78bfa" : "#f472b6",
+                                      boxShadow: i === 0 ? "0 0 6px rgba(96,165,250,0.7)" : i === 1 ? "0 0 6px rgba(167,139,250,0.7)" : "0 0 6px rgba(244,114,182,0.7)",
+                                    }}
+                                    animate={{ y: [0, -6, 0], opacity: [0.6, 1, 0.6] }}
+                                    transition={{
+                                      duration: 0.9,
+                                      delay: i * 0.18,
+                                      repeat: Infinity,
+                                      ease: "easeInOut",
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-[10px] font-bold text-white/35 uppercase tracking-widest">Friday is thinking</span>
+                            </div>
+                            {/* Cycling message with slide-up animation */}
+                            <div className="relative" style={{ minHeight: "20px" }}>
+                              <AnimatePresence mode="wait">
+                                <motion.div
+                                  key={loadingMessageIndex}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -10 }}
+                                  transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                                  className="flex items-center gap-2"
+                                >
+                                  <span className="text-base leading-none">
+                                    {LOADING_MESSAGES[loadingMessageIndex].emoji}
+                                  </span>
+                                  <span
+                                    className="text-[13px] leading-none font-normal chat-loading-text"
+                                  >
+                                    {LOADING_MESSAGES[loadingMessageIndex].text}
+                                  </span>
+                                </motion.div>
+                              </AnimatePresence>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  {/* Go-to-bottom floating button — anchored to the messages area, stays at bottom even when scrolling up */}
+                  <AnimatePresence>
+                    {showGoDown && (
+                      <motion.button
+                        type="button"
+                        onClick={scrollToBottom}
+                        aria-label="Go to latest message"
+                        title="Go to latest message"
+                        initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.8 }}
+                        transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                        className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 w-10 h-10 rounded-full bg-gradient-brand text-white flex items-center justify-center shadow-glow-lg border border-white/20 hover:brightness-110 active:scale-90 transition-all cursor-pointer"
+                      >
+                        <ArrowDown className="w-5 h-5" />
+                      </motion.button>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Enquiry options — numbered clickable chips for the current step (service/budget) */}
+                {enquiry.active && enquiryOptions.length > 0 && !loading && (
+                  <div className="flex flex-wrap gap-2 px-4 pb-2 pt-1 shrink-0">
+                    {enquiryOptions.map((opt, idx) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => send(String(idx + 1))}
+                        className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                      >
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="w-4 h-4 rounded-full bg-white/10 group-hover:bg-brand-blue/40 text-[9px] font-bold flex items-center justify-center shrink-0">
+                            {idx + 1}
+                          </span>
+                          {opt}
+                        </span>
                       </button>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Input */}
-              <div className="p-3 sm:p-3.5 border-t border-white/10 chat-surface-input shrink-0">
-                {/* Login gate — shown after a guest uses their free messages */}
-                {showLoginPrompt && !user && (
-                  <div className="mb-3 rounded-2xl border border-brand-blue/30 bg-brand-blue/10 p-3 text-center">
-                    <p className="text-[12.5px] text-white/85 mb-2.5 font-medium">
-                      Sign in to keep chatting with Friday
-                    </p>
-                    <div className="flex flex-col gap-2">
+                {/* Follow-up options after enquiry is submitted — keep the chat going or start fresh */}
+                {followUp && !loading && (
+                  <div className="flex flex-wrap gap-2 px-4 pb-2 pt-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setFollowUp(false)}
+                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                    >
+                      Continue chatting
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearHistory}
+                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                    >
+                      Start new chat
+                    </button>
+                  </div>
+                )}
+
+                {/* Suggestion chips — quick replies on first screen, contextual follow-ups after each reply.
+                  MOBILE ONLY: collapsible via chevron button + single swipeable row.
+                  DESKTOP: always visible, wrapped, no toggle (original behaviour). */}
+                {!enquiry.active && !followUp && suggestions.length > 0 && !loading && !showLoginPrompt && (
+                  <div className="shrink-0 px-4 pb-2 pt-1">
+                    {/* Mobile-only control row */}
+                    <div className="flex items-center justify-between gap-2 md:hidden">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/30">
+                        Quick replies
+                      </span>
                       <button
                         type="button"
-                        onClick={openAuthModal}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-gradient-brand text-white text-[13px] font-bold hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                        onClick={() => setSugOpen((o) => !o)}
+                        aria-label={sugOpen ? "Hide suggestions" : "Show suggestions"}
+                        aria-expanded={sugOpen}
+                        title={sugOpen ? "Hide suggestions" : "Show suggestions"}
+                        className="flex items-center gap-1 text-[10px] font-semibold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-2.5 py-1 transition-all cursor-pointer active:scale-95"
                       >
-                        <LogIn className="w-4 h-4" />
-                        Log In / Sign Up
+                        {sugOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
+                        {sugOpen ? "Hide" : "Show"}
                       </button>
-                      <a
-                        href={WHATSAPP_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold text-green-300 hover:bg-white/10 transition-all"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5" fill="currentColor" />
-                        Continue on WhatsApp instead
-                      </a>
+                    </div>
+                    {/* Chips — swipeable row on mobile, wrapped flow on desktop */}
+                    <div
+                      className={`gap-2 pb-0.5 overflow-x-auto no-scrollbar md:overflow-x-visible md:flex-wrap md:mt-0 ${sugOpen ? "flex mt-1.5 md:mt-0" : "hidden md:flex"
+                        }`}
+                    >
+                      {suggestions.map((q) => (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={() => send(q)}
+                          className="group shrink-0 whitespace-nowrap md:whitespace-normal md:shrink text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                        >
+                          {q}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
-                <div className="relative flex items-center gap-2 rounded-full chat-field p-1.5 pl-4 transition-all focus-within:border-brand-blue-light/60 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12),0_4px_20px_rgba(220,38,38,0.15)]">
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={onKeyDown}
-                    placeholder={firstName ? `Hi ${firstName}, type your message...` : "Type your message..."}
-                    disabled={showLoginPrompt && !user}
-                    className="chat-input flex-1 bg-transparent text-[13.5px] text-white focus:outline-none min-w-0 disabled:opacity-50"
-                    maxLength={1500}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => send()}
-                    disabled={loading || !input.trim() || (showLoginPrompt && !user)}
-                    aria-label="Send message"
-                    className="w-9 h-9 rounded-full bg-gradient-brand flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-90 transition-all cursor-pointer shadow-glow-sm"
-                  >
-                    {loading ? (
-                      <motion.span
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                        className="w-4.5 h-4.5 border-2 border-white/30 border-t-white rounded-full"
-                      />
-                    ) : (
-                      <Send className="w-4 h-4" />
-                    )}
-                  </button>
+
+                {/* Input */}
+                <div className="p-3 sm:p-3.5 border-t border-white/10 chat-surface-input shrink-0">
+                  {/* Login gate — shown after a guest uses their free messages */}
+                  {showLoginPrompt && !user && (
+                    <div className="mb-3 rounded-2xl border border-brand-blue/30 bg-brand-blue/10 p-3 text-center">
+                      <p className="text-[12.5px] text-white/85 mb-2.5 font-medium">
+                        Sign in to keep chatting with Friday
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <button
+                          type="button"
+                          onClick={openAuthModal}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-gradient-brand text-white text-[13px] font-bold hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                        >
+                          <LogIn className="w-4 h-4" />
+                          Log In / Sign Up
+                        </button>
+                        <a
+                          href={WHATSAPP_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold text-green-300 hover:bg-white/10 transition-all"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" fill="currentColor" />
+                          Continue on WhatsApp instead
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  <div className="relative flex items-center gap-2 rounded-full chat-field p-1.5 pl-4 transition-all focus-within:border-brand-blue-light/60 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12),0_4px_20px_rgba(220,38,38,0.15)]">
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={onKeyDown}
+                      placeholder={firstName ? `Hi ${firstName}, type your message...` : "Type your message..."}
+                      disabled={showLoginPrompt && !user}
+                      className="chat-input flex-1 bg-transparent text-[13.5px] text-white focus:outline-none min-w-0 disabled:opacity-50"
+                      maxLength={1500}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => send()}
+                      disabled={loading || !input.trim() || (showLoginPrompt && !user)}
+                      aria-label="Send message"
+                      className="w-9 h-9 rounded-full bg-gradient-brand flex items-center justify-center text-white disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 active:scale-90 transition-all cursor-pointer shadow-glow-sm"
+                    >
+                      {loading ? (
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                          className="w-4.5 h-4.5 border-2 border-white/30 border-t-white rounded-full"
+                        />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                  <p className="mt-2 text-center text-[10px] text-white/25">
+                    Powered by <span className="text-brand-blue-light font-medium">Nexus Digital</span> AI
+                  </p>
                 </div>
-                <p className="mt-2 text-center text-[10px] text-white/25">
-                  Powered by <span className="text-brand-blue-light font-medium">Nexus Digital</span> AI
-                </p>
-              </div>
               </div>
             </div>
           </motion.div>

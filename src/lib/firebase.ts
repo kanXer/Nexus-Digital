@@ -5,6 +5,8 @@ import {
   browserLocalPersistence,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
@@ -14,6 +16,9 @@ import {
 } from "firebase/auth";
 import {
   getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   doc,
   setDoc,
   getDoc,
@@ -42,11 +47,38 @@ export const auth = getAuth(app);
 setPersistence(auth, browserLocalPersistence).catch(() => {
   /* Private-mode browsers may block storage — SDK falls back gracefully */
 });
-export const db = getFirestore(app);
+
+// Initialize Firestore with long-polling to eliminate WebChannel RPC transport errors.
+// WebChannel (WebSocket upgrade) is frequently blocked by localhost dev servers,
+// VPNs, corporate firewalls, and browser extensions. Long-polling is a reliable
+// HTTP fallback that removes the "transport errored" console warnings entirely.
+// persistentLocalCache enables multi-tab IndexedDB caching for offline resilience.
+let db: ReturnType<typeof getFirestore>;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    experimentalForceLongPolling: true,
+  });
+} catch {
+  // Already initialized (e.g. hot-module reload in dev) — reuse the existing instance.
+  db = getFirestore(app);
+}
+export { db };
+
+// Configure Google Provider with proper scopes and settings
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.addScope("profile");
+googleProvider.addScope("email");
+// Set custom parameters for better UX (prompt for account selection)
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+  access_type: "online",
+});
 
 export {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,

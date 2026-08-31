@@ -313,26 +313,28 @@ export default function Navbar() {
                     )}
                   </button>
 
+                  {/* Mobile profile drop-down — opens below the avatar in navbar */}
                   <AnimatePresence>
                     {userMenuOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                        initial={{ opacity: 0, y: -10, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full mt-2 right-0 w-52 rounded-xl p-1.5 nav-dropdown border border-white/12 shadow-2xl z-50"
+                        exit={{ opacity: 0, y: -10, scale: 0.96 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute top-full mt-2 right-0 w-56 rounded-2xl p-1.5 nav-dropdown border border-white/12 shadow-2xl z-50"
                       >
+                        {/* User info header */}
                         <div className="px-3 py-2.5 border-b border-white/8 mb-1 flex items-center gap-2.5">
                           {user.photoURL ? (
                             <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-blue/30 shrink-0" referrerPolicy="no-referrer" />
                           ) : (
                             <div className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
-                              {userProfile.name?.trim().split(" ")[0]?.[0] || user.displayName?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
+                              {userProfile.name?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="text-white font-bold text-xs truncate">{userProfile.name || user.displayName || "Logged In"}</p>
-                            <p className="text-white/40 text-[11px] truncate">{user.email}</p>
+                            <p className="text-white font-bold text-xs truncate">{userProfile.name || user.displayName || "My Account"}</p>
+                            <p className="text-white/40 text-[10px] truncate">{user.email}</p>
                           </div>
                         </div>
                         <button
@@ -349,17 +351,15 @@ export default function Navbar() {
                           <span className="flex items-center gap-2">
                             <ShoppingCart className="w-4 h-4 text-brand-blue-light" /> My Cart
                           </span>
-                          {user && cart.length > 0 && (
-                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-blue-light text-white">
-                              {cart.length}
-                            </span>
+                          {cart.length > 0 && (
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-blue-light text-white">{cart.length}</span>
                           )}
                         </Link>
                         <button
                           onClick={() => { setUserMenuOpen(false); openOrders(); }}
                           className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors text-left"
                         >
-                          <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders & Plans
+                          <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders &amp; Plans
                         </button>
                         <div className="border-t border-white/8 my-1" />
                         <button
@@ -446,37 +446,7 @@ export default function Navbar() {
               </nav>
 
               <div className="p-6 border-t border-white/8 space-y-3">
-                {user ? (
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => { setMobileOpen(false); openProfileModal(); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white"
-                    >
-                      <User className="w-4 h-4 text-brand-blue-light" /> Profile ({userProfile.name || user.email?.split("@")[0]})
-                    </button>
-                    <button
-                      onClick={() => { setMobileOpen(false); openCart(); }}
-                      className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white"
-                    >
-                      <span className="flex items-center gap-3">
-                        <ShoppingCart className="w-4 h-4 text-brand-blue-light" /> My Cart
-                      </span>
-                      {user && cart.length > 0 && <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-brand-blue-light">{cart.length}</span>}
-                    </button>
-                    <button
-                      onClick={() => { setMobileOpen(false); openOrders(); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white"
-                    >
-                      <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders & Plans
-                    </button>
-                    <button
-                      onClick={() => { setMobileOpen(false); logout(); }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-red-400 bg-red-500/10"
-                    >
-                      <LogOut className="w-4 h-4" /> Sign Out
-                    </button>
-                  </div>
-                ) : (
+                {!user && (
                   <button
                     onClick={() => { setMobileOpen(false); openAuthModal(); }}
                     className="w-full btn-primary py-3 rounded-xl justify-center font-bold text-sm"
@@ -484,7 +454,7 @@ export default function Navbar() {
                     <User className="w-4 h-4 mr-1.5" /> Sign In / Register
                   </button>
                 )}
-                <div className="flex items-center gap-2 pt-2">
+                <div className="flex items-center gap-2 pt-1">
                   <ThemeToggle size="md" />
                 </div>
               </div>

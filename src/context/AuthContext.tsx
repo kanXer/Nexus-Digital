@@ -6,6 +6,8 @@ import {
   db,
   googleProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
@@ -130,6 +132,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.error("Error loading local auth state:", e);
     }
+  }, []);
+
+  // Handle Google redirect result (fired when user returns from signInWithRedirect)
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          setUser(result.user);
+          setUserProfile((prev) => ({
+            ...prev,
+            name: result.user.displayName || prev.name || "Client",
+            email: result.user.email || prev.email || "",
+          }));
+          closeAuthModal();
+        }
+      })
+      .catch((err: any) => {
+        const code = err?.code || "";
+        if (code && code !== "auth/null-user" && code !== "auth/no-auth-event") {
+          console.error("Google redirect sign-in error:", code, err?.message);
+        }
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Complete passwordless email-link sign-in when the user returns from the email link
@@ -323,8 +348,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
-    const isDummy = !process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes("Dummy");
+    // Check if Firebase is properly configured with REAL (non-dummy) credentials
+    // Only fallback to demo user if the API key explicitly contains "DummyApiKey" (meaning env vars are not set)
+    const isDummy = !process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.trim() || 
+                    process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes("DummyApiKeyForFirebaseConfig");
+    
     if (isDummy) {
+      console.warn("Firebase is not properly configured with real credentials");
       const mockUser = {
         uid: "demo_google_user_123",
         email: "client@nexusdigitalmarketing.shop",
@@ -337,6 +367,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: prev.email || "client@nexusdigitalmarketing.shop",
       }));
       closeAuthModal();
+      alert("Firebase is not configured with real credentials. Using demo user for testing. Please set NEXT_PUBLIC_FIREBASE_* environment variables.");
       return;
     }
 
@@ -352,32 +383,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         closeAuthModal();
       }
     } catch (err: any) {
-      console.warn("Firebase Google Sign-In notice:", err?.code || err?.message);
-      if (err?.code === "auth/configuration-not-found" || err?.message?.includes("configuration-not-found")) {
-        const mockUser = {
-          uid: "demo_google_user_123",
-          email: "client@nexusdigitalmarketing.shop",
-          displayName: "Nexus Client",
-        } as unknown as User;
-        setUser(mockUser);
-        setUserProfile((prev) => ({
-          ...prev,
-          name: prev.name || "Nexus Client",
-          email: prev.email || "client@nexusdigitalmarketing.shop",
-        }));
-        closeAuthModal();
-        alert("Google Sign-In is disabled in Firebase Console. Logged in as Demo User!\n\nTo enable live Google Sign-In:\n1. Firebase Console -> Authentication -> Sign-in method -> Enable Google.\n2. Add 'localhost' to Authorized Domains.");
-      } else if (err?.code === "auth/popup-closed-by-user") {
-        throw new Error("Sign in popup was closed before completing.");
+      const code = err?.code || "";
+      const errorMsg = err?.message || "";
+
+      console.error("Google Sign-In Error:", { code, message: errorMsg });
+
+      // Popup was blocked by the browser — fall back to redirect flow silently.
+      if (code === "auth/popup-blocked" || code === "auth/cancelled-popup-request") {
+        console.warn("Popup blocked — falling back to redirect sign-in.");
+        await signInWithRedirect(auth, googleProvider);
+        return; // Page will reload; getRedirectResult() handles the rest.
+      }
+
+      if (code === "auth/popup-closed-by-user") {
+        // User manually closed the popup — no error to show.
+        return;
+      }
+
+      const isConfigIssue =
+        code.includes("configuration-not-found") ||
+        code.includes("internal-error") ||
+        code.includes("unauthorized-domain") ||
+        code.includes("network-request-failed") ||
+        code.includes("operation-not-allowed");
+
+      if (isConfigIssue) {
+        let hint = "Google Sign-In is disabled or misconfigured in Firebase Console.";
+        if (code.includes("unauthorized-domain")) {
+          hint = "This domain is not added under Firebase Console → Authentication → Settings → Authorized domains.";
+        } else if (code.includes("network-request-failed")) {
+          hint = "A network error occurred. Please check your internet connection.";
+        } else if (code.includes("operation-not-allowed")) {
+          hint = "Google provider is not enabled in Firebase Console → Authentication → Sign-in method.";
+        } else if (code.includes("configuration-not-found")) {
+          hint = "Firebase is not properly initialized. Verify all NEXT_PUBLIC_FIREBASE_* variables are set in .env.";
+        } else if (code.includes("internal-error")) {
+          hint = "Firebase internal error — check that Google provider is enabled and the domain is in Authorized domains.";
+        }
+        alert(`Google Sign-In failed.\n\nError: ${code}\n\n${hint}`);
       } else {
+        console.error("Unexpected sign-in error:", err);
         throw new Error(err?.message || "Google Sign-In failed.");
       }
     }
   };
 
   const sendEmailLinkLogin = async (email: string) => {
-    const isDummy = !process.env.NEXT_PUBLIC_FIREBASE_API_KEY || process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes("Dummy");
+    // Check if Firebase is properly configured with REAL (non-dummy) credentials
+    // Only fallback to demo user if the API key explicitly contains "DummyApiKey" (meaning env vars are not set)
+    const isDummy = !process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.trim() || 
+                    process.env.NEXT_PUBLIC_FIREBASE_API_KEY.includes("DummyApiKeyForFirebaseConfig");
+    
     if (isDummy) {
+      console.warn("Firebase is not properly configured with real credentials");
       const mockUser = {
         uid: "demo_email_user_123",
         email: email,
@@ -390,6 +448,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: email,
       }));
       closeAuthModal();
+      alert("Firebase is not configured with real credentials. Using demo user for testing. Please set NEXT_PUBLIC_FIREBASE_* environment variables.");
       return;
     }
 
@@ -400,16 +459,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           : "https://nexusdigitalmarketing.shop",
         handleCodeInApp: true,
       };
+      console.log("Sending email sign-in link to:", email);
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       localStorage.setItem("nexus_emailForSignIn", email);
       setUserProfile((prev) => ({ ...prev, email }));
     } catch (err: any) {
       const code = err?.code || "";
       let msg = err?.message || "Failed to send email sign-in link.";
+      
+      console.error("Email Sign-In Error Details:", {
+        code,
+        message: msg,
+      });
+      
       if (code.includes("configuration-not-found") || code.includes("operation-not-allowed")) {
         msg = "Passwordless email sign-in is not enabled in the Firebase Console yet (Authentication → Sign-in method → Email link).";
-      } else if (code.includes("unauthorized-domain")) {
-        msg = "This website domain is not added under Firebase Console → Authentication → Settings → Authorized domains.";
+      } else if (code.includes("unauthorized-domain") || code.includes("internal-error")) {
+        msg = "This website's domain is not added (or Firebase Auth has a temporary issue). Add this domain under Firebase Console → Authentication → Settings → Authorized domains.";
       } else if (code.includes("invalid-email") || code.includes("missing-email")) {
         msg = "Please enter a valid email address.";
       }
