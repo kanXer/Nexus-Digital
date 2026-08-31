@@ -48,15 +48,14 @@ export async function POST(req: Request) {
       returnUrl,
     });
 
-    const checkoutBase =
-      process.env.CASHFREE_ENV === "production"
-        ? "https://dashboard.cashfree.com"
-        : "https://sandbox.cashfree.com";
+    // Cashfree hosted checkout URL — production & sandbox both use the same
+    // payments.cashfree.com host (NOT dashboard.cashfree.com).
+    const checkoutUrl = `https://payments.cashfree.com/pay/${order.paymentSessionId}`;
 
     return NextResponse.json({
       demo: false,
       ...order,
-      checkoutUrl: `${checkoutBase}/pay/${order.paymentSessionId}`,
+      checkoutUrl,
     });
   } catch (e: any) {
     return NextResponse.json(
