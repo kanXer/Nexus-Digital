@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { generateInvoicePdf, downloadBlob } from "@/lib/pdf";
 import { getProduct } from "@/lib/products";
 import { config } from "@/lib/config";
+import { trackEvent } from "@/lib/analytics";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -104,6 +105,12 @@ function SuccessContent() {
             planId,
             isSubscription: prod?.cycle === "monthly",
             numericAmount: prod?.priceInr || 0,
+          });
+          trackEvent("purchase", {
+            transaction_id: txnId,
+            value: prod?.priceInr || 0,
+            currency: "INR",
+            items: prod?.name || planId,
           });
           router.replace(`/payment-success?plan=${encodeURIComponent(planId)}&txn=${txnId}`);
         } catch {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { config } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/contact" },
   title: "Contact Top Digital Marketing Agency Gorakhpur | Nexus Digital",
   description: `Contact ${config.name}, the best digital marketing agency in Gorakhpur, for a free consultation. Get a custom growth plan featuring social media, Google Ads, SEO, website design, and marketing automation.`,
   keywords: [

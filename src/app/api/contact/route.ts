@@ -29,10 +29,11 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, email, phone, business, service, budget, message, date, time, type } = body as BookingData & { type?: string };
 
-    if (!name || !email || !phone || !service) {
+    if (!name || !phone || !service) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const normalizedEmail = typeof email === "string" ? email.trim() : "";
     const isBooking = type === "booking";
     const isEnquiry = type === "enquiry";
 
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
       isBooking ? `*New Meeting Booking*` : isEnquiry ? `*New Business Enquiry*` : `*New Contact Form Submission*`,
       ``,
       `*Name:* ${name}`,
-      `*Email:* ${email}`,
+      normalizedEmail ? `*Email:* ${normalizedEmail}` : null,
       `*Phone:* ${phone}`,
       business ? `*Business:* ${business}` : null,
       `*Service:* ${service}`,
@@ -57,26 +58,31 @@ export async function POST(req: Request) {
 
     // MongoDB — submission save
     await saveSubmission(isBooking ? "booking" : isEnquiry ? "enquiry" : "contact", {
-      name, email, phone, business, service, budget, message, date, time,
+      name, email: normalizedEmail, phone, business, service, budget, message, date, time,
     });
 
     // Auto-subscribe the submitter to the newsletter list so they receive
     // future updates, without sending them a duplicate acknowledgement email.
-    try {
-      await saveSubmission("subscribe", { email, name, auto: true });
-    } catch (subErr) {
-      console.error("Auto-subscribe from contact form failed:", subErr);
+    if (normalizedEmail) {
+      try {
+        await saveSubmission("subscribe", { email: normalizedEmail, name, auto: true });
+      } catch (subErr) {
+        console.error("Auto-subscribe from contact form failed:", subErr);
+      }
     }
 
-    // Gmail SMTP
-    await Promise.all([
+    // Gmail SMTP — ack email only when we have a valid address.
+    const emailJobs = [
       isBooking
-        ? notifyAdminBooking({ name, email, phone, business, service, budget, message, date, time })
+        ? notifyAdminBooking({ name, email: normalizedEmail, phone, business, service, budget, message, date, time })
         : isEnquiry
-        ? notifyAdminEnquiry({ name, email, phone, business, service, budget, message })
-        : notifyAdminContact({ name, email, phone, business, service, budget, message }),
-      sendAckEmail(email, name, isBooking, isEnquiry),
-    ]);
+        ? notifyAdminEnquiry({ name, email: normalizedEmail, phone, business, service, budget, message })
+        : notifyAdminContact({ name, email: normalizedEmail, phone, business, service, budget, message }),
+    ];
+    if (normalizedEmail) {
+      emailJobs.push(sendAckEmail(normalizedEmail, name, isBooking, isEnquiry));
+    }
+    await Promise.all(emailJobs);
 
     return NextResponse.json({ success: true });
   } catch (err) {

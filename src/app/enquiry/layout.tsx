@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { config } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/enquiry" },
   title: "Get a Quote | Best Digital Marketing Agency in Gorakhpur",
   description: `Submit a digital marketing enquiry to ${config.name}, the best digital marketing agency in Gorakhpur. Get a customized price quote for SEO, paid ads, web design, or social media management.`,
   keywords: [

@@ -3,9 +3,10 @@ import { useRef } from "react";
 import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, Play, CheckCircle, BarChart3 } from "lucide-react";
+import { ArrowRight, CheckCircle, BarChart3, MessageCircle } from "lucide-react";
 import { config } from "@/lib/config";
 import { WordRotator } from "@/components/ui/WordRotator";
+import { trackEvent, WHATSAPP_AUDIT, waLink } from "@/lib/analytics";
 
 const HomeBelowFold = dynamic(() => import("@/components/home/HomeBelowFold"), { ssr: false });
 
@@ -51,72 +52,53 @@ export default function HomePage() {
               <motion.div variants={itemVariants}>
                 <span className="tag-badge mb-5 inline-flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                  Digital Marketing Agency in Gorakhpur, UP
+                  Performance Marketing · SEO · Social · AI Automation — Gorakhpur &amp; India
                 </span>
               </motion.div>
 
-              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.8rem,6vw,2.3rem)] font-bold text-white leading-[1.2] tracking-[-0.03em] mb-5 break-words">
-                <motion.span
-                  initial="hidden"
-                  animate="show"
-                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
-                  className="whitespace-nowrap"
-                >
-                  {["Best", "Digital", "Marketing"].map((w) => (
-                    <motion.span
-                      key={w}
-                      variants={{ hidden: { opacity: 0, y: 32, filter: "blur(4px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] } } }}
-                      className="inline-block mr-[0.22em]"
-                    >
-                      {w}
-                    </motion.span>
-                  ))}
-                </motion.span>
-                <br className="block" />
-                <motion.span
-                  initial="hidden"
-                  animate="show"
-                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.16, delayChildren: 0.15 } } }}
-                  className="whitespace-nowrap"
-                >
-                  {["Agency"].map((w) => (
-                    <motion.span
-                      key={w}
-                      variants={{ hidden: { opacity: 0, y: 32, filter: "blur(4px)" }, show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] } } }}
-                      className="inline-block mr-[0.3em]"
-                    >
-                      {w}
-                    </motion.span>
-                  ))}
-                </motion.span>{" "}
-                <WordRotator words={["in Gorakhpur", "in Lucknow", "in U.P.", "Across India"]} className="gradient-text animate-gradient-text" />
+              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.9rem,6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.03em] mb-5 break-words">
+                Get More Leads.
+                <br />
+                Get More Customers.
+                <br />
+                <WordRotator words={["Grow Faster.", "Scale Smarter.", "Win Your Market."]} className="gradient-text animate-gradient-text" />
               </motion.h1>
 
-              <motion.p variants={itemVariants} className="text-base md:text-lg text-white/55 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
-                We are a top digital marketing company in Gorakhpur &amp; Uttar Pradesh — the best digital marketing agency in Gorakhpur — helping businesses across India generate more leads, sales, and revenue through Social Media Marketing, SEO, Google Ads, and Website Development.
+              <motion.p variants={itemVariants} className="text-base md:text-lg text-white/65 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
+                Performance Marketing, SEO, Social Media &amp; AI Automation for businesses in Gorakhpur and across India. We turn your marketing into a lead-generation machine that shows measurable results.
               </motion.p>
 
               <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-6">
-                <Link href="/enquiry#enquiry-form" className="btn-primary text-base px-7 py-3.5 group relative overflow-hidden shadow-[0_0_20px_rgba(220,38,38,0.3)] animate-pulse-slow">
+                <Link
+                  href="/enquiry#enquiry-form"
+                  onClick={() => trackEvent("hero_cta_click", { cta: "get_free_growth_audit", location: "hero" })}
+                  className="btn-primary text-base px-7 py-3.5 group relative overflow-hidden shadow-[0_0_20px_rgba(220,38,38,0.3)] animate-pulse-slow"
+                >
                   <span className="relative z-10 flex items-center font-bold">
-                    Start Growing Today
+                    Get Free Growth Audit
                     <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                   </span>
                 </Link>
-                <Link href="/pricing" className="btn-secondary text-base px-7 py-3.5 group">
-                  <Play className="w-4 h-4 text-brand-red group-hover:text-white transition-colors" />
-                  See Our Packages
-                </Link>
+                <a
+                  href={waLink(WHATSAPP_AUDIT)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent("whatsapp_click", { cta: "whatsapp_us", location: "hero" })}
+                  className="btn-secondary text-base px-7 py-3.5 group"
+                >
+                  <MessageCircle className="w-4 h-4 text-green-400 group-hover:text-white transition-colors" />
+                  WhatsApp Us
+                </a>
               </motion.div>
 
               <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center sm:items-start justify-center lg:justify-start gap-4 mb-8">
                 <div className="flex items-center gap-1 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
                   <span className="flex text-yellow-400 text-[10px]">★★★★★</span>
-                  <span className="text-white/60 text-xs font-semibold ml-1">5.0 Google Rating</span>
+                  <span className="text-white/60 text-xs font-semibold ml-1">{config.gmbRating} Google Rating</span>
                 </div>
                 <div className="flex flex-wrap justify-center lg:justify-start gap-x-4 gap-y-2 pt-1.5">
-                  {["Trusted by 200+ Businesses", "Results in 30 days"].map((t) => (
-                    <span key={t} className="flex items-center gap-1.5 text-xs text-white/45 font-medium">
+                  {["Gorakhpur · Uttar Pradesh · India", "Business-Focused Results"].map((t) => (
+                    <span key={t} className="flex items-center gap-1.5 text-xs text-white/50 font-medium">
                       <CheckCircle className="w-3 h-3 text-green-400" />
                       {t}
                     </span>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { config } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/pricing" },
   title: "Affordable Digital Marketing Agency in Gorakhpur | Pricing & Packages",
   description: `Find transparent and affordable digital marketing packages in Gorakhpur. Nexus Digital offers top SEO, social media marketing, and website design plans for local businesses with no hidden fees.`,
   keywords: [

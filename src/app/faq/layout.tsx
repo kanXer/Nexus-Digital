@@ -3,6 +3,7 @@ import { config } from "@/lib/config";
 import { faqs } from "@/data/faq";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/faq" },
   title: "FAQ | Best Digital Marketing Agency in Gorakhpur & Uttar Pradesh",
   description: `Find answers to your most important questions about digital marketing from the best digital marketing agency in Gorakhpur & Uttar Pradesh. ${config.name} covers SEO, Google Ads, social media, website development, and lead generation.`,
   keywords: [

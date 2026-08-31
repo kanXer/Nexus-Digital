@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { config } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/services" },
   title: "Digital Marketing Services in Gorakhpur | Best SEO & PPC",
   description: `Explore ${config.name}'s professional digital marketing services in Gorakhpur. As the best seo company in gorakhpur and a top website designing company gorakhpur, we offer expert social media marketing agency gorakhpur services and elite ppc services in gorakhpur to scale your business.`,
   keywords: [

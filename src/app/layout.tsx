@@ -31,6 +31,7 @@ const title = `${config.name} — ${config.tagline}`;
 const ogImage = config.ogImage;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(config.website),
   title: { default: `${config.name} | Best Digital Marketing Agency in Gorakhpur`, template: `%s | ${config.name}` },
   description: `Nexus Digital is the Best Digital Marketing Agency in Gorakhpur & UP. We specialize in Social Media Marketing, SEO, Website Development, and Google Ads to grow your business across Gorakhpur, Lucknow, and all of India.`,
   keywords: [
@@ -163,7 +164,9 @@ export const metadata: Metadata = {
     images: [ogImage],
   },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 } },
-  verification: { google: "your-google-verification-code" },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {

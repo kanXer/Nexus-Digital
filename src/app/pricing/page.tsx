@@ -12,6 +12,7 @@ import { pricingPlans, pricingFaqs } from "@/data/pricing";
 import { servicePricing } from "@/data/servicePricing";
 import ServiceItemBuyer from "@/components/pricing/ServiceItemBuyer";
 import { useAuth } from "@/context/AuthContext";
+import { trackEvent } from "@/lib/analytics";
 
 export default function PricingPage() {
   const { addToCart } = useAuth();
@@ -71,13 +72,13 @@ export default function PricingPage() {
 
             <div>
               <p className="text-white font-bold text-sm">
-                High Demand Alert: Only 3 Spots Left This Month
+                Limited Client Intake Each Month
               </p>
 
               <p className="text-white/60 text-xs">
-                We limit our client intake to maintain quality. Lock in your
-                current pricing and secure your spot today before we close
-                onboarding.
+                We intentionally limit our client intake to maintain quality.
+                Lock in today&apos;s pricing and secure your onboarding slot before
+                we close this month&apos;s intake.
               </p>
             </div>
           </div>
@@ -179,6 +180,7 @@ export default function PricingPage() {
                 <div className="space-y-2.5 relative z-10">
                   <button
                     onClick={() => {
+                      trackEvent("pricing_cta_click", { plan: plan.id, action: "add_to_cart" });
                       addToCart({
                         id: plan.id,
                         title: plan.name,
@@ -204,7 +206,7 @@ export default function PricingPage() {
                 </div>
 
                 <p className="text-center text-[11px] text-white/30 mt-3 relative z-10">
-                  🔥 Join 200+ businesses growing with us — live in 24h
+                  🔒 No hidden fees · Cancel anytime · GST included where shown
                 </p>
               </motion.div>
             ))}
@@ -388,10 +390,11 @@ export default function PricingPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 shrink-0">
             <Link
-              href="/contact#book-consultation"
+              href="/enquiry#enquiry-form"
+              onClick={() => trackEvent("service_cta_click", { service: "enterprise_custom", location: "pricing_enterprise" })}
               className="btn-primary px-7 py-3 group"
             >
-              Contact Us
+              Get Free Growth Audit
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
 

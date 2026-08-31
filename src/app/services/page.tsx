@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import { serviceCategories } from "@/data/services";
 import * as LucideIcons from "lucide-react";
 import { AnimatedTitle } from "@/components/ui/AnimatedTitle";
+import { trackEvent } from "@/lib/analytics";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const icons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -53,8 +54,8 @@ export default function ServicesPage() {
             From social media to paid ads, SEO to web development — our digital marketing services in Gorakhpur &amp; India are designed with one goal: growing your revenue. As the best digital marketing agency in Gorakhpur, we are a top digital marketing company in Gorakhpur offering full-service campaigns. From ranking your brand via the best seo company in gorakhpur to designing high-converting sites as a website designing company gorakhpur, running high-performance campaigns as a premier social media marketing agency gorakhpur, or maximizing your ROAS with expert ppc services in gorakhpur — we have you covered.
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}>
-            <Link href="/contact#book-consultation" className="btn-primary px-8 py-4 group">
-              Get Free Consultation
+            <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("service_cta_click", { service: "all", location: "services_hero" })} className="btn-primary px-8 py-4 group">
+              Get Free Growth Audit
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </motion.div>
@@ -126,7 +127,8 @@ export default function ServicesPage() {
                         ))}
                       </ul>
                       <Link
-                        href="/contact#book-consultation"
+                        href="/enquiry#enquiry-form"
+                        onClick={() => trackEvent("service_cta_click", { service: service.title, location: "services_card" })}
                         className="mt-4 inline-flex items-center gap-1.5 text-brand-blue-light text-sm font-semibold group/link hover:gap-3 transition-all"
                       >
                         Get Started <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1" />
@@ -148,16 +150,16 @@ export default function ServicesPage() {
                   Stop Losing to Competitors
                 </span>
                 <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-                  Tired of marketing that doesn't generate leads? Let us fix it.
+                  Tired of marketing that doesn&apos;t generate leads? Let us fix it.
                 </h2>
                 <p className="text-white/70 mb-8 max-w-2xl text-sm md:text-base">
-                  We're a top digital marketing agency in Gorakhpur that actually focuses on ROI. We take a limited number of new clients per month to ensure quality. Secure your spot today.
+                  We&apos;re a top digital marketing agency in Gorakhpur that actually focuses on ROI. We take a limited number of new clients per month to ensure quality. Secure your spot today.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/pricing" className="btn-primary px-8 py-3.5 shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-pulse-slow font-bold">
+                  <Link href="/pricing" onClick={() => trackEvent("pricing_cta_click", { location: "services_interceptor" })} className="btn-primary px-8 py-3.5 shadow-[0_0_20px_rgba(220,38,38,0.4)] animate-pulse-slow font-bold">
                     View Our Packages
                   </Link>
-                  <Link href="/enquiry#enquiry-form" className="btn-secondary px-8 py-3.5 border-red-500/50 hover:bg-red-500/10">
+                  <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("service_cta_click", { service: "all", location: "services_interceptor" })} className="btn-secondary px-8 py-3.5 border-red-500/50 hover:bg-red-500/10">
                     Get Free Audit
                   </Link>
                 </div>
@@ -178,8 +180,8 @@ export default function ServicesPage() {
             initialDelay={0.1}
           />
           <p className="text-white/50 mb-8 leading-relaxed">Book a free 30-minute consultation. We&apos;ll audit your current marketing and recommend the right strategy for your business in Gorakhpur, Lucknow, or anywhere in India — including local SEO services in Uttar Pradesh, performance marketing, and lead generation for every budget.</p>
-          <Link href="/contact#book-consultation" className="btn-primary px-8 py-4 text-base group">
-            Book Free Strategy Call
+          <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("service_cta_click", { service: "all", location: "services_bottom" })} className="btn-primary px-8 py-4 text-base group">
+            Get Free Growth Audit
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>

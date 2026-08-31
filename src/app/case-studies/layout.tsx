@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { config } from "@/lib/config";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/case-studies" },
   title: "Digital Marketing Case Studies | Top Agency in Gorakhpur",
   description: `In-depth case studies from ${config.name}, the best digital marketing agency in Gorakhpur. Learn how we generate leads, increase ROAS, and rank local businesses on search engines.`,
   keywords: [
