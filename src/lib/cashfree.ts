@@ -86,3 +86,24 @@ export async function getCashfreeOrderStatus(orderId: string) {
     clearTimeout(timer);
   }
 }
+
+// GET /pg/orders/{order_id}/payments — returns the list of payments attempted
+// against an order. More authoritative for payment verification because it
+// exposes payment_status (SUCCESS/FAILED) per attempt.
+export async function getCashfreePayments(orderId: string): Promise<any> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(
+      `${BASE}/pg/orders/${encodeURIComponent(orderId)}/payments`,
+      { method: "GET", headers: authHeaders(), signal: controller.signal }
+    );
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(json?.message || "Could not fetch Cashfree order payments");
+    }
+    return json;
+  } finally {
+    clearTimeout(timer);
+  }
+}
