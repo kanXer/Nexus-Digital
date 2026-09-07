@@ -2,12 +2,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Send, UserCog, LogOut, ArrowLeft, Menu, X, Zap, Moon, FileBarChart2, PackageCheck, Tag } from "lucide-react";
+import { LayoutDashboard, Send, UserCog, LogOut, ArrowLeft, Menu, X, Zap, Moon, FileBarChart2, PackageCheck, Tag, Inbox } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { config } from "@/lib/config";
 
 const links = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/submissions", label: "Submissions", icon: Inbox },
   { href: "/admin/leads", label: "Lead Report", icon: FileBarChart2 },
   { href: "/admin/orders", label: "Orders", icon: PackageCheck },
   { href: "/admin/coupons", label: "Coupons & Offers", icon: Tag },
@@ -28,7 +29,7 @@ export default function AdminSidebar() {
   const close = () => setOpen(false);
 
   const sidebarContent = (
-    <div className="always-dark flex flex-col h-full text-[var(--text-primary)]">
+    <div className="flex flex-col h-full text-[var(--text-primary)]">
       {/* Brand banner */}
       <div className="relative shrink-0 px-4 pt-5 pb-4">
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-48 h-48 bg-brand-blue/20 blur-[70px] rounded-full pointer-events-none" />
@@ -110,11 +111,13 @@ export default function AdminSidebar() {
           }`}
         >
           <span
-            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-              pathname.startsWith("/admin/account") ? "bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm" : "bg-brand-blue/15"
+            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+              pathname.startsWith("/admin/account")
+                ? "bg-brand-blue text-white shadow-glow-sm"
+                : "bg-brand-blue/15 text-brand-blue border border-brand-blue/30"
             }`}
           >
-            <UserCog className="w-4 h-4 text-brand-blue-light" />
+            <UserCog className="w-4 h-4" />
           </span>
           <span className="min-w-0 flex-1 truncate">Admin Account</span>
           <span className="text-[9px] px-2 py-0.5 rounded-full border border-brand-blue/30 bg-brand-blue/10 text-brand-blue-light uppercase tracking-wider shrink-0">
@@ -138,7 +141,7 @@ export default function AdminSidebar() {
   return (
     <>
       {/* Mobile top bar — sticky so content flows below it without overlap */}
-      <div className="always-dark lg:hidden sticky top-0 z-40 flex items-center justify-between h-14 px-4 bg-[var(--bg-secondary)] border-b border-[var(--border-default)]">
+      <div className="lg:hidden sticky top-0 z-40 flex items-center justify-between h-14 px-4 bg-[var(--bg-secondary)] border-b border-[var(--border-default)]">
         <Link href="/admin/dashboard" onClick={close} className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light flex items-center justify-center">
             <Zap className="w-4 h-4 text-white" fill="white" />

@@ -57,27 +57,16 @@ const GUEST_KEY = "nexus_chat_guest_count";
 const LOGIN_PROMPT =
   "You've used your 5 free messages — you've been super helpful to help, so great stuff! To keep chatting (and get personalized answers), just sign in — it's free and takes seconds. Your conversation will continue right here.";
 
-// All service categories exactly as shown on the Services page.
+// High-level service categories
 const SERVICE_CATEGORIES = [
+  "Web Development",
+  "Google & Meta Ads",
+  "SEO & Ranking",
   "Social Media Marketing",
-  "Paid Marketing & Ads",
-  "Search Engine Optimisation",
-  "Website & Automation",
-  "Analytics & Reporting",
 ];
 
-const QUICK_REPLIES = ["📞 Call Specialist", "💬 Send WhatsApp", "⚡ Free SEO audit", ...SERVICE_CATEGORIES, "View Pricing", "Start my Enquiry"];
-
-// Contextual suggestion chips — shown after each assistant reply, matched against
-// the last message's topic so follow-ups feel relevant to what was just said.
-const REPLY_SUGGESTIONS: { match: RegExp; chips: string[] }[] = [
-  { match: /seo|rank|google map|local seo|on[- ]?page|backlink/i, chips: ["SEO pricing", "Local SEO", "Free SEO audit"] },
-  { match: /meta ads|facebook ad|instagram|social media|reel|smm/i, chips: ["Meta Ads cost", "Social Media Marketing", "Can you handle my Instagram?"] },
-  { match: /google ads|ppc|search ad|google ad/i, chips: ["Google Ads budget", "PPC management", "How fast do ads work?"] },
-  { match: /website|landing page|web dev|web design|custom site/i, chips: ["Website cost", "Landing page design", "How long does it take?"] },
-  { match: /email|newsletter|whatsapp/i, chips: ["Email Marketing", "WhatsApp Automation", "Can you send campaigns?"] },
-  { match: /plan|price|pricing|cost|package|buy|pay|subscribe|start now|monthly|fee|charge/i, chips: ["View Pricing", "Start Paid Plan", "Ask for Pricing"] },
-];
+// Clean prompt starters on initial empty state — no duplicate Call/WhatsApp buttons (already in top bar)
+const QUICK_REPLIES = ["What services do you offer?", "View Pricing Plans", "Audit my website"];
 
 const WHATSAPP_URL = `https://wa.me/${config.whatsapp}?text=${encodeURIComponent(
   "Hi! I just chatted with Friday and want to talk to your team."
@@ -129,7 +118,7 @@ function linkify(text: string): ReactNode {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-red-400 underline underline-offset-2 hover:text-red-300 hover:brightness-125 transition-colors break-words font-medium"
+        className="text-brand-red font-bold underline underline-offset-2 hover:opacity-80 transition-opacity break-words"
       >
         {cleanToken}
       </a>
@@ -429,10 +418,7 @@ export function ChatWidget() {
   const toggle = () => {
     followRef.current = true;
     setOpen((o) => !o);
-    if (!openedRef.current) {
-      openedRef.current = true;
-      setMessages([buildWelcome()]);
-    }
+    openedRef.current = true;
   };
 
   // Smooth typewriter — reveals text at message index `replyIndex` at a steady
@@ -524,6 +510,7 @@ export function ChatWidget() {
     setMessages(next);
     setInput("");
     setLoading(true);
+    setLastAction("chat");
 
     // Capture a lead if the visitor shared an email anywhere in the conversation.
     // (Skip while the structured enquiry form is active — it already saves the lead.)
@@ -624,28 +611,46 @@ export function ChatWidget() {
     }
   };
 
-  // Contextual follow-up suggestions for the latest assistant reply (or welcome
-  // quick replies on the very first screen). Resets every time a new message is added.
+  // Contextual follow-up suggestions:
+  // ONLY shown when explicitly needed (e.g. user directly asks for services or pricing)
+  // or on initial screen as clean conversation starters.
+  // NEVER shown on regular chat replies to avoid spamming buttons.
   const suggestions = useMemo(() => {
     if (loading) return [];
     if (messages.length <= 1) return QUICK_REPLIES;
-    const last = messages[messages.length - 1];
-    if (last.role !== "assistant") return [];
-    const text = last.content.toLowerCase();
-    for (const { match, chips } of REPLY_SUGGESTIONS) {
-      if (match.test(text)) return chips;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg.role !== "assistant") return [];
+
+    // Find the last message from user to see if they directly asked for options
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
+    const userText = (lastUserMsg?.content || "").toLowerCase();
+    const botText = (lastMsg.content || "").toLowerCase();
+
+    // 1. Only if user directly asked what services we offer / list of services:
+    if (/\b(services|what (services|do you offer|can you do)|offerings|capabilities|kya karte ho|kya service)\b/i.test(userText)) {
+      return SERVICE_CATEGORIES;
     }
-    const base = [...SERVICE_CATEGORIES, "Start my Enquiry"];
-    if (/enquiry|form|submit|quote/i.test(text)) return base;
-    return [...SERVICE_CATEGORIES.slice(0, 3), "Start my Enquiry"];
-  }, [messages, loading, REPLY_SUGGESTIONS, SERVICE_CATEGORIES]);
+
+    // 2. Only if user directly asked about pricing / plans / packages:
+    if (/\b(pricing|packages|charges|rate list|kitna charge|kharcha)\b/i.test(userText)) {
+      return ["View Pricing Plans", "Start my Enquiry"];
+    }
+
+    // 3. Only if bot explicitly asked whether to submit/start enquiry:
+    if (/can i submit (your )?enquiry|start (your )?enquiry|fill an enquiry|shall i book/i.test(botText)) {
+      return ["Yes, submit enquiry", "No, just exploring"];
+    }
+
+    // Default: Return EMPTY array! No spamming buttons on standard conversation replies!
+    return [];
+  }, [messages, loading]);
 
   const ContactButtons = (
     <div className="flex flex-col gap-2.5 mt-2 w-full">
       <div className="grid grid-cols-2 gap-2">
         <a
           href={`tel:${config.phoneRaw}`}
-          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold bg-emerald-600 hover:bg-emerald-500 active:scale-95 shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all"
+          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:scale-95 shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all"
         >
           <Phone className="w-4 h-4" />
           Call Direct
@@ -654,7 +659,7 @@ export function ChatWidget() {
           href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold hover:brightness-110 active:scale-95 shadow-[0_6px_20px_rgba(37,211,102,0.35)] transition-all"
+          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold text-white hover:brightness-110 active:scale-95 shadow-[0_6px_20px_rgba(37,211,102,0.35)] transition-all"
           style={{ background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)" }}
         >
           <MessageCircle className="w-4 h-4" fill="white" />
@@ -664,16 +669,16 @@ export function ChatWidget() {
       <div className="flex gap-2">
         <a
           href={`mailto:${config.email}`}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold hover:text-white bg-white/5 hover:bg-white/12 border border-white/10 active:scale-95 transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[12px] font-bold text-[var(--text-primary)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-default)] active:scale-95 transition-all shadow-sm"
         >
-          <Mail className="w-3.5 h-3.5 text-brand-blue-light" /> Email Us
+          <Mail className="w-3.5 h-3.5 text-brand-red" /> Email Us
         </a>
         <button
           type="button"
           onClick={() => send("Start my Enquiry")}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold hover:text-white bg-white/5 hover:bg-white/12 border border-white/10 active:scale-95 transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-[12px] font-bold text-[var(--text-primary)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-default)] active:scale-95 transition-all shadow-sm"
         >
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Book Free Audit
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Book Free Audit
         </button>
       </div>
     </div>
@@ -882,14 +887,14 @@ export function ChatWidget() {
                 </div>
 
                 {/* Quick Connect & Action Hub */}
-                <div className="px-3 py-2 chat-fast-bar flex items-center justify-between gap-1.5 shrink-0 overflow-x-auto no-scrollbar">
+                <div className="px-3 py-2.5 chat-fast-bar flex items-center justify-between gap-1.5 shrink-0 overflow-x-auto no-scrollbar">
                   <a
                     href={`tel:${config.phoneRaw}`}
                     title="Direct Call (+91-9696262007)"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 dark:text-emerald-300 text-[11px] font-bold transition-all active:scale-95 shrink-0 shadow-sm"
+                    className="chat-fast-btn chat-fast-btn-call gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 shrink-0"
                   >
-                    <Phone className="w-3.5 h-3.5 dark:text-emerald-400" />
-                    <span>Call Direct</span>
+                    <Phone className="w-3.5 h-3.5 shrink-0" />
+                    <span>Call Now</span>
                   </a>
 
                   <a
@@ -897,9 +902,9 @@ export function ChatWidget() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Send WhatsApp Message"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/15 hover:bg-green-500/25 border border-green-500/30 dark:text-green-300 text-[11px] font-bold transition-all active:scale-95 shrink-0 shadow-sm"
+                    className="chat-fast-btn chat-fast-btn-wa gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 shrink-0"
                   >
-                    <MessageCircle className="w-3.5 h-3.5 text-green-500 dark:text-green-400" fill="currentColor" />
+                    <MessageCircle className="w-3.5 h-3.5 shrink-0" fill="currentColor" />
                     <span>WhatsApp</span>
                   </a>
 
@@ -907,19 +912,19 @@ export function ChatWidget() {
                     type="button"
                     onClick={() => send("Free SEO audit")}
                     title="Get Free Website & SEO Audit"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-600 dark:text-white text-[11px] font-bold transition-all active:scale-95 shrink-0 shadow-sm"
+                    className="chat-fast-btn chat-fast-btn-audit gap-1.5 px-2.5 py-1.5 rounded-lg active:scale-95 shrink-0 cursor-pointer"
                   >
-                    <Zap className="w-3.5 h-3.5 text-brand-red" />
+                    <Zap className="w-3.5 h-3.5 shrink-0" />
                     <span>Free Audit</span>
                   </button>
 
                   <a
                     href="/pricing"
                     title="View Pricing & Plans"
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg chat-plan-btn text-[11px] font-semibold transition-all active:scale-95 shrink-0 shadow-sm"
+                    className="chat-fast-btn chat-fast-btn-plans gap-1 px-2.5 py-1.5 rounded-lg active:scale-95 shrink-0"
                   >
                     <span>Plans</span>
-                    <ArrowRight className="w-3 h-3 opacity-60" />
+                    <ArrowRight className="w-3 h-3 opacity-70 shrink-0" />
                   </a>
                 </div>
 
