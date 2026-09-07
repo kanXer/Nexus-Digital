@@ -118,3 +118,34 @@ export async function getCashfreePayments(orderId: string): Promise<any> {
     clearTimeout(timer);
   }
 }
+
+// Verifies Cashfree webhook signature (HMAC-SHA256 of timestamp + rawBody using CASHFREE_SECRET_KEY)
+export function verifyCashfreeWebhookSignature(
+  rawBody: string,
+  timestamp: string | null,
+  signature: string | null
+): boolean {
+  if (!CASHFREE_SECRET_KEY || !timestamp || !signature) {
+    return false;
+  }
+  try {
+    const crypto = require("crypto");
+    const dataToSign = `${timestamp}${rawBody}`;
+    const computedSignature = crypto
+      .createHmac("sha256", CASHFREE_SECRET_KEY)
+      .update(dataToSign)
+      .digest("base64");
+
+    const expectedBuf = Buffer.from(computedSignature);
+    const providedBuf = Buffer.from(signature);
+
+    if (expectedBuf.length !== providedBuf.length) {
+      return false;
+    }
+
+    return crypto.timingSafeEqual(expectedBuf, providedBuf);
+  } catch (err) {
+    console.error("Cashfree webhook signature verification error:", err);
+    return false;
+  }
+}
