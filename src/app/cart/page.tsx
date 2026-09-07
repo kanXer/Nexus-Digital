@@ -38,9 +38,10 @@ export default function CartPage() {
     setAddedIds((prev) => new Set([...prev, plan.id]));
   };
 
-  const handleCheckoutItem = (planId: string) => {
+  const handleCheckoutItem = (planId: string, numericPrice?: number) => {
     requireAuthForAction(() => {
-      router.push(`/checkout?plan=${planId}`);
+      const priceQuery = numericPrice ? `&price=${numericPrice}` : "";
+      router.push(`/checkout?plan=${encodeURIComponent(planId)}${priceQuery}`);
     });
   };
 
@@ -50,7 +51,7 @@ export default function CartPage() {
       return;
     }
     if (cart.length > 0) {
-      router.push(`/checkout?plan=${cart[0].id}`);
+      router.push(`/checkout?plan=cart`);
     }
   };
 
@@ -177,7 +178,7 @@ export default function CartPage() {
                             {/* Actions */}
                             <div className="flex items-center gap-2 mt-4">
                               <button
-                                onClick={() => handleCheckoutItem(item.id)}
+                                onClick={() => handleCheckoutItem(item.id, item.numericPrice)}
                                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl btn-primary font-bold text-xs"
                               >
                                 {user ? <>Buy Now <ArrowRight className="w-3.5 h-3.5" /></> : <><Lock className="w-3 h-3" /> Sign In to Buy</>}
