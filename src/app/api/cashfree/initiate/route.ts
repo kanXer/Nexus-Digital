@@ -34,20 +34,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
+    const isProd =
+      (process.env.CASHFREE_ENV || "sandbox").toLowerCase() === "production" ||
+      process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
+      process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true";
+
     // Determine absolute base URL for return_url
     const originHeader = req.headers.get("origin");
     const hostHeader = req.headers.get("host");
-    const proto = req.headers.get("x-forwarded-proto") || "https";
 
     let redirectBase = String(body?.redirectBase || "").trim();
     if (!redirectBase && originHeader) {
       redirectBase = originHeader;
     } else if (!redirectBase && hostHeader) {
-      redirectBase = `${proto}://${hostHeader}`;
+      redirectBase = `https://${hostHeader}`;
     } else if (!redirectBase) {
       redirectBase = process.env.NEXT_PUBLIC_AGENCY_WEBSITE || "https://thenexusdigital.in";
     }
     redirectBase = redirectBase.replace(/\/+$/, "");
+
+    // Cashfree Production API strictly enforces HTTPS on return_url.
+    // If testing on localhost/http, default to agency production URL to satisfy Cashfree validation.
+    if (isProd) {
+      if (
+        redirectBase.startsWith("http://localhost") ||
+        redirectBase.startsWith("http://127.0.0.1") ||
+        !redirectBase.startsWith("https://")
+      ) {
+        redirectBase = (process.env.NEXT_PUBLIC_AGENCY_WEBSITE || "https://thenexusdigital.in").replace(/\/+$/, "");
+      }
+    }
 
     // {order_id} & {order_status} placeholders are substituted by Cashfree
     // before the browser is redirected back to our success page.
@@ -65,11 +81,6 @@ export async function POST(req: Request) {
       customerPhone,
       returnUrl,
     });
-
-    const isProd =
-      (process.env.CASHFREE_ENV || "sandbox").toLowerCase() === "production" ||
-      process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
-      process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true";
 
     const paymentUrl = isProd
       ? "https://api.cashfree.com/pg/view/sessions/checkout"
