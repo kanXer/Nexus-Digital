@@ -67,8 +67,6 @@ const SERVICE_CATEGORIES = [
   "Analytics & Reporting",
 ];
 
-const QUICK_REPLIES = ["📞 Call Specialist", "💬 Send WhatsApp", "⚡ Free SEO audit", ...SERVICE_CATEGORIES, "View Pricing", "Start my Enquiry"];
-
 // Contextual suggestion chips — shown after each assistant reply, matched against
 // the last message's topic so follow-ups feel relevant to what was just said.
 const REPLY_SUGGESTIONS: { match: RegExp; chips: string[] }[] = [
