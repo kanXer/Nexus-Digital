@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ShieldCheck,
   CheckCircle2,
@@ -20,7 +20,6 @@ import {
   Copy,
   Check,
   Tag,
-  Percent,
   X,
   Loader2,
   Package,
@@ -181,11 +180,19 @@ function CheckoutContent() {
     }
   }
 
-  // ══════ GST & DISCOUNT CALCULATION ══════
+  // ══════ DYNAMIC GST (FROM ENV / CONFIG) & DISCOUNT CALCULATION ══════
+  const gstRate = Number(process.env.NEXT_PUBLIC_GST_RATE || config.gstRate || 18);
+  const halfGst = gstRate / 2;
+  const splitGstLabel =
+    gstRate > 0
+      ? ` - CGST ${Number.isInteger(halfGst) ? halfGst : halfGst.toFixed(1)}% + SGST ${
+          Number.isInteger(halfGst) ? halfGst : halfGst.toFixed(1)
+        }%`
+      : "";
+
   const subtotal = plan.priceInr;
   const discountAmount = appliedCoupon ? appliedCoupon.discountAmount : 0;
   const taxableAmount = Math.max(0, subtotal - discountAmount);
-  const gstRate = 18; // 18% standard GST for digital services
   const gstAmount = Math.round((taxableAmount * gstRate) / 100);
   const totalPayable = taxableAmount + gstAmount;
 
@@ -223,7 +230,9 @@ function CheckoutContent() {
           setCouponError(data.error || "Invalid coupon code.");
         } else {
           setAppliedCoupon(data.coupon);
-          setCouponSuccess(`Coupon '${data.coupon.code}' applied! Saved ₹${data.coupon.discountAmount.toLocaleString("en-IN")}`);
+          setCouponSuccess(
+            `Coupon '${data.coupon.code}' applied! Saved ₹${data.coupon.discountAmount.toLocaleString("en-IN")}`
+          );
           setCouponInput(data.coupon.code);
         }
       } catch (err) {
@@ -260,7 +269,6 @@ function CheckoutContent() {
       numericAmount: totalPayable,
     });
 
-    // Clear cart if checking out cart bundle
     if (isBundle) {
       clearCart();
     }
@@ -327,7 +335,7 @@ function CheckoutContent() {
       amount: subtotal,
       discount: discountAmount,
       couponCode: appliedCoupon?.code,
-      gstRate: 18,
+      gstRate: gstRate,
       currency: "INR",
       paymentRef: completedOrder.id,
     });
@@ -399,7 +407,7 @@ function CheckoutContent() {
 
           {/* Amount Paid Pill */}
           <div className="mt-6 inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10">
-            <span className="text-xs text-white/50 uppercase tracking-wider font-semibold">Total Paid (incl. GST)</span>
+            <span className="text-xs text-white/50 uppercase tracking-wider font-semibold">Total Paid (incl. {gstRate}% GST)</span>
             <span className="text-2xl font-black text-emerald-400">
               ₹{(completedOrder.numericAmount ?? totalPayable).toLocaleString("en-IN")}
             </span>
@@ -529,7 +537,7 @@ function CheckoutContent() {
         {/* Selected Package / Bundle Summary */}
         <div className="glass-card-brand rounded-3xl p-6 border border-brand-blue/30 shadow-[0_0_40px_rgba(109,94,252,0.12)] relative overflow-hidden group hover:border-brand-blue/50 transition-colors duration-500">
           <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-blue/10 rounded-full blur-2xl group-hover:bg-brand-blue/20 transition-all duration-500" />
-          
+
           <div className="flex items-center justify-between mb-4 relative z-10">
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-brand-blue/20 text-brand-blue-light border border-brand-blue/30 flex items-center gap-1.5">
               <Package className="w-3.5 h-3.5" />
@@ -572,7 +580,7 @@ function CheckoutContent() {
               <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /> 100% Dedicated Account Manager Onboarding
             </li>
             <li className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /> Transparent 18% GST Breakdown & Instant Tax Invoice
+              <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /> Transparent {gstRate}% GST Breakdown & Instant Tax Invoice
             </li>
             <li className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" /> Cancel or Pause Anytime (No Lock-in Contracts)
@@ -682,39 +690,47 @@ function CheckoutContent() {
           </div>
 
           {/* ══════ COUPON CODE SECTION ══════ */}
-          <div className="relative rounded-2xl bg-white/[0.04] border border-white/10 p-4 space-y-3">
+          <div className="relative rounded-2xl bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/12 p-4 sm:p-5 space-y-3.5 shadow-lg">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5 text-brand-red" /> Have a Coupon or Offer Code?
+              <label className="text-xs font-bold text-white flex items-center gap-2">
+                <span className="w-6 h-6 rounded-lg bg-brand-red/20 border border-brand-red/30 flex items-center justify-center text-brand-red">
+                  <Tag className="w-3.5 h-3.5" />
+                </span>
+                Have a Coupon or Offer Code?
               </label>
               {appliedCoupon && (
-                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                  Code Active
+                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <Check className="w-3 h-3 text-emerald-400" /> Active
                 </span>
               )}
             </div>
 
             {appliedCoupon ? (
-              <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-                <div className="min-w-0 pr-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-emerald-400 font-mono font-bold text-sm">
-                      {appliedCoupon.code}
-                    </span>
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold">
-                      {appliedCoupon.discountType === "percentage"
-                        ? `${appliedCoupon.discountValue}% OFF`
-                        : `Flat ₹${appliedCoupon.discountValue} OFF`}
-                    </span>
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950/40 via-emerald-900/20 to-black/40 border border-emerald-500/40 p-3.5 flex items-center justify-between shadow-[0_0_20px_rgba(16,185,129,0.15)]">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                    <Sparkles className="w-5 h-5" />
                   </div>
-                  <p className="text-[11px] text-emerald-200/80 truncate mt-0.5">
-                    Saved ₹{appliedCoupon.discountAmount.toLocaleString("en-IN")} on this order
-                  </p>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono font-black text-white text-sm tracking-wider bg-black/40 px-2 py-0.5 rounded border border-emerald-500/30">
+                        {appliedCoupon.code}
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full">
+                        {appliedCoupon.discountType === "percentage"
+                          ? `${appliedCoupon.discountValue}% OFF`
+                          : `Flat ₹${appliedCoupon.discountValue.toLocaleString("en-IN")} OFF`}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-emerald-300/90 font-medium mt-1">
+                      Saved ₹{appliedCoupon.discountAmount.toLocaleString("en-IN")} on this order!
+                    </p>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={handleRemoveCoupon}
-                  className="p-1.5 rounded-lg bg-white/5 hover:bg-red-500/20 text-white/50 hover:text-red-400 border border-white/10 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl bg-white/5 hover:bg-red-500/20 text-white/50 hover:text-red-400 border border-white/10 hover:border-red-500/30 transition-all cursor-pointer shrink-0 ml-2"
                   title="Remove coupon"
                 >
                   <X className="w-4 h-4" />
@@ -736,16 +752,28 @@ function CheckoutContent() {
                         handleApplyCoupon();
                       }
                     }}
-                    placeholder="e.g. NEXUS10"
+                    placeholder="Enter code (e.g. NEXUS10)"
                     disabled={couponLoading}
-                    className="w-full bg-black/40 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white uppercase placeholder:text-white/30 placeholder:normal-case font-mono focus:outline-none focus:border-brand-red transition-all"
+                    className="w-full bg-black/60 border border-white/20 hover:border-white/30 focus:border-brand-red rounded-xl px-3.5 py-2.5 text-xs text-white uppercase placeholder:text-white/35 placeholder:normal-case font-mono font-bold tracking-wider focus:outline-none focus:ring-1 focus:ring-brand-red/50 transition-all"
                   />
+                  {couponInput && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCouponInput("");
+                        setCouponError("");
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
                 <button
                   type="button"
                   onClick={() => handleApplyCoupon()}
                   disabled={couponLoading || !couponInput.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-red to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(220,38,38,0.3)] flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-red to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(220,38,38,0.35)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] active:scale-95 flex items-center gap-1.5 cursor-pointer shrink-0"
                 >
                   {couponLoading ? (
                     <>
@@ -753,7 +781,7 @@ function CheckoutContent() {
                       Checking...
                     </>
                   ) : (
-                    "Apply"
+                    "Apply Code"
                   )}
                 </button>
               </div>
@@ -761,26 +789,27 @@ function CheckoutContent() {
 
             {/* Error Message */}
             {couponError && (
-              <div className="flex items-start gap-1.5 text-[11px] text-red-400 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                <span>{couponError}</span>
+              <div className="flex items-start gap-2 text-[11px] text-red-300 bg-red-500/15 border border-red-500/30 p-3 rounded-xl">
+                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <span className="font-medium">{couponError}</span>
               </div>
             )}
 
             {/* Success Message */}
             {couponSuccess && !couponError && (
-              <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl">
-                <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                <span>{couponSuccess}</span>
+              <div className="flex items-center gap-2 text-[11px] text-emerald-300 bg-emerald-500/15 border border-emerald-500/30 p-3 rounded-xl">
+                <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="font-medium">{couponSuccess}</span>
               </div>
             )}
 
             {/* Available Quick Offers Pill List */}
             {availableCoupons.length > 0 && !appliedCoupon && (
-              <div className="pt-2 border-t border-white/8">
-                <p className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-2">
-                  Popular Agency Offers:
-                </p>
+              <div className="pt-3 border-t border-white/10 space-y-2">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-white/45">
+                  <span>Available Offers for You:</span>
+                  <span className="text-brand-red font-semibold">Tap to apply</span>
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {availableCoupons.map((c) => {
                     const eligible = subtotal >= c.minOrderAmount;
@@ -792,10 +821,10 @@ function CheckoutContent() {
                           setCouponInput(c.code);
                           handleApplyCoupon(c.code);
                         }}
-                        className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${
+                        className={`text-[11px] font-medium px-3 py-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 ${
                           eligible
-                            ? "bg-white/5 border-white/15 text-white/80 hover:bg-brand-red/20 hover:border-brand-red/40 hover:text-white"
-                            : "bg-white/[0.02] border-white/5 text-white/40 hover:text-white/60"
+                            ? "bg-white/[0.06] hover:bg-brand-red/20 border-white/15 hover:border-brand-red/40 text-white shadow-sm"
+                            : "bg-white/[0.02] border-white/5 text-white/35 hover:text-white/55"
                         }`}
                         title={
                           eligible
@@ -803,14 +832,12 @@ function CheckoutContent() {
                             : `Requires min order of ₹${c.minOrderAmount.toLocaleString("en-IN")}`
                         }
                       >
-                        <Tag className="w-2.5 h-2.5 text-brand-red" />
-                        <span className="font-mono font-bold">{c.code}</span>
-                        <span>
-                          (
+                        <Tag className="w-3 h-3 text-brand-red shrink-0" />
+                        <span className="font-mono font-bold text-white">{c.code}</span>
+                        <span className="text-emerald-400 font-semibold text-[10px]">
                           {c.discountType === "percentage"
-                            ? `${c.discountValue}%`
-                            : `₹${c.discountValue}`}
-                          )
+                            ? `${c.discountValue}% OFF`
+                            : `₹${c.discountValue} OFF`}
                         </span>
                       </button>
                     );
@@ -848,10 +875,10 @@ function CheckoutContent() {
               </span>
             </div>
 
-            {/* GST (18%) */}
+            {/* GST (Configured Rate from ENV) */}
             <div className="flex items-center justify-between text-white/70">
               <span className="flex items-center gap-1">
-                GST (18% - CGST 9% + SGST 9%)
+                GST ({gstRate}%{splitGstLabel})
               </span>
               <span className="font-semibold text-white">
                 + ₹{gstAmount.toLocaleString("en-IN")}
@@ -865,7 +892,9 @@ function CheckoutContent() {
                   Total Payable
                 </span>
                 <span className="text-[10px] text-emerald-400/80 font-medium">
-                  {discountAmount > 0 ? `Saved ₹${discountAmount.toLocaleString("en-IN")}` : "Inclusive of all taxes"}
+                  {discountAmount > 0
+                    ? `Saved ₹${discountAmount.toLocaleString("en-IN")}`
+                    : `Inclusive of ${gstRate}% GST`}
                 </span>
               </div>
               <div className="text-right">

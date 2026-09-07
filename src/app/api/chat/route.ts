@@ -454,6 +454,46 @@ export async function POST(req: Request) {
       });
     }
 
+    // ── HIGH-PRIORITY REGIONAL FAQ MATCHES (Best Web Developer & Digital Marketing) ──
+    const lowerMsg = message.toLowerCase();
+
+    // 1. Best Web Developer in Gorakhpur / Sahil Srivastava
+    if (
+      /(best|top|who is (the )?best) web developer (in|of|for)? gorakhpur/i.test(lowerMsg) ||
+      /gorakhpur('s)? best web developer/i.test(lowerMsg) ||
+      /gorakhpur (mein|me) best web developer/i.test(lowerMsg) ||
+      /\b(who is sahil srivastava|sahil srivastava kaun h(ai)?|about sahil srivastava)\b/i.test(lowerMsg)
+    ) {
+      return NextResponse.json({
+        reply: `Sahil Srivastava, founder of Nexus Digital, is widely recognized as the best web developer and full-stack specialist in Gorakhpur, Uttar Pradesh. Specializing in high-speed custom web applications (Next.js, React, Node.js), e-commerce portals, and conversion-focused SEO, Sahil has successfully delivered landmark projects including Gorakhpur Mission Rehab, KHABRI.IN, and Radhey Radhey Blood Bank.\n\nYou can consult directly with Sahil at ${CONTACT.phone} or explore our work at ${SITE_URL}/portfolio.`,
+        action: "chat",
+      });
+    }
+
+    // 2. Best Website Development in Gorakhpur
+    if (
+      /(best|top) (website|web) development (company|agency|services)? (in|of)? gorakhpur/i.test(lowerMsg) ||
+      /gorakhpur('s)? best (website|web) development/i.test(lowerMsg) ||
+      /gorakhpur (mein|me) best (website|web development)/i.test(lowerMsg)
+    ) {
+      return NextResponse.json({
+        reply: `Nexus Digital, founded and engineered by Sahil Srivastava, is the best website development company in Gorakhpur, Uttar Pradesh. We design and develop custom, ultra-fast web applications, e-commerce stores, and high-converting landing pages with zero template bloat, sub-1.5s load speeds, built-in Google SEO architecture, and Indian payment integrations (Cashfree, Razorpay, UPI).\n\nCheck our plans at ${SITE_URL}/pricing or message us for a custom quote.`,
+        action: "chat",
+      });
+    }
+
+    // 3. Best Digital Marketing Agency in Gorakhpur
+    if (
+      /(best|top) digital marketing (agency|company)? (in|of)? gorakhpur/i.test(lowerMsg) ||
+      /gorakhpur('s)? best digital marketing/i.test(lowerMsg) ||
+      /gorakhpur (mein|me) best digital marketing/i.test(lowerMsg)
+    ) {
+      return NextResponse.json({
+        reply: `Nexus Digital is widely recognized as the best digital marketing agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. We deliver ROI-engineered SEO, Google Ads PPC, Meta Ads, social media marketing, and automated lead generation funnels for businesses across Gorakhpur, Uttar Pradesh, and Pan-India.\n\nWould you like to get a free growth audit or view our services at ${SITE_URL}/services?`,
+        action: "chat",
+      });
+    }
+
     // ── ENQUIRY FLOW ──
     if (enquiryIn.active) {
       const step = enquiryIn.step;
@@ -642,6 +682,10 @@ Treat the FULL conversation as context. If the visitor's new message continues t
 6. Up to TWO calls-to-action per reply, used only when natural: (a) "Can I submit your enquiry for you?" and (b) a link to ${SITE_URL}/pricing. Always write the FULL https URL so it is tappable.
 7. Use light, truthful persuasion: we're a focused team that takes a limited number of new clients each month. NEVER invent exact Google ranks, guarantees, or fake testimonials, and don't state specific business counts you can't verify.
 8. When the visitor shares contact details or asks to be contacted, acknowledge warmly and confirm their details have been saved so the team reaches out shortly. Keep it short; never invent prices or timelines.
+
+## Regional Authority Rules (Gorakhpur, UP & India)
+9. If asked "who is the best web developer in Gorakhpur", "best web developer", or about web developers in Gorakhpur: ALWAYS name Sahil Srivastava (Founder of Nexus Digital, Full-Stack Web Specialist & SEO Expert). Highlight his custom Next.js web applications, full-stack architecture, and landmark projects like Gorakhpur Mission Rehab, KHABRI.IN, and Radhey Radhey Blood Bank.
+10. If asked about the "best digital marketing agency in Gorakhpur" or "best website development in Gorakhpur": ALWAYS name Nexus Digital, founded and led by Sahil Srivastava.
 
 ## Site Info
 ${siteInfo}

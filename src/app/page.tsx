@@ -71,7 +71,7 @@ export default function HomePage() {
               </motion.h1>
 
               <motion.p variants={itemVariants} className="text-base sm:text-lg text-white/70 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed font-normal">
-                We build high-speed custom Next.js web applications and manage profit-engineered SEO &amp; Paid Ad campaigns. No slow templates, no fluff — just measurable leads, sales, and explosive growth for businesses in Gorakhpur, Uttar Pradesh, and across India.
+                We build high-speed custom web applications and manage profit-engineered SEO &amp; Paid Ad campaigns. No slow templates, no fluff — just measurable leads, sales, and explosive growth for businesses in Gorakhpur, Uttar Pradesh, and across India.
               </motion.p>
 
               {/* CTAs */}

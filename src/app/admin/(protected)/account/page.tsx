@@ -206,28 +206,28 @@ export default function AdminAccountPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20">
-      <Link href="/admin/dashboard" className="inline-flex items-center gap-2 mb-5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-all">
+      <Link href="/admin/dashboard" className="inline-flex items-center gap-2 mb-5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] px-3 py-2 rounded-lg transition-all">
         <ArrowLeft className="w-4 h-4" /> Back to Dashboard
       </Link>
-      <div className="relative mb-8 overflow-hidden rounded-3xl glass-card border border-white/8 p-8">
-        <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 bg-brand-blue/15 blur-[90px] rounded-full" />
+      <div className="relative mb-8 overflow-hidden rounded-3xl bg-[var(--bg-card)] border border-[var(--border-default)] p-8 shadow-card">
+        <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 bg-brand-blue/10 blur-[90px] rounded-full" />
         <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
                 <UserCog className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-black text-white">Admin Account</h1>
+              <h1 className="text-2xl md:text-3xl font-black text-[var(--text-primary)]">Admin Account</h1>
             </div>
-            <p className="text-white/45 text-sm">Manage your login credentials and admin accounts.</p>
+            <p className="text-[var(--text-muted)] text-sm">Manage your login credentials and admin accounts.</p>
           </div>
           {email && (
-            <div className="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border bg-white/4 border-white/10 text-white/70 self-start sm:self-center">
-              <ShieldCheck className="w-4 h-4 text-brand-blue-light" />
-              <span className="hidden sm:inline">Signed in as</span>
-              <span className="text-white truncate max-w-[180px]">{email}</span>
+            <div className="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border bg-[var(--bg-secondary)] border-[var(--border-default)] text-[var(--text-secondary)] self-start sm:self-center">
+              <ShieldCheck className="w-4 h-4 text-brand-blue-light shrink-0" />
+              <span className="hidden sm:inline text-[var(--text-muted)]">Signed in as</span>
+              <span className="text-[var(--text-primary)] truncate max-w-[180px]">{email}</span>
               {isSuper && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-amber-500/10 text-amber-300 border-amber-500/25">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-red text-white border border-brand-red/80 shrink-0">
                   Super Admin
                 </span>
               )}
@@ -237,7 +237,7 @@ export default function AdminAccountPage() {
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-24 text-white/40">
+        <div className="flex items-center justify-center py-24 text-[var(--text-muted)]">
           <Loader2 className="w-6 h-6 animate-spin" />
         </div>
       )}
@@ -245,14 +245,14 @@ export default function AdminAccountPage() {
       {!loading && (
         <div className="space-y-6">
           {/* Change Password */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-white/8 p-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-card">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
                 <KeyRound className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-white font-bold">Change Password</h2>
-                <p className="text-white/40 text-xs">Update the password for your account.</p>
+                <h2 className="text-[var(--text-primary)] font-bold">Change Password</h2>
+                <p className="text-[var(--text-muted)] text-xs">Update the password for your account.</p>
               </div>
             </div>
 
@@ -312,15 +312,15 @@ export default function AdminAccountPage() {
 
           {/* Manage Admins - super only */}
           {isSuper && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card rounded-2xl border border-white/8 p-6">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-card">
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
                     <UserCog className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-white font-bold">Manage Admins</h2>
-                    <p className="text-white/40 text-xs">Add, edit or remove admin accounts.</p>
+                    <h2 className="text-[var(--text-primary)] font-bold">Manage Admins</h2>
+                    <p className="text-[var(--text-muted)] text-xs">Add, edit or remove admin accounts.</p>
                   </div>
                 </div>
                 {!showAdd && !editing && (
@@ -334,18 +334,18 @@ export default function AdminAccountPage() {
               {manageSuccess && <div className="text-green-400 text-xs bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-2 mb-4 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> {manageSuccess}</div>}
 
               {showAdd && (
-                <div className="border border-white/8 rounded-xl p-4 mb-4 bg-white/3">
+                <div className="border border-[var(--border-default)] rounded-xl p-4 mb-4 bg-[var(--bg-secondary)]">
                   <div className="flex items-center justify-between mb-4">
-                    <p className="text-white font-semibold text-sm">Add New Admin</p>
-                    <button onClick={() => { setShowAdd(false); setManageError(""); }} className="text-white/40 hover:text-white p-1" aria-label="Close">
+                    <p className="text-[var(--text-primary)] font-semibold text-sm">Add New Admin</p>
+                    <button onClick={() => { setShowAdd(false); setManageError(""); }} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 transition-colors" aria-label="Close">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                   <form onSubmit={handleAdd} className="space-y-3">
                     <div>
-                      <label className="text-white/45 text-xs font-medium mb-1.5 block">Email *</label>
+                      <label className="text-[var(--text-muted)] text-xs font-medium mb-1.5 block">Email *</label>
                       <div className="relative">
-                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                         <input
                           type="email"
                           value={newEmail}
@@ -357,9 +357,9 @@ export default function AdminAccountPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="text-white/45 text-xs font-medium mb-1.5 block">Password *</label>
+                      <label className="text-[var(--text-muted)] text-xs font-medium mb-1.5 block">Password *</label>
                       <div className="relative">
-                        <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                        <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                         <input
                           type="password"
                           value={newPassword}
@@ -380,32 +380,32 @@ export default function AdminAccountPage() {
 
               {admins.length === 0 ? (
                 <div className="text-center py-12">
-                  <Users className="w-8 h-8 text-white/20 mx-auto mb-2" />
-                  <p className="text-white/40 text-xs">No admin accounts yet.</p>
+                  <Users className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
+                  <p className="text-[var(--text-muted)] text-xs">No admin accounts yet.</p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {admins.map((admin) => (
-                    <div key={admin.email} className="flex items-center gap-3 bg-white/3 border border-white/6 rounded-xl px-4 py-3">
+                    <div key={admin.email} className="flex items-center gap-3 bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3">
                       <div className="w-9 h-9 rounded-full bg-brand-blue/15 border border-brand-blue/25 flex items-center justify-center shrink-0">
                         <Mail className="w-4 h-4 text-brand-blue-light" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-white/85 text-sm font-medium truncate flex items-center gap-2">
+                        <p className="text-[var(--text-primary)] text-sm font-medium truncate flex items-center gap-2">
                           {admin.email}
                           {admin.role === "super" && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-amber-500/10 text-amber-300 border-amber-500/25 flex items-center gap-1 shrink-0">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-red text-white border border-brand-red/80 flex items-center gap-1 shrink-0">
                               <ShieldCheck className="w-3 h-3" /> Super
                             </span>
                           )}
                         </p>
-                        <p className="text-white/35 text-[11px]">Added {new Date(admin.createdAt).toLocaleDateString()}</p>
+                        <p className="text-[var(--text-muted)] text-[11px]">Added {new Date(admin.createdAt).toLocaleDateString()}</p>
                       </div>
                       {admin.role !== "super" && (
                         <div className="flex items-center gap-1.5 shrink-0">
                           <button
                             onClick={() => handleEdit(admin)}
-                            className="p-2 rounded-lg text-white/25 hover:text-brand-blue-light hover:bg-white/5 transition-colors"
+                            className="p-2 rounded-lg text-[var(--text-muted)] hover:text-brand-blue-light hover:bg-brand-blue/10 transition-colors"
                             title="Edit"
                           >
                             <Pencil className="w-4 h-4" />
@@ -413,7 +413,7 @@ export default function AdminAccountPage() {
                           <button
                             onClick={() => handleDelete(admin.email)}
                             disabled={acting === admin.email}
-                            className="p-2 rounded-lg text-white/25 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                            className="p-2 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-colors"
                             title="Delete"
                           >
                             {acting === admin.email ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -441,17 +441,17 @@ export default function AdminAccountPage() {
                       exit={{ opacity: 0, scale: 0.95, y: 20 }}
                       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                       onClick={(e) => e.stopPropagation()}
-                      className="bg-[var(--bg-secondary)] border border-white/10 rounded-2xl w-full max-w-md p-6"
+                      className="bg-[var(--bg-card)] border border-[var(--border-default)] rounded-2xl w-full max-w-md p-6 shadow-2xl"
                     >
                       <div className="flex items-center justify-between mb-5">
-                        <h3 className="text-white font-bold">Edit Admin</h3>
-                        <button onClick={() => setEditing(null)} className="text-white/40 hover:text-white text-xl leading-none p-1">×</button>
+                        <h3 className="text-[var(--text-primary)] font-bold">Edit Admin</h3>
+                        <button onClick={() => setEditing(null)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xl leading-none p-1">×</button>
                       </div>
                       <form onSubmit={submitEdit} className="space-y-4">
                         <div>
-                          <label className="text-white/45 text-xs font-medium mb-1.5 block">Email *</label>
+                          <label className="text-[var(--text-muted)] text-xs font-semibold mb-1.5 block">Email *</label>
                           <div className="relative">
-                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                             <input
                               type="email"
                               value={editEmail}
@@ -462,9 +462,9 @@ export default function AdminAccountPage() {
                           </div>
                         </div>
                         <div>
-                          <label className="text-white/45 text-xs font-medium mb-1.5 block">New Password <span className="text-white/25">(optional)</span></label>
+                          <label className="text-[var(--text-muted)] text-xs font-semibold mb-1.5 block">New Password <span className="opacity-60">(optional)</span></label>
                           <div className="relative">
-                            <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                            <KeyRound className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                             <input
                               type="password"
                               value={editPassword}

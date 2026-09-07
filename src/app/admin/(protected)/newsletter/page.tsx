@@ -108,22 +108,22 @@ export default function AdminNewsletterPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20">
-      <Link href="/admin/dashboard" className="inline-flex items-center gap-2 mb-5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 px-3 py-2 rounded-lg transition-all">
+      <Link href="/admin/dashboard" className="inline-flex items-center gap-2 mb-5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] px-3 py-2 rounded-lg transition-all">
         <ArrowLeft className="w-4 h-4" /> Back to Dashboard
       </Link>
-      <div className="relative mb-8 overflow-hidden rounded-3xl glass-card border border-white/8 p-7 md:p-8">
-        <div className="pointer-events-none absolute -top-20 right-0 w-72 h-72 bg-brand-blue/15 blur-[100px] rounded-full" />
+      <div className="relative mb-8 overflow-hidden rounded-3xl bg-[var(--bg-card)] border border-[var(--border-default)] p-7 md:p-8 shadow-card">
+        <div className="pointer-events-none absolute -top-20 right-0 w-72 h-72 bg-brand-blue/10 blur-[100px] rounded-full" />
         <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
                 <Mail className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-black text-white">Newsletter</h1>
+              <h1 className="text-2xl md:text-3xl font-black text-[var(--text-primary)]">Newsletter</h1>
             </div>
-            <p className="text-white/45 text-sm">Select subscribers, then send your campaign to them.</p>
+            <p className="text-[var(--text-muted)] text-sm">Select subscribers, then send your campaign to them.</p>
           </div>
-          <button onClick={() => { setError(""); load(); }} className="btn-secondary px-4 py-2.5 text-sm self-start sm:self-auto">
+          <button onClick={() => { setError(""); load(); }} className="btn-secondary px-4 py-2.5 text-sm self-start sm:self-auto flex items-center gap-2">
             <RefreshCw className="w-4 h-4" /> Refresh
           </button>
         </div>
@@ -131,14 +131,14 @@ export default function AdminNewsletterPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Compose */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-3 glass-card rounded-2xl border border-white/8 p-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-3 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-card">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
                 <Send className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-white font-bold">Compose Campaign</h2>
-              <p className="text-white/40 text-xs">Send to selected subscribers only</p>
+                <h2 className="text-[var(--text-primary)] font-bold">Compose Campaign</h2>
+              <p className="text-[var(--text-muted)] text-xs">Send to selected subscribers only</p>
             </div>
           </div>
 
@@ -147,7 +147,7 @@ export default function AdminNewsletterPage() {
 
           <form onSubmit={handleSend} className="space-y-4">
             <div>
-              <label className="text-white/45 text-xs font-medium mb-1.5 block">Subject *</label>
+              <label className="text-[var(--text-muted)] text-xs font-semibold mb-1.5 block">Subject *</label>
               <input
                 type="text"
                 value={subject}
@@ -155,26 +155,26 @@ export default function AdminNewsletterPage() {
                 required
                 maxLength={120}
                 placeholder="e.g. New launch — get 20% off"
-                className="input-field-with-icon"
+                className="input-field"
               />
             </div>
             <div>
-              <label className="text-white/45 text-xs font-medium mb-1.5 block">Content *</label>
+              <label className="text-[var(--text-muted)] text-xs font-semibold mb-1.5 block">Content *</label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required
                 rows={8}
                 placeholder="Write your newsletter message here..."
-                className="input-field-with-icon resize-y min-h-[180px]"
+                className="input-field resize-y min-h-[180px]"
               />
             </div>
-            <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border text-sm ${selectedEmails.length > 0 ? "bg-brand-blue/8 border-brand-blue/25 text-brand-blue-light" : "bg-white/3 border-white/8 text-white/40"}`}>
+            <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border text-sm ${selectedEmails.length > 0 ? "bg-brand-blue/10 border-brand-blue/30 text-brand-blue-light" : "bg-[var(--bg-secondary)] border-[var(--border-default)] text-[var(--text-muted)]"}`}>
               <span className="font-semibold">{selectedEmails.length} of {subscribers.length} selected</span>
               <button
                 type="button"
                 onClick={() => selectedEmails.length > 0 && setSelected(new Set())}
-                className={`text-xs font-semibold underline underline-offset-2 ${selectedEmails.length > 0 ? "hover:text-white" : "text-white/25 cursor-default"}`}
+                className={`text-xs font-semibold underline underline-offset-2 ${selectedEmails.length > 0 ? "hover:text-[var(--text-primary)]" : "opacity-40 cursor-default"}`}
               >
                 Clear
               </button>
@@ -194,19 +194,19 @@ export default function AdminNewsletterPage() {
         </motion.div>
 
         {/* Subscribers */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2 glass-card rounded-2xl border border-white/8 p-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2 bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-card">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-[0_4px_15px_rgba(16,185,129,0.35)] flex items-center justify-center">
               <Users className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
-              <h2 className="text-white font-bold">Subscribers</h2>
-              <p className="text-white/40 text-xs">{subscribers.length} total</p>
+              <h2 className="text-[var(--text-primary)] font-bold">Subscribers</h2>
+              <p className="text-[var(--text-muted)] text-xs">{subscribers.length} total</p>
             </div>
             {subscribers.length > 0 && (
               <button
                 onClick={toggleAll}
-                className="text-xs font-semibold text-brand-blue-light hover:text-white underline underline-offset-2"
+                className="text-xs font-semibold text-brand-blue-light hover:text-[var(--text-primary)] underline underline-offset-2"
               >
                 {selected.size === subscribers.length ? "Clear all" : "Select all"}
               </button>
@@ -214,19 +214,19 @@ export default function AdminNewsletterPage() {
           </div>
 
           {loading ? (
-            <div className="flex items-center justify-center py-12 text-white/40"><Loader2 className="w-5 h-5 animate-spin" /></div>
+            <div className="flex items-center justify-center py-12 text-[var(--text-muted)]"><Loader2 className="w-5 h-5 animate-spin" /></div>
           ) : subscribers.length === 0 ? (
             <div className="text-center py-12">
-              <Inbox className="w-8 h-8 text-white/20 mx-auto mb-2" />
-              <p className="text-white/40 text-xs">No subscribers yet.</p>
+              <Inbox className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
+              <p className="text-[var(--text-muted)] text-xs">No subscribers yet.</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
               {subscribers.map((s) => (
                 <label
                   key={s.id}
-                  className={`flex items-center gap-3 bg-white/3 border rounded-lg px-3 py-2.5 cursor-pointer transition-all ${
-                    selected.has(s.id) ? "border-brand-blue/40 bg-brand-blue/8" : "border-white/6 hover:border-white/15"
+                  className={`flex items-center gap-3 bg-[var(--bg-secondary)] border rounded-lg px-3 py-2.5 cursor-pointer transition-all ${
+                    selected.has(s.id) ? "border-brand-blue/50 bg-brand-blue/10" : "border-[var(--border-default)] hover:border-[var(--border-hover)]"
                   }`}
                 >
                   <input
@@ -239,8 +239,8 @@ export default function AdminNewsletterPage() {
                     <Mail className="w-3.5 h-3.5 text-brand-blue-light" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-white/85 text-sm font-medium truncate">{s.email}</p>
-                    <p className="text-white/35 text-[11px] truncate">{s.name} · {new Date(s.createdAt).toLocaleDateString()}</p>
+                    <p className="text-[var(--text-primary)] text-sm font-semibold truncate">{s.email}</p>
+                    <p className="text-[var(--text-muted)] text-[11px] truncate">{s.name} · {new Date(s.createdAt).toLocaleDateString()}</p>
                   </div>
                 </label>
               ))}

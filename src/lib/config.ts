@@ -19,6 +19,7 @@ export const config = {
   gmbRating: process.env.NEXT_PUBLIC_AGENCY_GMB_RATING || "5.0",
   gmbReviewCount: process.env.NEXT_PUBLIC_AGENCY_GMB_REVIEW_COUNT || "30",
   ogImage: `${process.env.NEXT_PUBLIC_AGENCY_WEBSITE || "https://thenexusdigital.in"}/og-image.jpg`,
+  gstRate: Number(process.env.NEXT_PUBLIC_GST_RATE || 18),
   // Founder & Leadership Details
   founder: "Sahil Srivastava",
   founderRole: "Founder, SEO & Full-Stack Web Development Specialist",

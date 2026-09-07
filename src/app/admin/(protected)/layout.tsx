@@ -12,10 +12,10 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
   }
 
   return (
-    <div className="bg-black relative min-h-screen lg:pl-64">
+    <div className="bg-[var(--bg-primary)] relative min-h-screen lg:pl-64">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 right-0 w-[500px] h-[400px] bg-brand-blue/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-0 left-1/3 w-[400px] h-[300px] bg-brand-blue/5 blur-[120px] rounded-full" />
+        <div className="absolute -top-24 right-0 w-[500px] h-[400px] bg-brand-blue/8 blur-[120px] rounded-full" />
+        <div className="absolute bottom-0 left-1/3 w-[400px] h-[300px] bg-brand-blue/4 blur-[120px] rounded-full" />
       </div>
       <AdminSidebar />
       <main className="relative min-h-screen p-4 sm:p-6 lg:p-8">{children}</main>

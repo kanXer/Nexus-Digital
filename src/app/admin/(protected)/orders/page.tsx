@@ -102,7 +102,7 @@ export default function OrdersPage() {
             className={`relative p-5 rounded-2xl bg-gradient-to-br ${kpi.gradient} border ${kpi.border} overflow-hidden group hover:scale-[1.02] transition-transform duration-200`}
           >
             <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/[0.03] blur-xl" />
-            <div className={`w-9 h-9 rounded-xl bg-white/[0.08] flex items-center justify-center mb-3 ${kpi.iconColor}`}>
+            <div className={`w-9 h-9 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-default)] flex items-center justify-center mb-3 ${kpi.iconColor}`}>
               <kpi.icon className="w-4.5 h-4.5" />
             </div>
             <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-1">{kpi.label}</p>

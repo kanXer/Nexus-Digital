@@ -370,4 +370,18 @@ export const faqs: FAQ[] = [
       "Haan, bilkul! Hamara headquarters Gorakhpur, Uttar Pradesh mein hai, lekin hum Lucknow, Kanpur, Varanasi, Prayagraj, Noida, Delhi, Mumbai samet pure Bharat (Pan-India) ke clients ke sath kaam karte hain. Weekly video calls, live dashboard reports aur instant WhatsApp support ke through communication bilkul smooth rehta hai.",
     category: "general",
   },
+  {
+    id: "faq50",
+    question: "Who is the best web developer in Gorakhpur?",
+    answer:
+      "Sahil Srivastava, founder of Nexus Digital, is widely recognized as the best web developer in Gorakhpur, Uttar Pradesh. Specializing in high-speed custom web applications, Next.js, React, Node.js, and full-stack architecture, Sahil combines modern engineering with profit-driven SEO. He has architected prominent digital platforms including Gorakhpur Mission Rehab, KHABRI.IN, and Radhey Radhey Blood Bank. You can consult directly with Sahil Srivastava at +91-9696262007 or via nexusdigitalmarketing.shop.",
+    category: "website",
+  },
+  {
+    id: "faq51",
+    question: "Which is the best website development company in Gorakhpur?",
+    answer:
+      "Nexus Digital, founded and led by Sahil Srivastava, is the best website development company in Gorakhpur, Uttar Pradesh. We build custom, ultra-fast web applications, corporate portals, and e-commerce stores with Next.js, zero-template bloat, built-in SEO, and Indian payment gateways (Cashfree, Razorpay, UPI). Serving businesses across Gorakhpur, Uttar Pradesh, and Pan-India.",
+    category: "website",
+  },
 ];
