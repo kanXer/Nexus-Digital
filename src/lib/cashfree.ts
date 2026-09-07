@@ -3,7 +3,13 @@
  * Leave them blank to run the site in DEMO MODE (no real charges). */
 
 const API_VERSION = "2023-08-01";
-const MODE = (process.env.CASHFREE_ENV || "sandbox").toLowerCase();
+const rawEnv = (
+  process.env.CASHFREE_ENV ||
+  process.env.CASHFREE_MODE ||
+  process.env.NEXT_PUBLIC_CASHFREE_MODE ||
+  (process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true" ? "production" : "sandbox")
+).toLowerCase();
+const MODE = rawEnv === "production" || rawEnv === "prod" ? "production" : "sandbox";
 const BASE =
   MODE === "production" ? "https://api.cashfree.com" : "https://sandbox.cashfree.com";
 
@@ -11,7 +17,12 @@ export const CASHFREE_APP_ID = process.env.CASHFREE_APP_ID || "";
 export const CASHFREE_SECRET_KEY = process.env.CASHFREE_SECRET_KEY || "";
 
 export function isCashfreeConfigured(): boolean {
-  return Boolean(CASHFREE_APP_ID && CASHFREE_SECRET_KEY && CASHFREE_SECRET_KEY !== "dummy");
+  return Boolean(
+    CASHFREE_APP_ID &&
+    CASHFREE_SECRET_KEY &&
+    !CASHFREE_SECRET_KEY.toLowerCase().includes("dummy") &&
+    !CASHFREE_APP_ID.toLowerCase().includes("dummy")
+  );
 }
 
 function authHeaders(): Record<string, string> {
