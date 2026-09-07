@@ -645,7 +645,7 @@ export function ChatWidget() {
       <div className="grid grid-cols-2 gap-2">
         <a
           href={`tel:${config.phoneRaw}`}
-          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold text-white bg-emerald-600 hover:bg-emerald-500 active:scale-95 shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all"
+          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold bg-emerald-600 hover:bg-emerald-500 active:scale-95 shadow-[0_6px_20px_rgba(16,185,129,0.35)] transition-all"
         >
           <Phone className="w-4 h-4" />
           Call Direct
@@ -654,7 +654,7 @@ export function ChatWidget() {
           href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold text-white hover:brightness-110 active:scale-95 shadow-[0_6px_20px_rgba(37,211,102,0.35)] transition-all"
+          className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-[13px] font-bold hover:brightness-110 active:scale-95 shadow-[0_6px_20px_rgba(37,211,102,0.35)] transition-all"
           style={{ background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)" }}
         >
           <MessageCircle className="w-4 h-4" fill="white" />
@@ -664,14 +664,14 @@ export function ChatWidget() {
       <div className="flex gap-2">
         <a
           href={`mailto:${config.email}`}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-white/90 hover:text-white bg-white/5 hover:bg-white/12 border border-white/10 active:scale-95 transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold hover:text-white bg-white/5 hover:bg-white/12 border border-white/10 active:scale-95 transition-all"
         >
           <Mail className="w-3.5 h-3.5 text-brand-blue-light" /> Email Us
         </a>
         <button
           type="button"
           onClick={() => send("Start my Enquiry")}
-          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold text-white/90 hover:text-white bg-white/5 hover:bg-white/12 border border-white/10 active:scale-95 transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold hover:text-white bg-white/5 hover:bg-white/12 border border-white/10 active:scale-95 transition-all"
         >
           <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Book Free Audit
         </button>
