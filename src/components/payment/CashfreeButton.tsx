@@ -86,7 +86,7 @@ export default function CashfreeButton({
 
   const handleClick = useCallback(async () => {
     setStatus("processing");
-    setMessage("Connecting to Cashfree secure payment gateway…");
+    setMessage("Connecting to Cashfree…");
     setFallbackSession(null);
     try {
       const res = await fetchWithTimeout(
@@ -101,7 +101,7 @@ export default function CashfreeButton({
             recurring,
             userId: userId || "guest",
             customerEmail: customerEmail || "client@thenexusdigital.in",
-            customerPhone: customerPhone || "9696262007",
+            customerPhone: customerPhone || "0000000000",
             redirectBase: typeof window !== "undefined" ? window.location.origin : "",
           }),
         },
