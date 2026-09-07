@@ -1,13 +1,32 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, CheckCircle2, Lock, ArrowLeft, User, MapPin, CreditCard, AlertCircle } from "lucide-react";
-import { useAuth } from "@/context/AuthContext";
+import { motion } from "framer-motion";
+import {
+  ShieldCheck,
+  CheckCircle2,
+  Lock,
+  ArrowLeft,
+  User,
+  MapPin,
+  CreditCard,
+  AlertCircle,
+  Download,
+  Receipt,
+  ArrowRight,
+  Sparkles,
+  Copy,
+  Check,
+} from "lucide-react";
+import { useAuth, type UserOrder } from "@/context/AuthContext";
 import { getProduct } from "@/lib/products";
 import CashfreeButton from "@/components/payment/CashfreeButton";
 import RequireAuth from "@/components/auth/RequireAuth";
+import { generateInvoicePdf, downloadBlob } from "@/lib/pdf";
+import { config } from "@/lib/config";
+import { trackEvent } from "@/lib/analytics";
 
 const CANONICAL_PLANS: Record<string, { id: string; name: string; priceInr: number; priceStr: string; description: string; recurring: boolean }> = {
   basic: {
@@ -50,6 +69,9 @@ function CheckoutContent() {
   const planKey = (searchParams.get("plan") || "growth").toLowerCase();
   const { user, loading, userProfile, openAuthModal, openProfileModal, openOrders, recordNewOrder, cart } = useAuth();
   const router = useRouter();
+
+  const [completedOrder, setCompletedOrder] = useState<UserOrder | null>(null);
+  const [copiedTxn, setCopiedTxn] = useState(false);
 
   // While Firebase is resolving the session, show a neutral spinner —
   // this prevents the "login required" wall from flashing briefly.
@@ -95,14 +117,7 @@ function CheckoutContent() {
   // (NEXT_PUBLIC_CASHFREE_LIVE=true).
   const cashfreeLive = process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true";
 
-  const goToSuccess = (orderId: string, txn: string) => {
-    // Open the Orders modal and navigate to home directly, bypassing success page
-    openOrders();
-    router.push("/");
-  };
-
-  const handleDemoCheckout = async () => {
-    const txnId = `NEX-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+  const handlePaymentSuccess = async ({ orderId, cfPaymentId }: { orderId: string; cfPaymentId?: string }) => {
     const order = await recordNewOrder({
       title: plan.name,
       amount: plan.priceStr,
@@ -110,7 +125,64 @@ function CheckoutContent() {
       isSubscription: plan.recurring,
       numericAmount: plan.priceInr,
     });
-    goToSuccess(order.id, txnId);
+    trackEvent("purchase", {
+      transaction_id: orderId || cfPaymentId || order.id,
+      value: plan.priceInr,
+      currency: "INR",
+      items: plan.name,
+    });
+    setCompletedOrder({
+      ...order,
+      id: orderId || order.id,
+    });
+  };
+
+  const handleDemoCheckout = async () => {
+    const txnId = `NEX-DEMO-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+    const order = await recordNewOrder({
+      title: plan.name,
+      amount: plan.priceStr,
+      planId: plan.id,
+      isSubscription: plan.recurring,
+      numericAmount: plan.priceInr,
+    });
+    trackEvent("purchase", {
+      transaction_id: txnId,
+      value: plan.priceInr,
+      currency: "INR",
+      items: plan.name,
+    });
+    setCompletedOrder({
+      ...order,
+      id: txnId,
+    });
+  };
+
+  const handleDownloadInvoice = () => {
+    if (!completedOrder) return;
+    const billNumber = `INV-${completedOrder.id}`;
+    const blob = generateInvoicePdf({
+      billNumber,
+      date: completedOrder.date,
+      time: completedOrder.purchaseTime || "",
+      agencyName: config.name,
+      agencyEmail: config.email,
+      agencyAddress: config.address,
+      agencyWebsite: config.website,
+      clientName: userProfile.name || user?.displayName || "Valued Client",
+      clientEmail: userProfile.email || user?.email || "customer@thenexusdigital.in",
+      planName: completedOrder.title,
+      amount: completedOrder.numericAmount ?? plan.priceInr,
+      currency: "INR",
+      paymentRef: completedOrder.id,
+    });
+    downloadBlob(blob, `${billNumber}.pdf`);
+  };
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    setCopiedTxn(true);
+    setTimeout(() => setCopiedTxn(false), 2000);
   };
 
   if (!user) {
@@ -125,11 +197,164 @@ function CheckoutContent() {
         </p>
         <button
           onClick={openAuthModal}
-          className="w-full btn-primary py-3.5 rounded-xl justify-center font-bold text-sm shadow-[0_0_30px_rgba(220,38,38,0.4)]"
+          className="w-full btn-primary py-3.5 rounded-xl justify-center font-bold text-sm shadow-[0_0_30px_rgba(220,38,38,0.4)] cursor-pointer"
         >
           Sign In / Create Account to Continue
         </button>
       </div>
+    );
+  }
+
+  // ══════ IN-PAGE PAYMENT SUCCESS CONFIRMATION ══════
+  if (completedOrder) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.97, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-2xl mx-auto space-y-6 relative z-10"
+      >
+        {/* Celebration Header */}
+        <div className="glass-card-brand rounded-3xl p-8 text-center border border-emerald-500/30 shadow-[0_0_60px_rgba(16,185,129,0.2)] relative overflow-hidden">
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-72 bg-emerald-500/15 rounded-full blur-[80px] pointer-events-none" />
+
+          <div className="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500/40 flex items-center justify-center mx-auto mb-4 text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.35)]">
+            <CheckCircle2 className="w-10 h-10" />
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-3">
+            <Sparkles className="w-3.5 h-3.5" /> Order Confirmed & Paid
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-2">
+            Payment Successful!
+          </h2>
+          <p className="text-white/70 text-sm max-w-md mx-auto">
+            Welcome aboard! Your package <strong className="text-white">{completedOrder.title}</strong> is now officially active.
+          </p>
+
+          {/* Amount Paid Pill */}
+          <div className="mt-6 inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white/5 border border-white/10">
+            <span className="text-xs text-white/50 uppercase tracking-wider font-semibold">Total Paid</span>
+            <span className="text-2xl font-black text-emerald-400">
+              ₹{(completedOrder.numericAmount ?? plan.priceInr).toLocaleString("en-IN")}
+            </span>
+          </div>
+        </div>
+
+        {/* Order Details Card */}
+        <div className="glass-card rounded-3xl p-6 border border-white/10 space-y-4">
+          <h3 className="font-bold text-white text-base flex items-center gap-2">
+            <Receipt className="w-4 h-4 text-brand-blue-light" /> Transaction Receipt Details
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-white/5 p-4 rounded-2xl border border-white/5">
+            <div>
+              <span className="text-white/40 block">Order Reference:</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <code className="text-white font-mono font-bold text-xs bg-black/40 px-2 py-1 rounded border border-white/10">
+                  {completedOrder.id}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => handleCopyId(completedOrder.id)}
+                  className="p-1 rounded hover:bg-white/10 text-white/60 hover:text-white transition-colors cursor-pointer"
+                  title="Copy Order ID"
+                >
+                  {copiedTxn ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <span className="text-white/40 block">Payment Date & Time:</span>
+              <span className="text-white font-semibold text-sm">
+                {completedOrder.date} • {completedOrder.purchaseTime}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-white/40 block">Customer Name:</span>
+              <span className="text-white font-medium">
+                {userProfile.name || user?.displayName || "Valued Client"}
+              </span>
+            </div>
+
+            <div>
+              <span className="text-white/40 block">Account Email:</span>
+              <span className="text-white font-medium">
+                {userProfile.email || user?.email || "customer@thenexusdigital.in"}
+              </span>
+            </div>
+          </div>
+
+          {/* Action CTAs */}
+          <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={handleDownloadInvoice}
+              className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-red to-red-600 hover:from-red-600 hover:to-red-700 text-white transition-all shadow-[0_0_25px_rgba(220,38,38,0.35)] cursor-pointer"
+            >
+              <Download className="w-4 h-4" />
+              Download GST Invoice (PDF)
+            </button>
+
+            <button
+              type="button"
+              onClick={openOrders}
+              className="flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl font-bold text-sm bg-white/10 hover:bg-white/15 text-white border border-white/15 transition-all cursor-pointer"
+            >
+              <Receipt className="w-4 h-4" />
+              View in My Orders
+            </button>
+          </div>
+
+          <div className="pt-2">
+            <Link
+              href="/"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold text-xs text-white/60 hover:text-white hover:bg-white/5 transition-all border border-transparent hover:border-white/10"
+            >
+              Return to Homepage <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
+        {/* What Happens Next Card */}
+        <div className="glass-card rounded-3xl p-6 border border-white/10 bg-gradient-to-br from-white/[0.03] to-transparent">
+          <h4 className="font-bold text-white text-sm mb-3 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-brand-blue-light" /> What Happens Next?
+          </h4>
+          <ol className="space-y-3 text-xs text-white/70">
+            <li className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-brand-blue/20 text-brand-blue-light border border-brand-blue/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                1
+              </span>
+              <div>
+                <strong className="text-white block">Dedicated Onboarding Specialist</strong>
+                Your dedicated account manager is assigned and will review your business goals and market competition.
+              </div>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-brand-blue/20 text-brand-blue-light border border-brand-blue/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                2
+              </span>
+              <div>
+                <strong className="text-white block">Kickoff Call within 24 Hours</strong>
+                We will connect via WhatsApp / Phone (+91 96962 62007) to gather brand credentials and schedule campaign kickoff.
+              </div>
+            </li>
+            <li className="flex items-start gap-2.5">
+              <span className="w-5 h-5 rounded-full bg-brand-blue/20 text-brand-blue-light border border-brand-blue/30 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                3
+              </span>
+              <div>
+                <strong className="text-white block">24/7 Priority Client Support</strong>
+                Direct access to our digital marketing & tech leads at our Gorakhpur agency office.
+              </div>
+            </li>
+          </ol>
+        </div>
+      </motion.div>
     );
   }
 
@@ -276,6 +501,7 @@ function CheckoutContent() {
               customerEmail={userProfile.email || user?.email || "customer@thenexusdigital.in"}
               customerPhone={userProfile.phone || user?.phoneNumber || "9696262007"}
               onDemo={handleDemoCheckout}
+              onSuccess={handlePaymentSuccess}
             />
           </div>
 
