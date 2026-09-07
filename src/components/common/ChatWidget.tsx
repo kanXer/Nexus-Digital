@@ -121,7 +121,7 @@ function linkify(text: string): ReactNode {
     const trailingPunctuation = token.slice(cleanToken.length);
     const href = cleanToken.startsWith("http")
       ? cleanToken
-      : `https://nexusdigitalmarketing.shop${cleanToken}`;
+      : `https://thenexusdigital.in${cleanToken}`;
     out.push(
       <a
         key={i++}
