@@ -45,8 +45,7 @@ function extractLead(messages: ChatMsg[]): { email: string; name: string } {
 
 const WELCOME: ChatMsg = {
   role: "assistant",
-  content:
-    "Namaste! I'm Friday, your AI growth strategist at Nexus Digital in Gorakhpur, Uttar Pradesh. Need more leads, SEO ranking, or a high-converting website? You can call our team directly, message on WhatsApp, or let me build a growth plan for you below!",
+  content: "Namaste! 👋 I'm Friday, Nexus Digital's AI growth strategist. How can I help you grow your business today?",
 };
 
 // Guest "free" message allowance before we ask them to sign in.
@@ -66,7 +65,9 @@ const SERVICE_CATEGORIES = [
   "Website & Automation",
   "Analytics & Reporting",
 ];
-const QUICK_REPLIES = ["📞 Call Specialist", "💬 Send WhatsApp"];
+
+const QUICK_REPLIES = ["📞 Call Specialist", "💬 Send WhatsApp", "⚡ Free SEO audit", ...SERVICE_CATEGORIES, "View Pricing", "Start my Enquiry"];
+
 // Contextual suggestion chips — shown after each assistant reply, matched against
 // the last message's topic so follow-ups feel relevant to what was just said.
 const REPLY_SUGGESTIONS: { match: RegExp; chips: string[] }[] = [
@@ -121,7 +122,7 @@ function linkify(text: string): ReactNode {
     const trailingPunctuation = token.slice(cleanToken.length);
     const href = cleanToken.startsWith("http")
       ? cleanToken
-      : `https://thenexusdigital.in${cleanToken}`;
+      : `https://nexusdigitalmarketing.shop${cleanToken}`;
     out.push(
       <a
         key={i++}
@@ -150,7 +151,7 @@ function FridayAvatar() {
         <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-brand flex items-center justify-center shadow-glow-sm ring-1 ring-white/25">
           <Image src="/favicon.svg" alt="Friday" width={20} height={20} className="w-5 h-5 object-contain" />
         </div>
-        <span className="text-[8px] font-bold text-white/45 leading-none">Friday</span>
+        <span className="text-[8px] font-bold chat-avatar-label leading-none">Friday</span>
       </div>
     </>
   );
@@ -180,7 +181,7 @@ function UserAvatar({ photoURL, displayName }: { photoURL?: string | null; displ
           <User className="w-3.5 h-3.5 text-white/70" />
         </div>
       )}
-      <span className="text-[8px] font-bold text-white/45 leading-none">You</span>
+      <span className="text-[8px] font-bold chat-avatar-label leading-none">You</span>
     </div>
   );
 }
@@ -188,7 +189,7 @@ function UserAvatar({ photoURL, displayName }: { photoURL?: string | null; displ
 export function ChatWidget() {
   const { user, userProfile, openAuthModal } = useAuth();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMsg[]>([WELCOME]);
+  const [messages, setMessages] = useState<ChatMsg[]>([{ role: "assistant", content: "" }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
@@ -203,7 +204,11 @@ export function ChatWidget() {
   const [isNarrow, setIsNarrow] = useState(false);
   const [showGoDown, setShowGoDown] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);
-  const [sugOpen, setSugOpen] = useState(true); // suggestions panel collapse toggle
+  const [sugOpen, setSugOpen] = useState(true);
+  // Typing animation state for welcome message
+  const [isTypingWelcome, setIsTypingWelcome] = useState(false);
+  const [welcomeTyped, setWelcomeTyped] = useState(false);
+  const typingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const openedRef = useRef(false);
   const leadCapturedRef = useRef(false);
@@ -245,9 +250,38 @@ export function ChatWidget() {
     if (!firstName) return WELCOME;
     return {
       role: "assistant",
-      content: `Namaste ${firstName}! 👋 I'm Friday, your AI growth strategist at Nexus Digital in Gorakhpur, Uttar Pradesh. Great to see you! Need more leads, SEO ranking, or a high-speed website? You can call us directly, message on WhatsApp, or let me build a growth plan for you below!`,
+      content: `Namaste ${firstName}! 👋 I'm Friday, Nexus Digital's AI growth strategist. How can I help you grow today?`,
     };
   }, [firstName]);
+
+  // Typing animation — fires once when the chat is first opened
+  useEffect(() => {
+    if (!open || welcomeTyped) return;
+    const fullMsg = buildWelcome();
+    const text = fullMsg.content;
+    let idx = 0;
+    setIsTypingWelcome(true);
+    // Start with an empty bubble
+    setMessages([{ role: "assistant", content: "" }]);
+    // Small initial delay so the chat window renders first
+    const startDelay = setTimeout(() => {
+      typingRef.current = setInterval(() => {
+        idx += 1;
+        setMessages([{ role: "assistant", content: text.slice(0, idx) }]);
+        if (idx >= text.length) {
+          if (typingRef.current) clearInterval(typingRef.current);
+          setIsTypingWelcome(false);
+          setWelcomeTyped(true);
+          setMessages([{ role: "assistant", content: text }]);
+        }
+      }, 22); // ~22ms per char → ~45 chars/sec
+    }, 200);
+    return () => {
+      clearTimeout(startDelay);
+      if (typingRef.current) clearInterval(typingRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   // Position the launcher in the exact space previously occupied by the floating WhatsApp button:
   // Not scrolled: folds down to 24px (bottom-most)
@@ -649,7 +683,7 @@ export function ChatWidget() {
     <>
       {/* Hint bubble + launcher — placed in the exact floating WhatsApp spot */}
       <div
-        className="fixed right-6 z-40 flex flex-col items-end gap-3 always-dark transition-all duration-300 ease-out will-change-transform"
+        className="fixed right-6 z-40 flex flex-col items-end gap-3 transition-all duration-300 ease-out will-change-transform"
         style={{ bottom: launcherBottom }}
       >
         <AnimatePresence>
@@ -659,14 +693,14 @@ export function ChatWidget() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.85 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="relative glass-card rounded-2xl rounded-br-sm px-4 py-2.5 text-[11px] sm:text-xs font-semibold shadow-card cursor-pointer max-w-[calc(100vw-5rem)] sm:max-w-xs"
+              className="relative glass-card rounded-2xl rounded-br-sm px-4 py-2.5 text-[11px] sm:text-xs font-semibold shadow-card cursor-pointer max-w-[calc(100vw-5rem)] sm:max-w-xs text-[var(--text-primary)] border border-[var(--border-default)]"
               onClick={toggle}
             >
               <span className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-brand-blue-light" />
+                <Sparkles className="w-3.5 h-3.5 text-brand-red" />
                 {HINT_MESSAGES[hintIndex]}
               </span>
-              <span className="absolute -bottom-1 right-5 w-3 h-3 bg-white/[0.06] border-r border-b border-white/10 rotate-45" />
+              <span className="absolute -bottom-1 right-5 w-3 h-3 bg-[var(--bg-secondary)] border-r border-b border-[var(--border-default)] rotate-45" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -793,11 +827,11 @@ export function ChatWidget() {
               <div className="relative flex flex-col flex-1 min-h-0 w-full mx-auto max-w-full md:max-w-3xl lg:max-w-4xl">
 
                 {/* Header */}
-                <div className="relative flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-4 bg-gradient-to-r from-brand-blue/20 via-transparent to-transparent border-b border-white/10 shrink-0">
+                <div className="relative flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-4 sm:py-4 chat-header-bar shrink-0">
                   <div className="relative">
                     <div className="absolute inset-0 rounded-full bg-gradient-brand blur-md opacity-60" />
                     <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-gradient-brand flex items-center justify-center shadow-glow ring-2 ring-white/20">
-                      <Bot className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <motion.span
                       className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black"
@@ -806,15 +840,15 @@ export function ChatWidget() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-display font-bold text-sm sm:text-[15px] leading-tight flex items-center gap-2 text-white">
+                    <p className="font-display font-bold text-sm sm:text-[15px] leading-tight flex items-center gap-2 chat-title">
                       Friday
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-400/15 border border-emerald-400/30 text-emerald-300 text-[9px] font-bold uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-300 text-[9px] font-bold uppercase tracking-wider">
                         <span className="w-1 h-1 rounded-full bg-emerald-400" />
                         Online
                       </span>
                     </p>
-                    <p className="hidden sm:flex text-[11px] text-white/45 items-center gap-1 mt-0.5">
-                      <Sparkles className="w-3 h-3 text-brand-blue-light" />
+                    <p className="hidden sm:flex text-[11px] chat-subtitle items-center gap-1 mt-0.5">
+                      <Sparkles className="w-3 h-3 text-brand-red" />
                       {firstName ? `Here to help you grow, ${firstName}` : "Digital Marketing Assistant"}
                     </p>
                   </div>
@@ -823,7 +857,7 @@ export function ChatWidget() {
                     onClick={clearHistory}
                     aria-label="Clear chat history"
                     title="Clear history"
-                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
+                    className="w-8 h-8 rounded-full chat-icon-btn flex items-center justify-center transition-all cursor-pointer"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -832,7 +866,7 @@ export function ChatWidget() {
                       type="button"
                       onClick={() => setFullscreen((f) => !f)}
                       aria-label={fullscreen ? "Exit fullscreen" : "Fullscreen"}
-                      className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
+                      className="w-8 h-8 rounded-full chat-icon-btn flex items-center justify-center transition-all cursor-pointer"
                     >
                       {fullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                     </button>
@@ -841,20 +875,20 @@ export function ChatWidget() {
                     type="button"
                     onClick={toggle}
                     aria-label="Close chat"
-                    className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/12 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer"
+                    className="w-8 h-8 rounded-full chat-icon-btn flex items-center justify-center transition-all cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
                 {/* Quick Connect & Action Hub */}
-                <div className="px-3 py-2 bg-white/[0.03] border-b border-white/10 flex items-center justify-between gap-1.5 shrink-0 overflow-x-auto no-scrollbar">
+                <div className="px-3 py-2 chat-fast-bar flex items-center justify-between gap-1.5 shrink-0 overflow-x-auto no-scrollbar">
                   <a
                     href={`tel:${config.phoneRaw}`}
                     title="Direct Call (+91-9696262007)"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold transition-all active:scale-95 shrink-0"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 dark:text-emerald-300 text-[11px] font-bold transition-all active:scale-95 shrink-0 shadow-sm"
                   >
-                    <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                    <Phone className="w-3.5 h-3.5 dark:text-emerald-400" />
                     <span>Call Direct</span>
                   </a>
 
@@ -863,9 +897,9 @@ export function ChatWidget() {
                     target="_blank"
                     rel="noopener noreferrer"
                     title="Send WhatsApp Message"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/15 hover:bg-green-500/25 border border-green-500/30 text-green-300 text-[11px] font-bold transition-all active:scale-95 shrink-0"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/15 hover:bg-green-500/25 border border-green-500/30 dark:text-green-300 text-[11px] font-bold transition-all active:scale-95 shrink-0 shadow-sm"
                   >
-                    <MessageCircle className="w-3.5 h-3.5 text-green-400" fill="currentColor" />
+                    <MessageCircle className="w-3.5 h-3.5 text-green-500 dark:text-green-400" fill="currentColor" />
                     <span>WhatsApp</span>
                   </a>
 
@@ -873,19 +907,19 @@ export function ChatWidget() {
                     type="button"
                     onClick={() => send("Free SEO audit")}
                     title="Get Free Website & SEO Audit"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-brand-blue/15 hover:bg-brand-blue/25 border border-brand-blue/30 text-white text-[11px] font-bold transition-all active:scale-95 shrink-0"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-600 dark:text-white text-[11px] font-bold transition-all active:scale-95 shrink-0 shadow-sm"
                   >
-                    <Zap className="w-3.5 h-3.5 text-brand-blue-light" />
+                    <Zap className="w-3.5 h-3.5 text-brand-red" />
                     <span>Free Audit</span>
                   </button>
 
                   <a
                     href="/pricing"
                     title="View Pricing & Plans"
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white text-[11px] font-semibold transition-all active:scale-95 shrink-0"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg chat-plan-btn text-[11px] font-semibold transition-all active:scale-95 shrink-0 shadow-sm"
                   >
                     <span>Plans</span>
-                    <ArrowRight className="w-3 h-3 text-white/50" />
+                    <ArrowRight className="w-3 h-3 opacity-60" />
                   </a>
                 </div>
 
@@ -908,6 +942,21 @@ export function ChatWidget() {
                           }`}
                       >
                         {m.role === "assistant" && <FridayAvatar />}
+                        <div
+                          className={`relative max-w-[calc(100%-3.25rem)] sm:max-w-[80%] min-w-0 px-4 py-2.5 text-[14px] leading-[1.5] whitespace-pre-wrap break-words [overflow-wrap:anywhere] backdrop-blur-md ${m.role === "user"
+                              ? "bg-gradient-brand chat-user-bubble rounded-2xl rounded-br-sm shadow-[0_8px_24px_rgba(220,38,38,0.35)] border border-white/15"
+                              : "chat-bot-bubble rounded-2xl rounded-bl-sm shadow-card"
+                            }`}
+                        >
+                          {m.role === "user" && (
+                            <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-full" />
+                          )}
+                          {linkify(m.content)}
+                          {/* Blinking cursor while typing the welcome message */}
+                          {i === 0 && m.role === "assistant" && isTypingWelcome && (
+                            <span className="inline-block w-[2px] h-[1em] ml-0.5 bg-current align-middle animate-[blink_0.7s_step-end_infinite] opacity-80" />
+                          )}
+                        </div>
                         {m.role === "user" && (
                           <UserAvatar
                             photoURL={user?.photoURL}
@@ -946,7 +995,7 @@ export function ChatWidget() {
                               maskComposite: "exclude",
                             }}
                           />
-                          <div className="relative px-4 py-3 rounded-2xl rounded-bl-sm bg-blue-500/10 border border-blue-400/20 backdrop-blur-md">
+                          <div className="relative px-4 py-3 rounded-2xl rounded-bl-sm chat-loading-card backdrop-blur-md">
                             {/* Animated dots row */}
                             <div className="flex items-center gap-3 mb-2.5">
                               <div className="flex items-center gap-1.5">
@@ -968,7 +1017,7 @@ export function ChatWidget() {
                                   />
                                 ))}
                               </div>
-                              <span className="text-[10px] font-bold text-white/35 uppercase tracking-widest">Friday is thinking</span>
+                              <span className="text-[10px] font-bold chat-loading-subtext uppercase tracking-widest">Friday is thinking</span>
                             </div>
                             {/* Cycling message with slide-up animation */}
                             <div className="relative" style={{ minHeight: "20px" }}>
@@ -1026,10 +1075,10 @@ export function ChatWidget() {
                         key={opt}
                         type="button"
                         onClick={() => send(String(idx + 1))}
-                        className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                        className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border transition-all cursor-pointer hover:shadow-glow-sm"
                       >
                         <span className="inline-flex items-center gap-1.5">
-                          <span className="w-4 h-4 rounded-full bg-white/10 group-hover:bg-brand-blue/40 text-[9px] font-bold flex items-center justify-center shrink-0">
+                          <span className="w-4 h-4 rounded-full bg-black/10 dark:bg-white/10 group-hover:bg-red-500/20 text-[9px] font-bold flex items-center justify-center shrink-0">
                             {idx + 1}
                           </span>
                           {opt}
@@ -1045,14 +1094,14 @@ export function ChatWidget() {
                     <button
                       type="button"
                       onClick={() => setFollowUp(false)}
-                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border transition-all cursor-pointer hover:shadow-glow-sm"
                     >
                       Continue chatting
                     </button>
                     <button
                       type="button"
                       onClick={clearHistory}
-                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                      className="group text-[11px] px-3 py-1.5 rounded-full chat-chip border transition-all cursor-pointer hover:shadow-glow-sm"
                     >
                       Start new chat
                     </button>
@@ -1066,7 +1115,7 @@ export function ChatWidget() {
                   <div className="shrink-0 px-4 pb-2 pt-1">
                     {/* Mobile-only control row */}
                     <div className="flex items-center justify-between gap-2 md:hidden">
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-white/30">
+                      <span className="text-[9px] font-bold uppercase tracking-wider chat-quick-label">
                         Quick replies
                       </span>
                       <button
@@ -1075,7 +1124,7 @@ export function ChatWidget() {
                         aria-label={sugOpen ? "Hide suggestions" : "Show suggestions"}
                         aria-expanded={sugOpen}
                         title={sugOpen ? "Hide suggestions" : "Show suggestions"}
-                        className="flex items-center gap-1 text-[10px] font-semibold text-white/50 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-2.5 py-1 transition-all cursor-pointer active:scale-95"
+                        className="flex items-center gap-1 text-[10px] font-semibold chat-quick-label hover:opacity-100 chat-chip rounded-full px-2.5 py-1 transition-all cursor-pointer active:scale-95"
                       >
                         {sugOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
                         {sugOpen ? "Hide" : "Show"}
@@ -1091,7 +1140,7 @@ export function ChatWidget() {
                           key={q}
                           type="button"
                           onClick={() => send(q)}
-                          className="group shrink-0 whitespace-nowrap md:whitespace-normal md:shrink text-[11px] px-3 py-1.5 rounded-full chat-chip border text-white/70 transition-all cursor-pointer hover:text-white hover:border-brand-blue-light/60 hover:bg-brand-blue/15 hover:shadow-glow-sm"
+                          className="group shrink-0 whitespace-nowrap md:whitespace-normal md:shrink text-[11px] px-3 py-1.5 rounded-full chat-chip border transition-all cursor-pointer hover:shadow-glow-sm"
                         >
                           {q}
                         </button>
@@ -1101,11 +1150,11 @@ export function ChatWidget() {
                 )}
 
                 {/* Input */}
-                <div className="p-3 sm:p-3.5 border-t border-white/10 chat-surface-input shrink-0">
+                <div className="p-3 sm:p-3.5 chat-surface-input shrink-0">
                   {/* Login gate — shown after a guest uses their free messages */}
                   {showLoginPrompt && !user && (
-                    <div className="mb-3 rounded-2xl border border-brand-blue/30 bg-brand-blue/10 p-3 text-center">
-                      <p className="text-[12.5px] text-white/85 mb-2.5 font-medium">
+                    <div className="mb-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-3 text-center">
+                      <p className="text-[12.5px] chat-title mb-2.5 font-medium">
                         Sign in to keep chatting with Friday
                       </p>
                       <div className="flex flex-col gap-2">
@@ -1121,7 +1170,7 @@ export function ChatWidget() {
                           href={WHATSAPP_URL}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold text-green-300 hover:bg-white/10 transition-all"
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-full text-[12px] font-semibold text-green-600 dark:text-green-300 hover:bg-black/5 dark:hover:bg-white/10 transition-all"
                         >
                           <MessageCircle className="w-3.5 h-3.5" fill="currentColor" />
                           Continue on WhatsApp instead
@@ -1129,7 +1178,7 @@ export function ChatWidget() {
                       </div>
                     </div>
                   )}
-                  <div className="relative flex items-center gap-2 rounded-full chat-field p-1.5 pl-4 transition-all focus-within:border-brand-blue-light/60 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12),0_4px_20px_rgba(220,38,38,0.15)]">
+                  <div className="relative flex items-center gap-2 rounded-full chat-field p-1.5 pl-4 transition-all focus-within:border-brand-red focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12),0_4px_20px_rgba(220,38,38,0.15)]">
                     <input
                       type="text"
                       value={input}
@@ -1137,7 +1186,7 @@ export function ChatWidget() {
                       onKeyDown={onKeyDown}
                       placeholder={firstName ? `Hi ${firstName}, type your message...` : "Type your message..."}
                       disabled={showLoginPrompt && !user}
-                      className="chat-input flex-1 bg-transparent text-[13.5px] text-white focus:outline-none min-w-0 disabled:opacity-50"
+                      className="chat-input flex-1 bg-transparent text-[13.5px] focus:outline-none min-w-0 disabled:opacity-50"
                       maxLength={1500}
                     />
                     <button
@@ -1158,8 +1207,8 @@ export function ChatWidget() {
                       )}
                     </button>
                   </div>
-                  <p className="mt-2 text-center text-[10px] text-white/25">
-                    Powered by <span className="text-brand-blue-light font-medium">Nexus Digital</span> AI
+                  <p className="mt-2 text-center text-[10px] chat-footer-text">
+                    Powered by <span className="text-brand-red font-medium">Nexus Digital</span> AI
                   </p>
                 </div>
               </div>
