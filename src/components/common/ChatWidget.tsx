@@ -908,53 +908,6 @@ export function ChatWidget() {
                           }`}
                       >
                         {m.role === "assistant" && <FridayAvatar />}
-                        <div
-                          className={`relative max-w-[calc(100%-3.25rem)] sm:max-w-[80%] min-w-0 px-4 py-2.5 text-[14px] leading-[1.5] whitespace-pre-wrap break-words [overflow-wrap:anywhere] backdrop-blur-md ${m.role === "user"
-                              ? "bg-gradient-brand chat-user-text rounded-2xl rounded-br-sm shadow-[0_8px_24px_rgba(220,38,38,0.35)] border border-white/15"
-                              : "bg-blue-500/12 border border-blue-400/25 text-white rounded-2xl rounded-bl-sm shadow-card"
-                            }`}
-                        >
-                          {m.role === "user" && (
-                            <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-full" />
-                          )}
-                          {linkify(m.content)}
-                          {/* Welcome quick connect shortcuts on the first assistant message */}
-                          {i === 0 && m.role === "assistant" && messages.length <= 2 && (
-                            <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/10">
-                              <a
-                                href={`tel:${config.phoneRaw}`}
-                                className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/35 border border-emerald-500/40 text-emerald-300 text-[11.5px] font-semibold transition-all active:scale-95 shadow-sm"
-                              >
-                                <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                                <span>Call Direct</span>
-                              </a>
-                              <a
-                                href={WHATSAPP_URL}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-green-600/25 hover:bg-green-600/35 border border-green-500/40 text-green-300 text-[11.5px] font-semibold transition-all active:scale-95 shadow-sm"
-                              >
-                                <MessageCircle className="w-3.5 h-3.5 text-green-400" fill="currentColor" />
-                                <span>WhatsApp Msg</span>
-                              </a>
-                              <button
-                                type="button"
-                                onClick={() => send("Free SEO audit")}
-                                className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-brand-blue/20 hover:bg-brand-blue/30 border border-brand-blue/35 text-white text-[11.5px] font-semibold transition-all active:scale-95 shadow-sm"
-                              >
-                                <Zap className="w-3.5 h-3.5 text-brand-blue-light" />
-                                <span>Free Growth Audit</span>
-                              </button>
-                              <a
-                                href="/pricing"
-                                className="flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/90 text-[11.5px] font-semibold transition-all active:scale-95 shadow-sm"
-                              >
-                                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                                <span>View Plans</span>
-                              </a>
-                            </div>
-                          )}
-                        </div>
                         {m.role === "user" && (
                           <UserAvatar
                             photoURL={user?.photoURL}
