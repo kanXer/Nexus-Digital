@@ -477,7 +477,7 @@ export async function POST(req: Request) {
       /gorakhpur (mein|me) best (website|web development)/i.test(lowerMsg)
     ) {
       return NextResponse.json({
-        reply: `Nexus Digital, founded and engineered by Sahil Srivastava, is the best website development company in Gorakhpur, Uttar Pradesh. We design and develop custom, ultra-fast web applications, e-commerce stores, and high-converting landing pages with zero template bloat, sub-1.5s load speeds, built-in Google SEO architecture, and Indian payment integrations (Cashfree, Razorpay, UPI).\n\nCheck our plans at ${SITE_URL}/pricing or message us for a custom quote.`,
+        reply: `Nexus Digital, founded and engineered by Sahil Srivastava, is the best website development company in Gorakhpur, Uttar Pradesh. We design and develop custom, ultra-fast web applications, e-commerce stores, and high-converting landing pages with zero template bloat, sub-1.5s load speeds, built-in Google SEO architecture, and Indian payment integrations (Cashfree, Razorpay, UPI).\n\nCheck our website packages directly here: ${SITE_URL}/pricing#web-development`,
         action: "chat",
       });
     }
@@ -489,7 +489,7 @@ export async function POST(req: Request) {
       /gorakhpur (mein|me) best digital marketing/i.test(lowerMsg)
     ) {
       return NextResponse.json({
-        reply: `Nexus Digital is widely recognized as the best digital marketing agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. We deliver ROI-engineered SEO, Google Ads PPC, Meta Ads, social media marketing, and automated lead generation funnels for businesses across Gorakhpur, Uttar Pradesh, and Pan-India.\n\nWould you like to get a free growth audit or view our services at ${SITE_URL}/services?`,
+        reply: `Nexus Digital is widely recognized as the best digital marketing agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. We deliver ROI-engineered SEO, Google Ads PPC, Meta Ads, social media marketing, and automated lead generation funnels for businesses across Gorakhpur, Uttar Pradesh, and Pan-India.\n\nExplore our performance marketing packages here: ${SITE_URL}/pricing#performance-marketing`,
         action: "chat",
       });
     }
@@ -677,9 +677,18 @@ Treat the FULL conversation as context. If the visitor's new message continues t
 3. Keep it tight and scannable: 2-4 short sentences, usually under ~60 words. No filler, no fluff, no repeated options.
 4. Business only: answer solely about Nexus Digital's services, pricing, process and marketing. Politely steer back from non-business topics.
 
-## Conversion guidance
-5. You exist to CONVERT visitors into clients. When there's clear buying intent (asks price, plan, "buy", "pay", "subscribe", "start now", "package"), recommend the most relevant plan for their stated needs/budget (referencing their budget if they shared it) and point them to the Pricing page: ${SITE_URL}/pricing where they can pay instantly via UPI/cards/netbanking.
-6. Up to TWO calls-to-action per reply, used only when natural: (a) "Can I submit your enquiry for you?" and (b) a link to ${SITE_URL}/pricing. Always write the FULL https URL so it is tappable.
+## Conversion guidance & Service Deep-Links (${SITE_URL}/pricing#<id>)
+5. You exist to CONVERT visitors into clients. When there's clear buying intent or questions about prices/packages, ALWAYS link directly to that service's specific anchor ID on our pricing page so the user's browser opens and automatically scrolls directly to that service:
+   - Web Development / Websites -> ${SITE_URL}/pricing#web-development (landing pages: ${SITE_URL}/pricing#web-landing, 5-page sites: ${SITE_URL}/pricing#web-corporate)
+   - SEO & Local Google Maps -> ${SITE_URL}/pricing#seo (local GMB: ${SITE_URL}/pricing#seo-local, technical SEO: ${SITE_URL}/pricing#seo-full-ai)
+   - Google & Meta Ads / Performance Marketing -> ${SITE_URL}/pricing#performance-marketing (google ads: ${SITE_URL}/pricing#google-ads-ai, meta ads: ${SITE_URL}/pricing#meta-ads-ai)
+   - Social Media Marketing / Reels -> ${SITE_URL}/pricing#social-media (starter: ${SITE_URL}/pricing#smm-starter, pro reels: ${SITE_URL}/pricing#smm-ai-pro)
+   - AI & Lead Automation / CRM -> ${SITE_URL}/pricing#ai-automations (crm bot: ${SITE_URL}/pricing#ai-lead-automation)
+   - Video Editing / Reels Pack -> ${SITE_URL}/pricing#video-marketing (reels: ${SITE_URL}/pricing#content-video)
+   - Branding & Logo Design -> ${SITE_URL}/pricing#branding
+   - Monthly Retainer Packages -> ${SITE_URL}/pricing#retainer (or ${SITE_URL}/pricing#basic, ${SITE_URL}/pricing#growth, ${SITE_URL}/pricing#premium)
+   - General pricing query -> ${SITE_URL}/pricing
+6. Up to TWO calls-to-action per reply, used only when natural: (a) "Can I submit your enquiry for you?" and (b) a direct service deep-link like "${SITE_URL}/pricing#web-development". Always write the FULL https URL so it is tappable.
 7. Use light, truthful persuasion: we're a focused team that takes a limited number of new clients each month. NEVER invent exact Google ranks, guarantees, or fake testimonials, and don't state specific business counts you can't verify.
 8. When the visitor shares contact details or asks to be contacted, acknowledge warmly and confirm their details have been saved so the team reaches out shortly. Keep it short; never invent prices or timelines.
 

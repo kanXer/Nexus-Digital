@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Check, X, Phone, Star } from "lucide-react";
@@ -16,6 +17,101 @@ import { trackEvent } from "@/lib/analytics";
 
 export default function PricingPage() {
   const { addToCart } = useAuth();
+
+  useEffect(() => {
+    const scrollToTarget = () => {
+      if (typeof window === "undefined") return;
+      const rawHash = window.location.hash;
+      if (!rawHash) return;
+
+      const rawId = rawHash.replace(/^#/, "").trim().toLowerCase();
+      if (!rawId) return;
+
+      const ALIAS_MAP: Record<string, string> = {
+        website: "web-development",
+        websites: "web-development",
+        web: "web-development",
+        "web-dev": "web-development",
+        "web-design": "web-development",
+        "web-developer": "web-development",
+        webdev: "web-development",
+        "landing-page": "web-landing",
+        "corporate-website": "web-corporate",
+        ads: "performance-marketing",
+        "paid-ads": "performance-marketing",
+        "google-ads": "performance-marketing",
+        "meta-ads": "performance-marketing",
+        "facebook-ads": "performance-marketing",
+        google: "performance-marketing",
+        meta: "performance-marketing",
+        ppc: "performance-marketing",
+        marketing: "performance-marketing",
+        seo: "seo",
+        "local-seo": "seo",
+        gmb: "seo",
+        "search-engine-optimization": "seo",
+        social: "social-media",
+        "social-media": "social-media",
+        smm: "social-media",
+        reels: "social-media",
+        instagram: "social-media",
+        ai: "ai-automations",
+        automation: "ai-automations",
+        automations: "ai-automations",
+        crm: "ai-automations",
+        video: "video-marketing",
+        videos: "video-marketing",
+        branding: "branding",
+        logo: "branding",
+        plans: "plans",
+        "pricing-plans": "plans",
+        packages: "plans",
+        "monthly-plans": "plans",
+        services: "service-pricing",
+        "service-pricing": "service-pricing",
+        "plan-basic": "basic",
+        "plan-growth": "growth",
+        "plan-premium": "premium",
+      };
+
+      const resolvedId = ALIAS_MAP[rawId] || rawId;
+      const el = document.getElementById(resolvedId) || document.getElementById(rawId);
+
+      if (el) {
+        // Calculate navbar height + 20px breathing space above element
+        const navEl = document.querySelector("header");
+        const navHeight = navEl ? navEl.getBoundingClientRect().height : 80;
+        // On desktop TopInfoBar adds ~36px (h-9) if visible
+        const topBarEl = document.querySelector("div.fixed.top-0.h-9");
+        const topBarHeight = topBarEl && window.innerWidth >= 1024 ? 36 : 0;
+        const totalHeaderHeight = navHeight + topBarHeight;
+        
+        // Exact 20px above the target element beneath the header
+        const extraSpace = 20;
+        const totalOffset = totalHeaderHeight + extraSpace;
+
+        const y = el.getBoundingClientRect().top + window.pageYOffset - totalOffset;
+        window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+
+        el.classList.add("pricing-highlight-glow");
+        setTimeout(() => el.classList.remove("pricing-highlight-glow"), 3500);
+      }
+    };
+
+    // Trigger on initial mount and staggered timeouts for dynamic DOM hydration
+    scrollToTarget();
+    const t1 = setTimeout(scrollToTarget, 150);
+    const t2 = setTimeout(scrollToTarget, 450);
+    const t3 = setTimeout(scrollToTarget, 900);
+
+    window.addEventListener("hashchange", scrollToTarget);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener("hashchange", scrollToTarget);
+    };
+  }, []);
 
   return (
     <div className="bg-black min-h-screen">
@@ -62,7 +158,10 @@ export default function PricingPage() {
       </section>
 
       {/* Pricing Plans */}
-      <section className="px-4 sm:px-6 lg:px-8 pb-24">
+      <section id="plans" className="px-4 sm:px-6 lg:px-8 pb-24 scroll-mt-28 relative">
+        <span id="packages" className="absolute -top-28" />
+        <span id="pricing-plans" className="absolute -top-28" />
+        <span id="monthly-plans" className="absolute -top-28" />
         <div className="max-w-6xl mx-auto">
           {/* Urgency Alert */}
           <div className="max-w-3xl mx-auto bg-brand-red/10 border border-brand-red/30 rounded-lg p-4 mb-10 flex items-center gap-4 animate-pulse-slow">
@@ -87,6 +186,7 @@ export default function PricingPage() {
             {pricingPlans.map((plan, i) => (
               <motion.div
                 key={plan.id}
+                id={plan.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -95,7 +195,7 @@ export default function PricingPage() {
                   ease: [0.22, 1, 0.36, 1] as const,
                 }}
                 whileHover={{ y: -6 }}
-                className={`relative rounded-3xl p-7 flex flex-col transition-all duration-500 group ${
+                className={`relative rounded-3xl p-7 flex flex-col transition-all duration-500 group scroll-mt-28 ${
                   plan.highlight
                     ? "glass-card-brand border-brand-blue/50 shadow-[0_0_60px_rgba(220,38,38,0.25)] scale-[1.02] md:scale-105 hover:shadow-[0_0_90px_rgba(220,38,38,0.4)]"
                     : "glass-card border-white/8 hover:border-brand-blue/50 hover:shadow-[0_0_50px_rgba(220,38,38,0.2)]"
@@ -243,7 +343,9 @@ export default function PricingPage() {
       </section>
 
       {/* Service-wise Pricing Breakdown */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <section id="service-pricing" className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden scroll-mt-28">
+        <span id="services" className="absolute -top-28" />
+        <span id="service-breakdown" className="absolute -top-28" />
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none opacity-60" />
 
         <div className="max-w-6xl mx-auto relative z-10">
@@ -256,7 +358,7 @@ export default function PricingPage() {
 
           <div className="mt-14 space-y-14">
             {servicePricing.map((group) => (
-              <div key={group.category}>
+              <div key={group.category} id={group.id} className="scroll-mt-28">
                 <motion.h3
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -278,6 +380,7 @@ export default function PricingPage() {
                   {group.items.map((item, i) => (
                     <motion.div
                       key={item.id}
+                      id={item.id}
                       initial={{ opacity: 0, y: 24 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -286,7 +389,7 @@ export default function PricingPage() {
                         duration: 0.6,
                         ease: [0.22, 1, 0.36, 1] as const,
                       }}
-                      className="glass-card border-white/8 rounded-3xl p-6 flex flex-col hover:border-brand-blue/60 hover:shadow-[0_0_50px_rgba(220,38,38,0.2)] transition-all duration-500 group relative overflow-hidden"
+                      className="glass-card border-white/8 rounded-3xl p-6 flex flex-col hover:border-brand-blue/60 hover:shadow-[0_0_50px_rgba(220,38,38,0.2)] transition-all duration-500 group relative overflow-hidden scroll-mt-28"
                     >
                       {/* Card Glow */}
                       <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[70px] pointer-events-none transition-all duration-700 opacity-0 group-hover:opacity-100 bg-brand-blue/40" />

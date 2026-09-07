@@ -16,7 +16,7 @@ export const leadMagnets: LeadMagnet[] = [
     icon: "CheckSquare",
     bullets: ["SEO & Local SEO setup", "Ad account structure", "Landing page CRO", "WhatsApp automation"],
     tag: "Most popular",
-    file: "/lead-magnets/digital-marketing-checklist.txt",
+    file: "/lead-magnets/digital-marketing-checklist.pdf",
   },
   {
     id: "seo-blueprint",
@@ -25,7 +25,7 @@ export const leadMagnets: LeadMagnet[] = [
     icon: "MapPin",
     bullets: ["Google Business Profile", "Citation building", "Review strategy", "Content calendar"],
     tag: "For local brands",
-    file: "/lead-magnets/local-seo-blueprint.txt",
+    file: "/lead-magnets/local-seo-blueprint.pdf",
   },
   {
     id: "roi-calculator",

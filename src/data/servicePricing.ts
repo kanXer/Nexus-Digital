@@ -9,12 +9,14 @@ export interface ServicePricingItem {
 }
 
 export interface ServicePricingCategory {
+  id: string;
   category: string;
   items: ServicePricingItem[];
 }
 
 export const servicePricing: ServicePricingCategory[] = [
   {
+    id: "performance-marketing",
     category: "Performance Marketing",
     items: [
       {
@@ -52,6 +54,7 @@ export const servicePricing: ServicePricingCategory[] = [
     ],
   },
   {
+    id: "ai-automations",
     category: "AI Integrations & Automations",
     items: [
       {
@@ -72,6 +75,7 @@ export const servicePricing: ServicePricingCategory[] = [
     ],
   },
   {
+    id: "social-media",
     category: "Social Media Management",
     items: [
       {
@@ -107,6 +111,7 @@ export const servicePricing: ServicePricingCategory[] = [
     ],
   },
   {
+    id: "seo",
     category: "Search Engine Optimization",
     items: [
       {
@@ -142,6 +147,7 @@ export const servicePricing: ServicePricingCategory[] = [
     ],
   },
   {
+    id: "web-development",
     category: "Website & Web Development",
     items: [
       {
@@ -179,6 +185,7 @@ export const servicePricing: ServicePricingCategory[] = [
     ],
   },
   {
+    id: "video-marketing",
     category: "Content & Video Marketing",
     items: [
       {
@@ -199,6 +206,7 @@ export const servicePricing: ServicePricingCategory[] = [
     ],
   },
   {
+    id: "branding",
     category: "Branding & Graphic Design",
     items: [
       {
@@ -218,6 +226,7 @@ export const servicePricing: ServicePricingCategory[] = [
     ],
   },
   {
+    id: "retainer",
     category: "Full Retainer Packages",
     items: [
       {
