@@ -17,6 +17,9 @@ export interface InvoiceData {
   amount: number;
   currency: string;
   paymentRef: string;
+  discount?: number;
+  couponCode?: string;
+  gstRate?: number;
 }
 
 type RGB = [number, number, number];
@@ -97,9 +100,11 @@ export function generateInvoicePdfString(d: InvoiceData): string {
 
   const fmtAmt = (n: number) => `Rs. ${Number(n || 0).toLocaleString("en-IN")}`;
 
-  const gstRate = Number(process.env.NEXT_PUBLIC_GST_RATE || "28");
-  const gstAmount = Math.round(d.amount * gstRate / 100);
-  const totalAmount = d.amount + gstAmount;
+  const gstRate = Number(d.gstRate || process.env.NEXT_PUBLIC_GST_RATE || "18");
+  const discount = Math.max(0, Number(d.discount || 0));
+  const taxableAmount = Math.max(0, d.amount - discount);
+  const gstAmount = Math.round(taxableAmount * gstRate / 100);
+  const totalAmount = taxableAmount + gstAmount;
 
   /* ───── PREMIUM HEADER BAND ───── */
   box(0, H - 140, W, 140, BRAND_DARK); // Dark header
@@ -175,13 +180,25 @@ export function generateInvoicePdfString(d: InvoiceData): string {
   hline(M, W - M, rowBottom);
 
   /* ───── TOTALS ───── */
-  let tt = rowBottom - 35;
-  txt("Subtotal (excl. GST)", W - M - 150, tt, 10, false, TEXT_MUTED, "r");
+  let tt = rowBottom - 30;
+  txt("Subtotal (Base)", W - M - 150, tt, 10, false, TEXT_MUTED, "r");
   txt(fmtAmt(d.amount), W - M - 20, tt, 11, false, TEXT_MAIN, "r");
-  tt -= 24;
+
+  if (discount > 0) {
+    tt -= 20;
+    const discLabel = d.couponCode ? `Coupon (${d.couponCode})` : "Special Discount";
+    txt(discLabel, W - M - 150, tt, 10, false, BRAND_PRIMARY, "r");
+    txt(`- ${fmtAmt(discount)}`, W - M - 20, tt, 11, true, BRAND_PRIMARY, "r");
+
+    tt -= 20;
+    txt("Taxable Amount", W - M - 150, tt, 10, false, TEXT_MUTED, "r");
+    txt(fmtAmt(taxableAmount), W - M - 20, tt, 11, false, TEXT_MAIN, "r");
+  }
+
+  tt -= 22;
   txt(`GST (${gstRate}%)`, W - M - 150, tt, 10, false, TEXT_MUTED, "r");
   txt(fmtAmt(gstAmount), W - M - 20, tt, 11, false, TEXT_MAIN, "r");
-  tt -= 34;
+  tt -= 32;
 
   // Highlighted total row
   box(W - M - 260, tt - 12, 260, 38, LIGHT_BG);

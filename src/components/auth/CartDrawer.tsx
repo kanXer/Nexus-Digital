@@ -150,14 +150,24 @@ export default function CartDrawer() {
                 Clear all items
               </button>
 
-              <Link
-                href="/cart"
-                onClick={closeCart}
-                className="group w-full btn-primary py-3.5 rounded-xl justify-center font-bold text-sm shadow-[0_0_25px_rgba(220,38,38,0.4)]"
-              >
-                Proceed to Secure Checkout
-                <ArrowRight className="w-4 h-4 ml-1.5 transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
+              <div className="space-y-2">
+                <Link
+                  href="/checkout?plan=cart"
+                  onClick={closeCart}
+                  className="group w-full btn-primary py-3.5 rounded-xl justify-center font-bold text-sm shadow-[0_0_25px_rgba(220,38,38,0.4)]"
+                >
+                  Proceed to Secure Checkout
+                  <ArrowRight className="w-4 h-4 ml-1.5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+
+                <Link
+                  href="/cart"
+                  onClick={closeCart}
+                  className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-semibold flex items-center justify-center transition-colors border border-white/5"
+                >
+                  Review Cart Details
+                </Link>
+              </div>
 
               <div className="flex items-center justify-center gap-4 text-[10px] text-white/35 font-semibold">
                 <span className="flex items-center gap-1">

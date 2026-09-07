@@ -86,7 +86,7 @@ export default function CashfreeButton({
 
   const handleClick = useCallback(async () => {
     setStatus("processing");
-    setMessage("Connecting to Cashfree gateway…");
+    setMessage("Connecting to Cashfree secure payment gateway…");
     setFallbackSession(null);
     try {
       const res = await fetchWithTimeout(
@@ -121,7 +121,7 @@ export default function CashfreeButton({
         throw new Error("Payment session not created. Please try again.");
       }
 
-      setMessage("Opening Cashfree payment ...");
+      setMessage("Opening Cashfree payment popup…");
 
       const isProd =
         process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||

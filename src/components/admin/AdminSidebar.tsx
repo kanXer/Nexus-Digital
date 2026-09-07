@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Send, UserCog, LogOut, ArrowLeft, Menu, X, Zap, Moon, FileBarChart2, PackageCheck } from "lucide-react";
+import { LayoutDashboard, Send, UserCog, LogOut, ArrowLeft, Menu, X, Zap, Moon, FileBarChart2, PackageCheck, Tag } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { config } from "@/lib/config";
 
@@ -10,6 +10,7 @@ const links = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Lead Report", icon: FileBarChart2 },
   { href: "/admin/orders", label: "Orders", icon: PackageCheck },
+  { href: "/admin/coupons", label: "Coupons & Offers", icon: Tag },
   { href: "/admin/newsletter", label: "Newsletter", icon: Send },
 ];
 
