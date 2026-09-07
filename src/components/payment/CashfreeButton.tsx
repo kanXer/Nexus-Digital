@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Wallet, AlertCircle, Loader2 } from "lucide-react";
+// @ts-ignore
+import { load } from "@cashfreepayments/cashfree-js";
 
 async function fetchWithTimeout(url: string, init: RequestInit, ms = 30000): Promise<Response> {
   const controller = new AbortController();
@@ -10,6 +12,20 @@ async function fetchWithTimeout(url: string, init: RequestInit, ms = 30000): Pro
     return await fetch(url, { ...init, signal: controller.signal });
   } finally {
     clearTimeout(timer);
+  }
+}
+
+let cachedCashfree: any = null;
+
+async function getCashfreeSdk(mode: "production" | "sandbox") {
+  if (typeof window === "undefined") return null;
+  if (cachedCashfree) return cachedCashfree;
+  try {
+    cachedCashfree = await load({ mode });
+    return cachedCashfree;
+  } catch (e) {
+    console.warn("Cashfree SDK async load error:", e);
+    return null;
   }
 }
 
@@ -38,6 +54,12 @@ export default function CashfreeButton({
 
   useEffect(() => {
     mountedRef.current = true;
+    // Preload SDK in the background for instant checkout trigger
+    const isProd =
+      process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
+      process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true";
+    getCashfreeSdk(isProd ? "production" : "sandbox").catch(() => {});
+
     return () => {
       mountedRef.current = false;
     };
@@ -85,18 +107,34 @@ export default function CashfreeButton({
         process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
         process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true";
 
+      const mode = isProd ? "production" : "sandbox";
+
+      // 1. Try official Cashfree JS SDK checkout first
+      try {
+        const cashfree = await getCashfreeSdk(mode);
+        if (cashfree && typeof cashfree.checkout === "function") {
+          const result = await cashfree.checkout({
+            paymentSessionId: data.paymentSessionId,
+            redirectTarget: "_self",
+          });
+          if (result?.error) {
+            console.warn("Cashfree SDK returned checkout error:", result.error);
+          } else {
+            // SDK redirect initiated successfully
+            return;
+          }
+        }
+      } catch (sdkErr) {
+        console.warn("Cashfree SDK checkout exception, using native POST fallback:", sdkErr);
+      }
+
+      // 2. Resilient Fallback: Native form submission to Cashfree Hosted Checkout
       const paymentUrl =
         data.paymentUrl ||
         (isProd
           ? "https://api.cashfree.com/pg/view/sessions/checkout"
           : "https://sandbox.cashfree.com/pg/view/sessions/checkout");
 
-      // Seamless Native Hosted Checkout: Standard POST form submission.
-      // This is Cashfree's official hosted redirect integration.
-      // - 100% works across all mobile browsers (Android Chrome, iOS Safari)
-      // - Direct UPI app deep links (Google Pay, PhonePe, Paytm, BHIM, QR)
-      // - Zero iframe blocking or third-party cookie restrictions
-      // - Eliminates false-positive domain whitelisting errors
       const form = document.createElement("form");
       form.method = "POST";
       form.action = paymentUrl;
