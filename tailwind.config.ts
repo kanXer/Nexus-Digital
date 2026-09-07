@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: ["selector", '[data-theme="dark"]'],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -87,6 +88,10 @@ const config: Config = {
         "border-glow": {
           "0%, 100%": { borderColor: "rgba(37,99,235,0.3)" },
           "50%": { borderColor: "rgba(37,99,235,0.8)" },
+        },
+        blink: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0" },
         },
       },
       boxShadow: {
