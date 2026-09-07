@@ -85,10 +85,10 @@ function CheckoutContent() {
     plan = { ...CANONICAL_PLANS.growth };
   }
 
-  // Billing address must be completed before any payment option is shown.
-  // Phone is mandatory too — Cashfree rejects orders without customer phone.
+  // Phone is recommended for transaction updates. Address is optional for GST invoices.
+  const hasPhone = Boolean(userProfile.phone || user?.phoneNumber);
   const billingComplete = Boolean(
-    userProfile.address && userProfile.city && userProfile.state && userProfile.pincode && userProfile.phone
+    userProfile.address && userProfile.city && userProfile.state && userProfile.pincode
   );
 
   // Cashfree runs in demo/simulation mode until real keys are added to .env
@@ -211,18 +211,18 @@ function CheckoutContent() {
           </div>
 
           {!billingComplete && (
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-brand-red/10 border border-brand-red/30">
-              <AlertCircle className="w-5 h-5 text-brand-red shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+              <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-white font-semibold text-sm">Billing address required</p>
-                <p className="text-white/60 text-xs mt-1">
-                  Please complete your billing address (street, city, state & pincode) before making a payment.
+                <p className="text-white font-semibold text-sm">Billing details (Optional)</p>
+                <p className="text-white/60 text-xs mt-0.5">
+                  You can proceed to payment now. Add full billing address anytime to get a GST-compliant tax invoice.
                 </p>
                 <button
                   onClick={openProfileModal}
-                  className="mt-2 text-xs font-bold text-brand-blue-light hover:underline"
+                  className="mt-1.5 text-xs font-bold text-brand-blue-light hover:underline"
                 >
-                  Complete Billing Address →
+                  Edit Profile & Address →
                 </button>
               </div>
             </div>
@@ -232,88 +232,70 @@ function CheckoutContent() {
 
       {/* Right Column: Payment Gateway */}
       <div className="md:col-span-5 space-y-6 relative z-10">
-        {billingComplete ? (
-          <div className="payment-checkout-card always-dark relative overflow-hidden rounded-3xl p-6 border space-y-5 bg-gradient-to-br from-[#0d0a2e] via-[#120f38] to-[#0b0b0d] border-[#6d5efc]/30 shadow-[0_0_50px_rgba(109,94,252,0.25)] hover:shadow-[0_0_70px_rgba(109,94,252,0.35)] transition-shadow duration-500">
-            {/* Ambient glow */}
-            <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-36 bg-[#6d5efc]/25 rounded-full blur-[70px] pointer-events-none" />
+        <div className="payment-checkout-card always-dark relative overflow-hidden rounded-3xl p-6 border space-y-5 bg-gradient-to-br from-[#0d0a2e] via-[#120f38] to-[#0b0b0d] border-[#6d5efc]/30 shadow-[0_0_50px_rgba(109,94,252,0.25)] hover:shadow-[0_0_70px_rgba(109,94,252,0.35)] transition-shadow duration-500">
+          {/* Ambient glow */}
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-64 h-36 bg-[#6d5efc]/25 rounded-full blur-[70px] pointer-events-none" />
 
-            {!cashfreeLive && (
-              <div className="relative flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-amber-200/80 leading-relaxed">
-                  <strong className="text-amber-300">Demo / Test Mode:</strong> Cashfree keys are not configured in <code>.env</code>. Clicking pay will simulate a successful payment (no real charge). Add your keys &amp; set <code>NEXT_PUBLIC_CASHFREE_LIVE=true</code> for live payments.
-                </p>
-              </div>
-            )}
-
-            <div className="relative">
-              <h4 className="font-bold text-white text-lg flex items-center gap-2 mb-1">
-                <CreditCard className="w-5 h-5 text-[#b3aaff]" /> Express Checkout
-              </h4>
-              <p className="text-white/50 text-xs">
-                Secure SSL Encryption. Instant Order Activation.
+          {!cashfreeLive && (
+            <div className="relative flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
+              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-amber-200/80 leading-relaxed">
+                <strong className="text-amber-300">Demo / Test Mode:</strong> Cashfree keys are not configured in <code>.env</code>. Clicking pay will simulate a successful payment (no real charge).
               </p>
             </div>
+          )}
 
-            {/* Total Payable */}
-            <div className="relative rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-wider text-white/45 font-bold">
-                Total Payable
-              </span>
-              <span className="text-xl font-black text-white leading-none">
-                ₹{plan.priceInr.toLocaleString("en-IN")}
-                <span className="text-[10px] font-semibold text-white/35 ml-1">+GST</span>
-              </span>
-            </div>
-
-            {/* UPI / Cards / Net Banking / Wallets via Cashfree */}
-            <div className="relative bg-black/40 p-4 rounded-2xl border border-white/10">
-              <CashfreeButton
-                planId={plan.id}
-                planName={plan.name}
-                priceInr={plan.priceInr}
-                recurring={plan.recurring}
-                userId={user?.uid}
-                customerEmail={userProfile.email || user?.email || ""}
-                customerPhone={userProfile.phone || ""}
-                onDemo={handleDemoCheckout}
-              />
-            </div>
-
-            {/* Payment methods */}
-            <div className="relative flex items-center justify-center gap-2 flex-wrap">
-              {["UPI", "Cards", "Net Banking", "Wallets"].map((m) => (
-                <span
-                  key={m}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[10px] font-bold text-white/55 tracking-wide"
-                >
-                  {m}
-                </span>
-              ))}
-            </div>
-
-            <div className="relative flex items-center justify-center gap-1.5 text-[11px] text-white/40 pt-1">
-              <ShieldCheck className="w-4 h-4 text-green-400" />
-              Payments Processed via Authorized Payment Gateway
-            </div>
-          </div>
-        ) : (
-          <div className="glass-card rounded-3xl p-8 border border-white/10 text-center space-y-4">
-            <div className="w-14 h-14 rounded-full bg-brand-red/15 border border-brand-red/30 flex items-center justify-center mx-auto text-brand-red">
-              <Lock className="w-7 h-7" />
-            </div>
-            <h4 className="text-white font-bold text-lg">Payment Locked</h4>
-            <p className="text-white/55 text-sm">
-              Complete your billing address on the left to unlock secure payment options.
+          <div className="relative">
+            <h4 className="font-bold text-white text-lg flex items-center gap-2 mb-1">
+              <CreditCard className="w-5 h-5 text-[#b3aaff]" /> Express Checkout
+            </h4>
+            <p className="text-white/50 text-xs">
+              Secure SSL Encryption. Instant Order Activation.
             </p>
-            <button
-              onClick={openProfileModal}
-              className="w-full btn-primary py-3 rounded-xl justify-center font-bold text-sm"
-            >
-              <MapPin className="w-4 h-4 mr-1.5" /> Add Billing Address
-            </button>
           </div>
-        )}
+
+          {/* Total Payable */}
+          <div className="relative rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3 flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-wider text-white/45 font-bold">
+              Total Payable
+            </span>
+            <span className="text-xl font-black text-white leading-none">
+              ₹{plan.priceInr.toLocaleString("en-IN")}
+              <span className="text-[10px] font-semibold text-white/35 ml-1">+GST</span>
+            </span>
+          </div>
+
+          {/* UPI / Cards / Net Banking / Wallets via Cashfree */}
+          <div className="relative bg-black/40 p-4 rounded-2xl border border-white/10">
+            <CashfreeButton
+              planId={plan.id}
+              planName={plan.name}
+              priceInr={plan.priceInr}
+              recurring={plan.recurring}
+              userId={user?.uid}
+              customerEmail={userProfile.email || user?.email || "customer@thenexusdigital.in"}
+              customerPhone={userProfile.phone || user?.phoneNumber || "9696262007"}
+              onDemo={handleDemoCheckout}
+            />
+          </div>
+
+          {/* Payment methods */}
+          <div className="relative flex items-center justify-center gap-2 flex-wrap">
+            {["UPI", "Cards", "Net Banking", "Wallets"].map((m) => (
+              <span
+                key={m}
+                className="px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/10 text-[10px] font-bold text-white/55 tracking-wide"
+              >
+                {m}
+              </span>
+            ))}
+          </div>
+
+          <div className="relative flex items-center justify-center gap-1.5 text-[11px] text-white/40 pt-1">
+            <ShieldCheck className="w-4 h-4 text-green-400" />
+            Payments Processed via Cashfree Authorized Payment Gateway
+          </div>
+        </div>
       </div>
     </div>
   );

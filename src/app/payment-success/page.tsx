@@ -17,7 +17,7 @@ import { trackEvent } from "@/lib/analytics";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, userProfile, orders, recordNewOrder, openOrders } = useAuth();
+  const { user, loading, userProfile, orders, recordNewOrder, openOrders } = useAuth();
   const [copied, setCopied] = useState(false);
   const [verifyError, setVerifyError] = useState(false);
   const recordedRef = useRef(false);
@@ -28,6 +28,7 @@ function SuccessContent() {
   // Present after a real Cashfree redirect (cf_order = Cashfree orderId).
   const cfOrder = searchParams.get("cf_order");
   const payStatus = searchParams.get("status");
+  const [verifyLoading, setVerifyLoading] = useState(Boolean(cfOrder));
 
   // Find matching order from context if available
   const matchedOrder = orders.find((o) => o.id === orderId || o.planId === planId);
@@ -79,23 +80,27 @@ function SuccessContent() {
     downloadBlob(blob, `${billNumber}.pdf`);
   };
 
-  // Real Cashfree return: verify the order server-side, then record it in
-  // Firebase so it appears in "My Orders" and can be billed/downloaded.
+  // Real Cashfree return: verify the order server-side with resilient retry,
+  // then record it in Firestore/MongoDB so it appears in "My Orders".
   useEffect(() => {
-    if (!user) {
-      router.push("/pricing");
-      return;
-    }
-    if (cfOrder && !recordedRef.current) {
-      recordedRef.current = true;
-      (async () => {
-        try {
-          const res = await fetch(`/api/cashfree/status?orderId=${encodeURIComponent(cfOrder)}`);
-          const data = await res.json();
-          if (data?.order_status !== "PAID") {
-            setVerifyError(true);
-            return;
-          }
+    if (!cfOrder || recordedRef.current) return;
+
+    let isMounted = true;
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    const checkOrder = async () => {
+      try {
+        const res = await fetch(`/api/cashfree/status?orderId=${encodeURIComponent(cfOrder)}`);
+        const data = await res.json();
+        const isPaid =
+          data?.is_paid === true ||
+          data?.order_status === "PAID" ||
+          data?.payment_status === "SUCCESS";
+
+        if (isPaid) {
+          if (!isMounted) return;
+          recordedRef.current = true;
           const prod = getProduct(planId);
           await recordNewOrder({
             title: prod?.name || planId,
@@ -112,23 +117,58 @@ function SuccessContent() {
             currency: "INR",
             items: prod?.name || planId,
           });
-          openOrders();
-          router.replace("/");
-        } catch {
-          setVerifyError(true);
+          setVerifyLoading(false);
+          return;
         }
-      })();
-    }
-  }, [cfOrder, user, planId, router, recordNewOrder, txnId]);
 
-  // Redirect if no valid context
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(checkOrder, 1500);
+        } else {
+          if (isMounted) {
+            setVerifyLoading(false);
+            setVerifyError(true);
+          }
+        }
+      } catch (err) {
+        console.error("Cashfree status check failed:", err);
+        attempts++;
+        if (attempts < maxAttempts) {
+          setTimeout(checkOrder, 1500);
+        } else {
+          if (isMounted) {
+            setVerifyLoading(false);
+            setVerifyError(true);
+          }
+        }
+      }
+    };
+
+    checkOrder();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [cfOrder, planId, recordNewOrder, txnId]);
+
+  // Only redirect if auth is fully loaded and there is truly no payment or order context
   useEffect(() => {
-    if (!user) {
+    if (!loading && !user && !cfOrder && !orderId) {
       router.push("/pricing");
     }
-  }, [user, router]);
+  }, [user, loading, cfOrder, orderId, router]);
 
-  if (!user) return null;
+  if (loading || verifyLoading) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-28 text-center">
+        <div className="w-16 h-16 rounded-full border-4 border-green-500/20 border-t-green-400 animate-spin mx-auto mb-6" />
+        <h2 className="text-2xl font-bold text-white mb-2">Confirming Your Payment…</h2>
+        <p className="text-white/60 text-sm">
+          Please wait while we verify your transaction with Cashfree.
+        </p>
+      </div>
+    );
+  }
 
   // Real gateway payment failed / could not be verified.
   if (payStatus === "failed" || payStatus === "EXPIRED" || verifyError) {

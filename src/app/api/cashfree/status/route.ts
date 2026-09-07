@@ -43,6 +43,11 @@ export async function GET(req: Request) {
 
     if (paymentHappened && payments.length) {
       const latest = payments[payments.length - 1];
+      const isPaid =
+        latest?.payment_status === "SUCCESS" ||
+        order?.order_status === "PAID" ||
+        payments.some((p: any) => p?.payment_status === "SUCCESS");
+
       return NextResponse.json({
         order_id: orderId,
         order_status: order?.order_status,
@@ -50,8 +55,7 @@ export async function GET(req: Request) {
         payment_amount: latest?.payment_amount,
         cf_payment_id: latest?.cf_payment_id,
         payment_method: latest?.payment_method,
-        is_paid:
-          latest?.payment_status === "SUCCESS" || order?.order_status === "PAID",
+        is_paid: isPaid,
         payments_count: payments.length,
       });
     }
