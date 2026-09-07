@@ -99,7 +99,7 @@ const HINT_MESSAGES = [
 // Convert plain-text URLs in a message into clickable links (open in new tab).
 function linkify(text: string): ReactNode {
   const urlRe =
-    /(https?:\/\/[^\s<]+)|(\/(?:pricing|contact|services|enquiry|about|case-studies|testimonials|faq)(?:\/[^\s<]*)?)/g;
+    /(https?:\/\/[^\s<]+)|(\/(?:pricing|contact|services|enquiry|about|case-studies|testimonials|faq)(?:[/#?][^\s<]*)?)/g;
   const out: ReactNode[] = [];
   let last = 0;
   let m: RegExpExecArray | null;
@@ -491,6 +491,68 @@ export function ChatWidget() {
       return;
     }
 
+    // Direct shortcut handlers for pricing anchors
+    if (text === "Web Development Plans" || text === "Web Development") {
+      window.open("/pricing#web-development", "_blank");
+      setMessages((m) => [
+        ...m,
+        { role: "user", content: text },
+        {
+          role: "assistant",
+          content: "Opening our Web Development packages at https://nexusdigitalmarketing.shop/pricing#web-development — from single-page landing pages (₹6,000) to complete custom web applications (₹15,000 - ₹35,000+).",
+        },
+      ]);
+      return;
+    }
+    if (text === "SEO Packages" || text === "SEO & Ranking") {
+      window.open("/pricing#seo", "_blank");
+      setMessages((m) => [
+        ...m,
+        { role: "user", content: text },
+        {
+          role: "assistant",
+          content: "Opening our SEO packages at https://nexusdigitalmarketing.shop/pricing#seo — including Local GMB Map Pack ranking (₹5,000/mo) and full technical GEO SEO (₹12,000/mo).",
+        },
+      ]);
+      return;
+    }
+    if (text === "Google & Meta Ads" || text === "Ads Pricing Plans") {
+      window.open("/pricing#performance-marketing", "_blank");
+      setMessages((m) => [
+        ...m,
+        { role: "user", content: text },
+        {
+          role: "assistant",
+          content: "Opening our paid performance marketing packages at https://nexusdigitalmarketing.shop/pricing#performance-marketing — Meta Ads (₹10,000/mo) and Google Ads (₹12,000/mo).",
+        },
+      ]);
+      return;
+    }
+    if (text === "Social Media Marketing" || text === "Social Media Pricing") {
+      window.open("/pricing#social-media", "_blank");
+      setMessages((m) => [
+        ...m,
+        { role: "user", content: text },
+        {
+          role: "assistant",
+          content: "Opening our Social Media packages at https://nexusdigitalmarketing.shop/pricing#social-media — Starter SMM (₹6,000/mo) and Pro SMM + AI Reels (₹12,000/mo).",
+        },
+      ]);
+      return;
+    }
+    if (text === "View Pricing Plans" || text === "View Pricing") {
+      window.open("/pricing", "_blank");
+      setMessages((m) => [
+        ...m,
+        { role: "user", content: text },
+        {
+          role: "assistant",
+          content: "Opening all pricing plans at https://nexusdigitalmarketing.shop/pricing — transparent rates with instant add-to-cart checkout.",
+        },
+      ]);
+      return;
+    }
+
     // ── FREE-MESSAGE LIMIT FOR GUESTS ──
     // Visitors who haven't signed in get GUEST_LIMIT messages. After that we ask
     // them to log in, leaving their typed text in the box so they don't lose it.
@@ -632,7 +694,19 @@ export function ChatWidget() {
     }
 
     // 2. Only if user directly asked about pricing / plans / packages:
-    if (/\b(pricing|packages|charges|rate list|kitna charge|kharcha)\b/i.test(userText)) {
+    if (/\b(pricing|packages|charges|rate list|kitna charge|kharcha|cost)\b/i.test(userText)) {
+      if (/web|website|site|landing|developer|application/i.test(userText)) {
+        return ["Web Development Plans", "Start my Enquiry"];
+      }
+      if (/seo|rank|google map|gmb/i.test(userText)) {
+        return ["SEO Packages", "Start my Enquiry"];
+      }
+      if (/ad|ads|google ad|meta|ppc|facebook/i.test(userText)) {
+        return ["Ads Pricing Plans", "Start my Enquiry"];
+      }
+      if (/social|smm|instagram|reel/i.test(userText)) {
+        return ["Social Media Pricing", "Start my Enquiry"];
+      }
       return ["View Pricing Plans", "Start my Enquiry"];
     }
 
