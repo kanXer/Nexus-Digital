@@ -220,6 +220,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Listen for Firebase Auth & sync with Firestore Database
   useEffect(() => {
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
@@ -233,6 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch {
           /* corrupted cache — ignore, Firestore will re-sync */
         }
+        setLoading(false);
 
         // Load User Profile from Firestore DB if available
         try {
@@ -314,7 +319,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(safetyTimer);
+      unsubscribe();
+    };
   }, []);
 
   // Sync state changes to LocalStorage
