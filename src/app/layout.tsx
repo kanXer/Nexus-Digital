@@ -32,8 +32,8 @@ const ogImage = config.ogImage;
 
 export const metadata: Metadata = {
   metadataBase: new URL(config.website),
-  title: { default: `${config.name} | Best Web Development & Digital Marketing Agency in Gorakhpur, Uttar Pradesh`, template: `%s | ${config.name}` },
-  description: `Nexus Digital is the Best Digital Marketing & Website Development Agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. We specialize in Custom Next.js Web Development, E-Commerce, SEO, Google Ads, and Social Media Marketing to scale businesses across Gorakhpur, Uttar Pradesh, Lucknow, and all of India.`,
+  title: { default: `${config.name} | Best Digital Marketing Agency in Gorakhpur, Uttar Pradesh`, template: `%s | ${config.name}` },
+  description: `Nexus Digital is the Best Digital Marketing and also best Website Development Agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. We specialize in Custom Next.js Web Development, E-Commerce, SEO, Google Ads, and Social Media Marketing to scale businesses across Gorakhpur, Uttar Pradesh, Lucknow, and all of India.`,
   keywords: [
     // Web Development — Gorakhpur, UP & India
     "best website development in gorakhpur",
