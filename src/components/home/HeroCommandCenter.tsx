@@ -67,58 +67,58 @@ export default function HeroCommandCenter() {
       <div className="relative glass-card-luxury rounded-2xl md:rounded-3xl p-4 sm:p-5 border border-white/12 shadow-[0_25px_70px_rgba(0,0,0,0.7),0_0_50px_rgba(220,38,38,0.15)] overflow-hidden">
         
         {/* Top Command Bar */}
-        <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-white/8">
+        <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-[var(--border-default)]">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
             <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
             <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-            <span className="ml-2 text-[11px] font-mono font-medium text-white/40 tracking-wider">
+            <span className="ml-2 text-[10px] sm:text-[11px] font-mono font-medium text-[var(--text-tertiary)] tracking-wider truncate">
               COMMAND_CENTER.v2
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/8 text-[11px] font-semibold text-green-400">
-            <span className="radar-dot bg-green-400" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5 border border-[var(--border-default)] text-[11px] font-semibold text-green-600 dark:text-green-400 shrink-0">
+            <span className="radar-dot bg-green-500" />
             <span className="text-[10px] uppercase tracking-wider">Live System</span>
           </div>
         </div>
 
         {/* Interactive Tab Switcher */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 bg-black/40 rounded-xl border border-white/8 mb-4">
+        <div className="grid grid-cols-3 gap-1 p-1 bg-black/5 dark:bg-black/40 rounded-xl border border-[var(--border-default)] mb-4">
           <button
             onClick={() => setActiveTab("roi")}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 sm:px-2 rounded-lg text-[11px] sm:text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === "roi"
                 ? "bg-brand-blue text-white shadow-[0_4px_15px_rgba(220,38,38,0.4)]"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5"
             }`}
           >
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>ROI Engine</span>
+            <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">ROI Engine</span>
           </button>
 
           <button
             onClick={() => setActiveTab("speed")}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 sm:px-2 rounded-lg text-[11px] sm:text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === "speed"
                 ? "bg-brand-blue text-white shadow-[0_4px_15px_rgba(220,38,38,0.4)]"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5"
             }`}
           >
-            <Zap className="w-3.5 h-3.5" />
-            <span>Speed 99/100</span>
+            <Zap className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Speed 99</span>
           </button>
 
           <button
             onClick={() => setActiveTab("seo")}
-            className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 sm:px-2 rounded-lg text-[11px] sm:text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === "seo"
                 ? "bg-brand-blue text-white shadow-[0_4px_15px_rgba(220,38,38,0.4)]"
-                : "text-white/60 hover:text-white hover:bg-white/5"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5"
             }`}
           >
-            <Search className="w-3.5 h-3.5" />
-            <span>#1 SEO Rank</span>
+            <Search className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">#1 SEO</span>
           </button>
         </div>
 

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, startTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, ChevronDown, ArrowRight, Calculator, ShoppingCart, User, PackageCheck, LogOut } from "lucide-react";
+import { Menu, X, Zap, ChevronDown, ArrowRight, Calculator, ShoppingCart, User, PackageCheck, LogOut, ShieldCheck } from "lucide-react";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { config } from "@/lib/config";
 import LeadCalculator from "@/components/home/LeadCalculator";
@@ -37,6 +37,7 @@ export default function Navbar() {
     openCart,
     openOrders,
     logout,
+    isAdmin,
   } = useAuth();
 
   const [scrolled, setScrolled] = useState(false);
@@ -115,19 +116,28 @@ export default function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`fixed top-0 lg:top-9 left-0 right-0 z-50 will-change-transform transition-all duration-300 ${scrolled
-          ? "bg-black/90 backdrop-blur-2xl border-b border-white/12 shadow-[0_10px_35px_rgba(0,0,0,0.7)]"
-          : "bg-black/60 backdrop-blur-md border-b border-white/8"
+          ? "navbar-gradient-scrolled backdrop-blur-2xl border-b border-[var(--border-default)] shadow-[0_10px_35px_rgba(0,0,0,0.08)] dark:shadow-[0_12px_45px_rgba(0,0,0,0.85)]"
+          : "navbar-gradient-default backdrop-blur-xl border-b border-[var(--border-default)]"
           }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Subtle top ambient glint line */}
+        <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent pointer-events-none" />
+
+        {/* Dynamic Animated Gradient Accent along bottom */}
+        <div className="absolute bottom-0 inset-x-0 h-[2px] bg-gradient-to-r from-brand via-amber-500 via-rose-500 to-sky-500 bg-[length:200%_auto] animate-gradient-x pointer-events-none opacity-90" />
+
+        {/* Ambient subtle light wash across navbar */}
+        <div className="absolute inset-0 bg-gradient-to-r from-brand/5 via-amber-500/5 to-sky-500/5 pointer-events-none opacity-60" />
+
+        <div className="max-w-15xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="flex items-center justify-between h-16 lg:h-20">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light flex items-center justify-center shadow-[0_4px_15px_rgba(220,38,38,0.3)] group-hover:shadow-[0_8px_25px_rgba(220,38,38,0.5)] transition-all duration-300">
+              <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-brand-dark via-brand to-brand-light flex items-center justify-center shadow-[0_4px_15px_rgba(225,29,72,0.35)] group-hover:shadow-[0_8px_25px_rgba(225,29,72,0.6)] group-hover:scale-105 transition-all duration-300">
                 <Zap className="w-5 h-5 text-white" fill="white" />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-brand-blue to-brand-blue-light opacity-0 group-hover:opacity-60 blur-md transition-opacity duration-300" />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-brand to-amber-500 opacity-0 group-hover:opacity-70 blur-md transition-opacity duration-300 pointer-events-none" />
               </div>
-              <span className="text-xl font-bold text-white tracking-tight">
-                {config.shortName}<span className="text-brand-blue-light">{config.name.replace(config.shortName, "")}</span>
+              <span className="text-xl font-bold text-[var(--text-primary)] tracking-tight transition-colors">
+                {config.shortName}<span className="text-brand">{config.name.replace(config.shortName, "")}</span>
               </span>
             </Link>
 
@@ -137,7 +147,7 @@ export default function Navbar() {
                   <div key={link.label} className="relative" ref={dropdownRef}>
                     <button
                       onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className={`flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${dropdownOpen ? "text-white bg-white/8" : "text-white/60 hover:text-white hover:bg-white/5"
+                      className={`flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${dropdownOpen ? "text-[var(--text-primary)] bg-black/5 dark:bg-white/8 font-semibold" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5"
                         }`}
                     >
                       {link.label}
@@ -150,13 +160,17 @@ export default function Navbar() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 8, scale: 0.96 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute top-full mt-2 left-0 w-48 rounded-xl p-1.5 nav-dropdown"
+                          className="absolute top-full mt-2 left-0 w-48 rounded-2xl p-1.5 nav-dropdown border border-[var(--border-default)] shadow-2xl backdrop-blur-2xl overflow-hidden"
+                          style={{
+                            background: "linear-gradient(145deg, var(--bg-card) 0%, var(--bg-secondary) 100%)",
+                            boxShadow: "0 15px 40px rgba(0,0,0,0.15), 0 0 20px rgba(225,29,72,0.1)",
+                          }}
                         >
                           {link.children.map((child) => (
                             <Link
                               key={child.href}
                               href={child.href}
-                              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${pathname === child.href ? "text-brand-blue-light bg-brand-blue/10" : "text-white/60 hover:text-white hover:bg-white/5"
+                              className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${pathname === child.href ? "text-brand bg-brand/10 font-semibold" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5"
                                 }`}
                             >
                               {child.label}
@@ -171,8 +185,8 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href!}
                     className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${pathname === link.href
-                      ? "text-white bg-white/8"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      ? "text-brand bg-brand/10 font-semibold shadow-sm"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5"
                       }`}
                   >
                     {link.label}
@@ -186,9 +200,9 @@ export default function Navbar() {
                 onClick={() => setCalcOpen(true)}
                 title="Lead Calculator"
                 aria-label="Open Lead Calculator"
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-all duration-200"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 cursor-pointer"
               >
-                <Calculator className="w-4 h-4 text-brand-blue-light" />
+                <Calculator className="w-4 h-4 text-brand" />
                 Calculator
               </button>
 
@@ -199,17 +213,17 @@ export default function Navbar() {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg glass-card border border-white/12 hover:border-white/25 transition-all text-xs font-semibold text-white cursor-pointer"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg glass-card border border-[var(--border-default)] hover:border-brand/30 transition-all text-xs font-semibold text-[var(--text-primary)] cursor-pointer"
                   >
                     {user.photoURL ? (
                       <img
                         src={user.photoURL}
                         alt={userProfile.name || "User"}
-                        className="w-7 h-7 rounded-full object-cover ring-2 ring-brand-blue/40"
+                        className="w-7 h-7 rounded-full object-cover ring-2 ring-brand/40"
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-7 h-7 rounded-full bg-brand-blue flex items-center justify-center text-[11px] font-bold text-white uppercase">
+                      <div className="w-7 h-7 rounded-full bg-brand flex items-center justify-center text-[11px] font-bold text-white uppercase">
                         {userProfile.name?.trim().split(" ")[0]?.[0] || user.displayName?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
                       </div>
                     )}
@@ -223,51 +237,65 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.96 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute top-full mt-2 right-0 w-52 rounded-xl p-1.5 nav-dropdown border border-white/12 shadow-2xl z-50"
+                        className="absolute top-full mt-2 right-0 w-52 rounded-2xl p-1.5 nav-dropdown border border-[var(--border-default)] shadow-2xl z-50 backdrop-blur-2xl overflow-hidden"
+                        style={{
+                          background: "linear-gradient(145deg, var(--bg-card) 0%, var(--bg-secondary) 100%)",
+                          boxShadow: "0 20px 50px rgba(0,0,0,0.2), 0 0 25px rgba(225,29,72,0.12)",
+                        }}
                       >
-                        <div className="px-3 py-2.5 border-b border-white/8 mb-1 flex items-center gap-2.5">
+                        <div className="px-3 py-2.5 border-b border-[var(--border-default)] mb-1 flex items-center gap-2.5">
                           {user.photoURL ? (
-                            <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-blue/30 shrink-0" referrerPolicy="no-referrer" />
+                            <img src={user.photoURL} alt="" className="w-8 h-8 rounded-full object-cover ring-2 ring-brand/30 shrink-0" referrerPolicy="no-referrer" />
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-brand-blue flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-[11px] font-bold text-white uppercase shrink-0">
                               {userProfile.name?.trim().split(" ")[0]?.[0] || user.displayName?.trim().split(" ")[0]?.[0] || user.email?.[0] || "U"}
                             </div>
                           )}
                           <div className="min-w-0">
-                            <p className="text-white font-bold text-xs truncate">{userProfile.name || user.displayName || "Logged In"}</p>
-                            <p className="text-white/40 text-[11px] truncate">{user.email}</p>
+                            <p className="text-[var(--text-primary)] font-bold text-xs truncate">{userProfile.name || user.displayName || "Logged In"}</p>
+                            <p className="text-[var(--text-tertiary)] text-[11px] truncate">{user.email}</p>
                           </div>
                         </div>
-                        <button
-                          onClick={() => { setUserMenuOpen(false); openProfileModal(); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors text-left"
+                        <Link
+                          href="/profile"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/8 transition-colors"
                         >
-                          <User className="w-4 h-4 text-brand-blue-light" /> My Profile
-                        </button>
+                          <User className="w-4 h-4 text-brand" /> My Profile
+                        </Link>
                         <Link
                           href="/cart"
                           onClick={() => setUserMenuOpen(false)}
-                          className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors"
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/8 transition-colors"
                         >
                           <span className="flex items-center gap-2">
-                            <ShoppingCart className="w-4 h-4 text-brand-blue-light" /> My Cart
+                            <ShoppingCart className="w-4 h-4 text-brand" /> My Cart
                           </span>
                           {user && cart.length > 0 && (
-                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand-blue-light text-white">
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-brand text-white">
                               {cart.length}
                             </span>
                           )}
                         </Link>
                         <button
                           onClick={() => { setUserMenuOpen(false); openOrders(); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors text-left"
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/8 transition-colors text-left"
                         >
-                          <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders & Plans
+                          <PackageCheck className="w-4 h-4 text-brand" /> Orders & Plans
                         </button>
-                        <div className="border-t border-white/8 my-1" />
+                        {isAdmin && (
+                          <Link
+                            href="/admin/dashboard"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-brand hover:bg-brand/10 transition-colors"
+                          >
+                            <ShieldCheck className="w-4 h-4 text-brand" /> Admin Dashboard
+                          </Link>
+                        )}
+                        <div className="border-t border-[var(--border-default)] my-1" />
                         <button
                           onClick={() => { setUserMenuOpen(false); logout(); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors text-left"
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-red-500 hover:bg-red-500/10 transition-colors text-left"
                         >
                           <LogOut className="w-4 h-4" /> Sign Out
                         </button>
@@ -278,16 +306,16 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={openAuthModal}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg glass-card border border-white/10 hover:border-white/20 text-xs font-bold text-white hover:bg-white/5 transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg glass-card border border-[var(--border-default)] hover:border-brand/30 text-xs font-bold text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
                 >
-                  <User className="w-3.5 h-3.5 text-brand-blue-light" />
+                  <User className="w-3.5 h-3.5 text-brand" />
                   Sign In
                 </button>
               )}
 
-              <Link href="/enquiry#enquiry-form" className="btn-primary text-sm px-5 py-2.5 group">
+              <Link href="/enquiry#enquiry-form" className="btn-primary text-sm px-5 py-2.5 group animate-shine shadow-glow-sm hover:shadow-glow-lg transition-all active:scale-95">
                 Get Free Audit
-                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </div>
 
@@ -296,15 +324,15 @@ export default function Navbar() {
               {!user && (
                 <button
                   onClick={openAuthModal}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-card border border-white/10 hover:border-white/20 text-xs font-bold text-white hover:bg-white/5 transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg glass-card border border-[var(--border-default)] hover:border-brand/30 text-xs font-bold text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
                 >
-                  <User className="w-3.5 h-3.5 text-brand-blue-light" />
+                  <User className="w-3.5 h-3.5 text-brand" />
                   <span className="hidden sm:inline">Sign In</span>
                 </button>
               )}
-              
-              <div className="scale-90 origin-right">
-                <ThemeToggle />
+
+              <div className="scale-95 origin-right">
+                <ThemeToggle size="sm" />
               </div>
 
               {user ? (
@@ -351,12 +379,13 @@ export default function Navbar() {
                             <p className="text-white/40 text-[10px] truncate">{user.email}</p>
                           </div>
                         </div>
-                        <button
-                          onClick={() => { setUserMenuOpen(false); openProfileModal(); }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors text-left"
+                        <Link
+                          href="/profile"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/8 transition-colors"
                         >
                           <User className="w-4 h-4 text-brand-blue-light" /> My Profile
-                        </button>
+                        </Link>
                         <Link
                           href="/cart"
                           onClick={() => setUserMenuOpen(false)}
@@ -375,6 +404,15 @@ export default function Navbar() {
                         >
                           <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders &amp; Plans
                         </button>
+                        {isAdmin && (
+                          <Link
+                            href="/admin/dashboard"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-brand hover:bg-brand/10 transition-colors"
+                          >
+                            <ShieldCheck className="w-4 h-4 text-brand" /> Admin Dashboard
+                          </Link>
+                        )}
                         <div className="border-t border-white/8 my-1" />
                         <button
                           onClick={() => { setUserMenuOpen(false); logout(); }}
@@ -414,13 +452,16 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 h-full w-80 z-50 bg-[#050505] border-l border-white/8 flex flex-col lg:hidden"
+              className="fixed top-0 right-0 h-full w-full max-w-[310px] sm:max-w-xs z-50 bg-[var(--bg-primary)] border-l border-[var(--border-default)] flex flex-col lg:hidden shadow-2xl transition-colors duration-300"
             >
-              <div className="flex items-center justify-between p-6 border-b border-white/8">
-                <span className="font-bold text-white text-lg">{config.shortName}<span className="text-brand-blue-light">{config.name.replace(config.shortName, "")}</span></span>
-                <button onClick={() => setMobileOpen(false)} className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/5 transition-colors">
-                  <X className="w-5 h-5" />
-                </button>
+              <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[var(--border-default)]">
+                <span className="font-bold text-lg text-[var(--text-primary)]">{config.shortName}<span className="text-brand-blue-light">{config.name.replace(config.shortName, "")}</span></span>
+                <div className="flex items-center gap-2">
+                  <ThemeToggle size="sm" />
+                  <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
               <nav className="flex-1 overflow-y-auto p-4 space-y-1">
@@ -463,12 +504,13 @@ export default function Navbar() {
                 {user ? (
                   <div className="space-y-2">
                     <p className="px-1 text-xs font-semibold uppercase tracking-[0.15em] text-white/30 mb-2">My Account</p>
-                    <button
-                      onClick={() => { setMobileOpen(false); openProfileModal(); }}
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileOpen(false)}
                       className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 hover:bg-white/10 text-white transition-colors"
                     >
                       <User className="w-4 h-4 text-brand-blue-light" /> Profile
-                    </button>
+                    </Link>
                     <Link
                       href="/cart"
                       onClick={() => setMobileOpen(false)}
@@ -485,6 +527,15 @@ export default function Navbar() {
                     >
                       <PackageCheck className="w-4 h-4 text-brand-blue-light" /> Orders & Plans
                     </button>
+                    {isAdmin && (
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={() => setMobileOpen(false)}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-brand bg-brand/10 hover:bg-brand/20 transition-colors"
+                      >
+                        <ShieldCheck className="w-4 h-4 text-brand" /> Admin Dashboard
+                      </Link>
+                    )}
                     <button
                       onClick={() => { setMobileOpen(false); logout(); }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors"

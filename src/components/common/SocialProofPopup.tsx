@@ -147,22 +147,20 @@ export function SocialProofPopup() {
         >
           <Link
             href="/enquiry#enquiry-form"
-            className="block relative rounded-2xl overflow-hidden group cursor-pointer"
+            className="block relative rounded-2xl overflow-hidden group cursor-pointer bg-[var(--bg-card)] backdrop-blur-2xl border border-[var(--border-default)] hover:border-brand/40 transition-all duration-300 shadow-xl"
             style={{
-              background: "linear-gradient(135deg, rgba(20,20,25,0.98) 0%, rgba(10,10,15,0.98) 100%)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              boxShadow: `0 20px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05), 0 4px 20px ${ev.glow}`,
+              boxShadow: `0 20px 45px rgba(0,0,0,0.12), 0 4px 20px ${ev.glow}`,
             }}
           >
-            {/* Top accent bar */}
+            {/* Top accent bar with flowing gradient */}
             <div
-              className="h-[2px] w-full"
+              className="h-[2.5px] w-full"
               style={{ background: `linear-gradient(90deg, transparent, ${ev.color}, transparent)` }}
             />
 
             {/* Ambient glow */}
             <div
-              className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+              className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-20 group-hover:opacity-35"
               style={{
                 background: `radial-gradient(ellipse 80% 60% at 0% 50%, ${ev.glow} 0%, transparent 70%)`,
               }}
@@ -177,19 +175,7 @@ export function SocialProofPopup() {
                 e.stopPropagation();
                 setDismissed(true);
               }}
-              className="absolute top-2.5 right-2.5 z-20 w-5 h-5 rounded-full flex items-center justify-center transition-all"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.4)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = "rgba(255,255,255,0.8)";
-                e.currentTarget.style.background = "rgba(255,255,255,0.16)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = "rgba(255,255,255,0.4)";
-                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-              }}
+              className="absolute top-2.5 right-2.5 z-20 w-5 h-5 rounded-full flex items-center justify-center transition-all bg-black/5 dark:bg-white/10 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-black/10 dark:hover:bg-white/20"
             >
               <X className="w-3 h-3" />
             </button>
@@ -199,7 +185,7 @@ export function SocialProofPopup() {
               <div className="flex items-start gap-3">
                 {/* Icon avatar */}
                 <div
-                  className="relative shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                  className="relative shrink-0 w-10 h-10 rounded-xl flex items-center justify-center shadow-md"
                   style={{
                     background: `linear-gradient(135deg, ${ev.color}22, ${ev.color}44)`,
                     border: `1px solid ${ev.color}55`,
@@ -209,8 +195,8 @@ export function SocialProofPopup() {
                   <Icon className="w-5 h-5" style={{ color: ev.color }} />
                   {/* Live pulse dot */}
                   <span
-                    className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2"
-                    style={{ background: ev.color, borderColor: "#0f0f14" }}
+                    className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-card)]"
+                    style={{ background: ev.color }}
                   >
                     <span
                       className="absolute inset-0 rounded-full animate-ping opacity-75"
@@ -221,12 +207,12 @@ export function SocialProofPopup() {
 
                 {/* Text content */}
                 <div className="min-w-0 flex-1 pr-4">
-                  <p className="text-[12px] leading-snug" style={{ color: "rgba(255,255,255,0.65)" }}>
-                    <span className="font-semibold" style={{ color: "#ffffff" }}>{ev.name}</span>
+                  <p className="text-[12px] leading-snug text-[var(--text-secondary)]">
+                    <span className="font-semibold text-[var(--text-primary)]">{ev.name}</span>
                     {" "}from{" "}
-                    <span style={{ color: ev.color }} className="font-medium">{ev.city}</span>
+                    <span style={{ color: ev.color }} className="font-semibold">{ev.city}</span>
                   </p>
-                  <p className="text-[12.5px] font-semibold mt-0.5 leading-snug" style={{ color: "#ffffff" }}>
+                  <p className="text-[12.5px] font-bold mt-0.5 leading-snug text-[var(--text-primary)]">
                     {ev.action}
                   </p>
                 </div>
@@ -236,16 +222,15 @@ export function SocialProofPopup() {
               <div
                 className="mt-3 flex items-center justify-between rounded-xl px-3 py-2"
                 style={{
-                  background: `linear-gradient(135deg, ${ev.color}10, ${ev.color}18)`,
-                  border: `1px solid ${ev.color}30`,
+                  background: `linear-gradient(135deg, ${ev.color}12, ${ev.color}20)`,
+                  border: `1px solid ${ev.color}35`,
                 }}
               >
                 <span className="text-[11px] font-bold" style={{ color: ev.color }}>
                   ✦ {ev.result}
                 </span>
                 <span
-                  className="flex items-center gap-1 text-[10px] font-semibold transition-colors"
-                  style={{ color: "rgba(255,255,255,0.45)" }}
+                  className="flex items-center gap-1 text-[10px] font-semibold text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] transition-colors"
                 >
                   Start now
                   <ArrowUpRight
@@ -257,8 +242,8 @@ export function SocialProofPopup() {
 
               {/* Timestamp + progress */}
               <div className="mt-2.5 flex items-center justify-between">
-                <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.28)" }}>{ev.ago}</span>
-                <span className="text-[10px] flex items-center gap-1" style={{ color: "rgba(255,255,255,0.28)" }}>
+                <span className="text-[10px] text-[var(--text-tertiary)]">{ev.ago}</span>
+                <span className="text-[10px] flex items-center gap-1 text-[var(--text-tertiary)]">
                   <span
                     className="inline-block w-1.5 h-1.5 rounded-full animate-pulse"
                     style={{ background: ev.color }}
@@ -269,7 +254,7 @@ export function SocialProofPopup() {
             </div>
 
             {/* Progress bar at bottom */}
-            <div className="h-[2px] w-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+            <div className="h-[2.5px] w-full bg-[var(--border-default)]">
               <motion.div
                 className="h-full"
                 style={{ width: `${progress}%`, background: ev.color }}

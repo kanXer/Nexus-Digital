@@ -38,7 +38,7 @@ function SectionHeadingBase({
         title={title}
         highlight={highlight}
         initialDelay={badge ? 0.1 : 0.15}
-        className="font-display text-[clamp(1.5rem,3.2vw,2.6rem)] font-bold text-white leading-[1.18] tracking-[-0.02em]"
+        className="font-display text-[clamp(1.5rem,3.2vw,2.6rem)] font-bold text-[var(--text-primary)] leading-[1.18] tracking-[-0.02em]"
       />
       {subtitle && (
         <motion.p
@@ -46,7 +46,7 @@ function SectionHeadingBase({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] as const }}
-          className={`mt-4 text-base md:text-lg text-white/50 leading-relaxed ${align === "center" ? "max-w-2xl mx-auto" : "max-w-2xl"}`}
+          className={`mt-4 text-base md:text-lg text-[var(--text-secondary)] leading-relaxed ${align === "center" ? "max-w-2xl mx-auto" : "max-w-2xl"}`}
         >
           {subtitle}
         </motion.p>

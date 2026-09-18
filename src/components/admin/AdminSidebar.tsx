@@ -98,7 +98,7 @@ export default function AdminSidebar() {
             </span>
             <span>Theme</span>
           </span>
-          <ThemeToggle size="sm" />
+          <ThemeToggle size="sm" variant="button" />
         </div>
 
         <Link

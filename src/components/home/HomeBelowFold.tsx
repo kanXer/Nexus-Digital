@@ -62,7 +62,14 @@ const whyUs = [
   { icon: Zap, title: "Fast Execution", desc: "Campaigns live in days, not weeks. We move at the speed your business demands." },
 ];
 
-const clientLogos = ["Gorakhpur Mission Rehab", "1st Poultry Conclave", "Radhey Radhey Blood Bank"];
+const clientLogos = [
+  "Gorakhpur Mission Rehab",
+  "1st Poultry Conclave Gorakhpur",
+  "Radhey Radhey Blood Bank",
+  "Purvanchal Dental & Maxillofacial",
+  "Kalyan Jewellers Event Partner",
+  "Sunrise Coaching Academy GKP",
+];
 
 const caseStudyPreviews = [
   { headline: "Neuro Rehab Website & Local SEO", client: "Gorakhpur Mission Rehab (Gorakhpur, Uttar Pradesh)", industry: "Healthcare", service: "Website + Local SEO", gradient: "from-teal-600/25 to-cyan-600/15", href: "/case-studies", result: "Online", label: "Presence" },
@@ -546,16 +553,31 @@ export default function HomeBelowFold() {
         </div>
       </section>
 
-      {/* ═══ CLIENT LOGOS ═══ */}
-      <section className="py-16 overflow-hidden border-b border-white/6 relative">
-        <div className="container-custom mb-8 px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-white/30 text-xs uppercase tracking-[0.2em] font-semibold">Trusted by growing businesses</p>
+      {/* ═══ CLIENT LOGOS / TRUSTED BY MARQUEE ═══ */}
+      <section className="py-14 sm:py-16 overflow-hidden border-b border-[var(--border-default)] bg-[var(--bg-primary)] relative">
+        <div className="container-custom mb-7 px-4 text-center">
+          <p className="text-xs uppercase tracking-[0.25em] font-extrabold text-[var(--text-tertiary)] dark:text-white/50">
+            Trusted by Growing Businesses in Gorakhpur, UP &amp; All India
+          </p>
         </div>
-        <div className="relative">
-          <div className="flex gap-8 animate-marquee whitespace-nowrap">
-            {[...clientLogos, ...clientLogos].map((name, i) => (
-              <div key={i} className="flex items-center justify-center w-40 h-14 glass-card rounded-xl border border-white/8 shrink-0 hover:border-white/15 transition-all">
-                <span className="text-white/35 text-sm font-semibold tracking-wide">{name}</span>
+
+        {/* Bounded Marquee Container with Dual Gradient Fade Masks */}
+        <div className="relative w-full overflow-hidden max-w-7xl mx-auto">
+          {/* Left Edge Gradient Mask */}
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-r from-[var(--bg-primary)] to-transparent" />
+          {/* Right Edge Gradient Mask */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-32 z-10 bg-gradient-to-l from-[var(--bg-primary)] to-transparent" />
+
+          <div className="flex gap-6 animate-marquee whitespace-nowrap py-1 hover:[animation-play-state:paused]">
+            {[...clientLogos, ...clientLogos, ...clientLogos].map((name, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2.5 px-6 py-3.5 h-14 rounded-2xl glass-card border border-slate-200/90 dark:border-white/10 shrink-0 shadow-xs dark:shadow-md hover:border-brand/40 transition-all duration-300 group cursor-default"
+              >
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-200 group-hover:text-brand transition-colors tracking-wide whitespace-nowrap">
+                  {name}
+                </span>
               </div>
             ))}
           </div>
@@ -676,43 +698,101 @@ export default function HomeBelowFold() {
         </div>
       </section>
 
-      {/* ═══ FAQ ═══ */}
-      <section className="section-padding bg-white/2 border-y border-white/6 relative">
-        <div className="container-custom max-w-3xl">
-          <SectionHeading badge="FAQ" title="Frequently Asked " highlight="Questions" subtitle="Everything you need to know before getting started." />
-          <div className="mt-12 space-y-3">
-            {faqs.slice(0, 6).map((faq, i) => (
-              <FAQItem key={faq.id} question={faq.question} answer={faq.answer} index={i} />
-            ))}
+      {/* ═══ HIGH-CONVERTING MID-PAGE CONVERSION BANNER (GORAKHPUR GROWTH ACCELERATOR) ═══ */}
+      <section className="py-14 sm:py-20 relative overflow-hidden bg-[var(--bg-secondary)] border-y border-[var(--border-default)]">
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-25" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-brand/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="container-custom relative z-10 max-w-5xl mx-auto px-4">
+          <div className="glass-card rounded-3xl p-8 sm:p-12 border border-slate-200/90 dark:border-white/10 shadow-2xl relative overflow-hidden bg-gradient-to-br from-white via-slate-50/80 to-rose-50/40 dark:from-slate-900/90 dark:via-slate-950 dark:to-rose-950/20">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-8 text-center lg:text-left space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand/10 border border-brand/25 text-brand text-xs font-bold uppercase tracking-wider">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                  Gorakhpur Business Growth Accelerator
+                </div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+                  Ready to Rank <span className="gradient-text animate-gradient-text">#1 on Google</span> &amp; 10X Your Monthly Customer Enquiries?
+                </h2>
+                <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl font-normal">
+                  Stop losing high-paying clients to competitors in Gorakhpur and Uttar Pradesh. Book a <strong className="text-slate-900 dark:text-white font-semibold">100% Free 30-Minute Marketing &amp; Competitor Audit</strong>. We will analyze your website speed, local Google Maps ranking, and ad funnel with zero sales pressure.
+                </p>
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs font-semibold text-slate-700 dark:text-slate-300 pt-1">
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    No Long-Term Contracts
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    Weekly Transparent ROI Reports
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    Direct Senior Specialist Access
+                  </span>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4 flex flex-col gap-3.5 justify-center items-stretch sm:items-center lg:items-stretch">
+                <Link
+                  href="/enquiry#enquiry-form"
+                  onClick={() => trackEvent("growth_audit_start", { cta: "claim_growth_audit", location: "mid_banner" })}
+                  className="btn-primary text-sm sm:text-base px-6 py-4 justify-center font-bold shadow-lg group text-center"
+                >
+                  <Rocket className="w-4 h-4 mr-2" />
+                  Claim Free Growth Audit
+                  <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+
+                <a
+                  href={waLink(WHATSAPP_AUDIT)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackEvent("whatsapp_click", { cta: "whatsapp_audit", location: "mid_banner" })}
+                  className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md transition-all cursor-pointer"
+                >
+                  <MessageCircle className="w-4.5 h-4.5 fill-white text-white" />
+                  WhatsApp Us Instantly
+                </a>
+
+                <a
+                  href={`tel:${config.phoneRaw}`}
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-all cursor-pointer"
+                >
+                  <Phone className="w-3.5 h-3.5 text-brand" />
+                  Direct Call: {config.phone}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ═══ DIGITAL MARKETING CONTENT / LOCAL SEO ═══ */}
-      <section className="section-padding bg-white/2 border-y border-white/6 relative overflow-hidden">
+      <section className="section-padding bg-white/2 border-y border-[var(--border-default)] relative overflow-hidden">
         <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
         <div className="container-custom relative z-10">
           <SectionHeading
             badge="Why Local Businesses Choose Us"
             title="Trusted Digital Marketing Agency in "
             highlight="Gorakhpur, Uttar Pradesh"
-            subtitle="Keyword-driven content that helps customers find you on Google — and choose you when they do."
+            subtitle="Keyword-driven strategies that help customers find you on Google — and choose you when they do."
           />
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            <div className="glass-card rounded-2xl p-7 border border-white/8 space-y-4">
-              <p className="text-white/55 text-sm leading-relaxed">
-                For businesses looking for the <strong className="text-white">best digital marketing agency in Gorakhpur, Uttar Pradesh</strong>, Nexus Digital is a top digital marketing company in Gorakhpur, Uttar Pradesh that delivers real, measurable growth. Our digital marketing services in Gorakhpur, Uttar Pradesh cover SEO, Google Ads, Meta Ads, social media marketing, and custom web development — everything you need to grow online.
+            <div className="glass-card rounded-2xl p-7 border border-slate-200/90 dark:border-white/10 space-y-4 shadow-sm">
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                For businesses looking for the <strong className="text-slate-900 dark:text-white font-bold">best digital marketing agency in Gorakhpur, Uttar Pradesh</strong>, Nexus Digital is a top digital marketing company in Gorakhpur, Uttar Pradesh that delivers real, measurable growth. Our digital marketing services in Gorakhpur, Uttar Pradesh cover SEO, Google Ads, Meta Ads, social media marketing, and custom web development — everything you need to grow online.
               </p>
-              <p className="text-white/55 text-sm leading-relaxed">
-                As a leading <strong className="text-white">SEO agency in Gorakhpur, Uttar Pradesh</strong> and local SEO company, we put local businesses on top of Google Maps and page one of Google. Combined with Google Ads PPC management Gorakhpur, Uttar Pradesh businesses trust, and a Meta Ads specialist Gorakhpur, Uttar Pradesh brands rely on, we turn searches into sales.
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                As a leading <strong className="text-slate-900 dark:text-white font-bold">SEO agency in Gorakhpur, Uttar Pradesh</strong> and local SEO company, we put local businesses on top of Google Maps and page one of Google. Combined with Google Ads PPC management Gorakhpur, Uttar Pradesh businesses trust, and a Meta Ads specialist Gorakhpur, Uttar Pradesh brands rely on, we turn searches into sales.
               </p>
-              <p className="text-white/55 text-sm leading-relaxed">
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
                 We specialise in website design and digital marketing Gorakhpur, Uttar Pradesh businesses need to compete — from high-converting websites to full local business promotion. Our team is a hands-on best digital marketing expert Gorakhpur, Uttar Pradesh can call for strategy, content, ads, and analytics.
               </p>
             </div>
-            <div className="glass-card rounded-2xl p-7 border border-white/8 space-y-4">
-              <p className="text-white/55 text-sm leading-relaxed">
-                We are an <strong className="text-white">affordable digital marketing agency in Gorakhpur, Uttar Pradesh</strong> with transparent pricing and no long-term lock-ins, offering digital marketing packages across Uttar Pradesh. From digital marketing agency in Uttar Pradesh services to performance marketing agency UP campaigns, we scale businesses at every budget.
+            <div className="glass-card rounded-2xl p-7 border border-slate-200/90 dark:border-white/10 space-y-4 shadow-sm">
+              <p className="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                We are an <strong className="text-slate-900 dark:text-white font-bold">affordable digital marketing agency in Gorakhpur, Uttar Pradesh</strong> with transparent pricing and no long-term lock-ins, offering digital marketing packages across Uttar Pradesh. From digital marketing agency in Uttar Pradesh services to performance marketing agency UP campaigns, we scale businesses at every budget.
               </p>
               <ul className="space-y-2">
                 {[
@@ -725,13 +805,13 @@ export default function HomeBelowFold() {
                   "Website Design & Development in Gorakhpur, Uttar Pradesh",
                   "Real Estate & Healthcare Digital Marketing in Gorakhpur, Uttar Pradesh",
                 ].map((k) => (
-                  <li key={k} className="flex items-center gap-2 text-xs text-white/60">
-                    <CheckCircle className="w-3.5 h-3.5 text-brand-blue-light shrink-0" />
+                  <li key={k} className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                    <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     {k}
                   </li>
                 ))}
               </ul>
-              <p className="text-white/45 text-xs leading-relaxed pt-2">
+              <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed pt-2">
                 Serving digital marketing for hospitals in Gorakhpur, Uttar Pradesh, real estate agencies, schools &amp; colleges, e-commerce brands, and B2B businesses across UP and India with local SEO services in Uttar Pradesh.
               </p>
             </div>
@@ -761,10 +841,10 @@ export default function HomeBelowFold() {
               <button
                 key={tab.id}
                 onClick={() => setFaqTab(tab.id as typeof faqTab)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
                   faqTab === tab.id
-                    ? "bg-brand-blue text-white shadow-[0_4px_15px_rgba(220,38,38,0.4)]"
-                    : "bg-white/5 text-white/60 hover:text-white hover:bg-white/10 border border-white/8"
+                    ? "bg-brand text-white shadow-[0_4px_15px_rgba(225,29,72,0.4)]"
+                    : "bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200/80 dark:border-white/8 shadow-xs"
                 }`}
               >
                 {tab.label}
@@ -824,13 +904,13 @@ export default function HomeBelowFold() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const }}
-                className="relative glass-card rounded-2xl p-6 text-center hover:border-brand-blue/30 transition-all duration-300"
+                className="relative glass-card rounded-2xl p-6 text-center border border-slate-200/90 dark:border-white/10 hover:border-brand/40 shadow-xs dark:shadow-md transition-all duration-300"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light flex items-center justify-center mx-auto mb-4 font-black text-white text-lg shadow-glow-sm">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-dark via-brand to-amber-500 flex items-center justify-center mx-auto mb-4 font-black text-white text-lg shadow-md">
                   {s.step}
                 </div>
-                <h3 className="text-white font-semibold text-sm mb-2">{s.title}</h3>
-                <p className="text-white/45 text-xs leading-relaxed">{s.desc}</p>
+                <h3 className="text-slate-900 dark:text-white font-bold text-sm mb-2">{s.title}</h3>
+                <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed font-medium">{s.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -838,41 +918,41 @@ export default function HomeBelowFold() {
             <Link
               href="/enquiry#enquiry-form"
               onClick={() => trackEvent("service_cta_click", { cta: "get_free_growth_audit", location: "how_it_works" })}
-              className="btn-primary px-8 py-3.5 text-sm group"
+              className="btn-primary px-8 py-3.5 text-sm font-bold group shadow-md"
             >
-              Start Step 1 — Free Audit
+              Start Step 1 — Free Growth Audit
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ═══ CTA ═══ */}
-      <section className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/20 via-transparent to-purple-600/15" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand-blue/10 blur-[120px] pointer-events-none" />
+      {/* ═══ FINAL HIGH-CONVERTING CTA ═══ */}
+      <section className="relative py-24 overflow-hidden bg-[var(--bg-primary)] border-t border-[var(--border-default)]">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand/15 via-transparent to-amber-500/10 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand/10 blur-[120px] pointer-events-none" />
         <div className="absolute inset-0 noise-bg pointer-events-none opacity-40" />
         <div className="container-custom relative z-10 text-center max-w-2xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}>
           <span className="tag-badge mb-5 inline-flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            Ready to grow? 🔥 Slots filling fast
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Ready to grow? 🔥 Limited client slots for Gorakhpur this month
           </span>
             <AnimatedTitle
               as="h2"
-              title="Start Growing Your Business Today"
-              highlight="Today"
-              className="text-[clamp(2rem,5vw,3.25rem)] font-black text-white mb-5 leading-tight tracking-tight"
+              title="Scale Your Business In Gorakhpur &amp; India "
+              highlight="Starting Today"
+              className="text-[clamp(2rem,5vw,3.25rem)] font-extrabold text-slate-900 dark:text-white mb-5 leading-tight tracking-tight"
               initialDelay={0.1}
             />
-          <p className="text-white/60 text-base md:text-lg mb-4 max-w-lg mx-auto leading-relaxed">
-            🔥 Limited new-client slots this month — lock your growth plan today. Book a <strong className="text-white">free consultation</strong> or <strong className="text-white">pay &amp; start instantly</strong> to become a Nexus client in minutes.
+          <p className="text-slate-600 dark:text-slate-300 text-base md:text-lg mb-4 max-w-lg mx-auto leading-relaxed font-normal">
+            Lock your custom growth plan today. Book a <strong className="text-slate-900 dark:text-white font-bold">free 30-minute consultation</strong> or <strong className="text-slate-900 dark:text-white font-bold">connect on WhatsApp</strong> to get your marketing campaign rolling in 24 hours.
           </p>
-          <p className="text-brand-blue-light/80 text-sm mb-8 max-w-lg mx-auto font-medium">
-            Trusted by 200+ businesses across India 🇮🇳
+          <p className="text-brand dark:text-brand-light text-sm mb-8 max-w-lg mx-auto font-bold">
+            Trusted by 200+ businesses across Gorakhpur, UP &amp; Pan-India 🇮🇳
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("hero_cta_click", { cta: "get_free_growth_audit", location: "final_cta" })} className="btn-primary text-base px-8 py-4 group">
+          <div className="flex flex-col sm:flex-row gap-3.5 justify-center">
+            <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("hero_cta_click", { cta: "get_free_growth_audit", location: "final_cta" })} className="btn-primary text-base px-8 py-4 font-bold group shadow-lg">
               Get Free Growth Audit
               <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
@@ -881,14 +961,14 @@ export default function HomeBelowFold() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackEvent("whatsapp_click", { cta: "whatsapp_us", location: "final_cta" })}
-              className="btn-secondary text-base px-8 py-4 group"
+              className="btn-secondary text-base px-7 py-4 group font-bold border-slate-200 dark:border-white/12 hover:border-emerald-500/40"
             >
-              <MessageCircle className="w-4 h-4 text-green-400" />
-              WhatsApp Us
+              <MessageCircle className="w-4.5 h-4.5 text-emerald-500" />
+              WhatsApp Us Instantly
             </a>
-            <a href={`tel:${config.phone}`} onClick={() => trackEvent("phone_click", { location: "final_cta" })} className="btn-secondary text-base px-8 py-4">
-              <Phone className="w-4 h-4" />
-              Call Us Now
+            <a href={`tel:${config.phoneRaw}`} onClick={() => trackEvent("phone_click", { location: "final_cta" })} className="btn-secondary text-base px-7 py-4 font-bold border-slate-200 dark:border-white/12 hover:border-brand/40">
+              <Phone className="w-4 h-4 text-brand" />
+              Call Specialist
             </a>
           </div>
           </motion.div>

@@ -96,43 +96,45 @@ export default function Footer() {
     }
   };
   return (
-    <footer className="relative bg-[#050505] border-t border-white/8 overflow-hidden">
-      {/* Animated top accent line */}
-      <div className="footer-border-flow absolute top-0 inset-x-0 h-px pointer-events-none" />
-      {/* Background decor */}
-      <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-[900px] h-[260px] bg-brand-blue/8 blur-[130px] pointer-events-none" />
-      <div className="absolute -bottom-24 -right-24 w-[400px] h-[400px] bg-purple-600/6 rounded-full blur-[120px] pointer-events-none" />
+    <footer className="relative bg-gradient-to-b from-[var(--bg-primary)] via-[var(--bg-secondary)] to-[var(--bg-tertiary)] border-t border-[var(--border-default)] overflow-hidden transition-colors duration-300">
+      {/* Radiant animated top accent line */}
+      <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-brand via-amber-500 to-transparent bg-[length:200%_auto] animate-gradient-x pointer-events-none" />
+
+      {/* Floating ambient glow orbs */}
+      <div className="absolute -top-16 left-1/4 w-[550px] h-[350px] bg-gradient-to-br from-brand/12 to-amber-500/8 rounded-full blur-[130px] pointer-events-none animate-float-slow" />
+      <div className="absolute bottom-10 right-1/4 w-[500px] h-[350px] bg-gradient-to-tl from-brand-light/10 to-indigo-500/8 rounded-full blur-[140px] pointer-events-none animate-float-slow" style={{ animationDelay: "2.5s" }} />
       <div className="absolute inset-0 grid-dots opacity-15 pointer-events-none" />
-      <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
+      <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+
       {/* Giant brand watermark */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 select-none text-center overflow-hidden" aria-hidden="true">
-        <span className="text-[22vw] lg:text-[14rem] font-black leading-none tracking-tighter bg-gradient-to-b from-white/[0.05] to-transparent bg-clip-text text-transparent whitespace-nowrap">
+        <span className="text-[22vw] lg:text-[14rem] font-black leading-none tracking-tighter bg-gradient-to-b from-black/[0.04] dark:from-white/[0.05] to-transparent bg-clip-text text-transparent whitespace-nowrap">
           {config.name}
         </span>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20 relative z-10">
-        {/* CTA banner */}
-        <motion.div {...fadeUp(0)} className="mb-16 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-brand-blue/10 via-white/[0.02] to-purple-600/10 p-8 md:p-12 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16 lg:py-20 relative z-10">
+        {/* CTA banner with animated glow and shine */}
+        <motion.div {...fadeUp(0)} className="mb-14 sm:mb-16 relative overflow-hidden rounded-3xl border border-brand/20 bg-gradient-to-br from-brand/10 via-[var(--bg-card)] to-amber-500/10 p-6 sm:p-8 md:p-12 text-center shadow-xl">
           <div className="absolute inset-0 grid-dots opacity-15 pointer-events-none" />
-          <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-[600px] h-[240px] bg-brand-blue/10 blur-[110px] pointer-events-none" />
+          <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-[600px] h-[240px] bg-brand/15 blur-[110px] pointer-events-none" />
           <div className="relative z-10">
             <span className="tag-badge mb-4 inline-flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               Ready to Grow?
             </span>
             <AnimatedTitle
               as="h2"
               title="Let's Grow Your Business in Gorakhpur, Uttar Pradesh Together"
               highlight="Gorakhpur, Uttar Pradesh"
-              className="text-2xl md:text-4xl font-black text-white mb-4 leading-tight tracking-tight"
+              className="text-2xl md:text-4xl font-black text-[var(--text-primary)] mb-4 leading-tight tracking-tight"
               initialDelay={0.05}
             />
-            <p className="text-white/50 text-sm md:text-base mb-8 max-w-xl mx-auto leading-relaxed">
+            <p className="text-[var(--text-secondary)] text-sm md:text-base mb-8 max-w-xl mx-auto leading-relaxed">
               Get a free consultation and a custom growth plan from the best digital marketing agency in Gorakhpur, Uttar Pradesh — no cost, no pressure, no long-term contracts.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("hero_cta_click", { cta: "get_free_growth_audit", location: "footer" })} className="btn-primary px-7 py-3 text-sm group">
+              <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("hero_cta_click", { cta: "get_free_growth_audit", location: "footer" })} className="btn-primary px-7 py-3 text-sm group animate-shine shadow-glow-sm hover:shadow-glow-lg">
                 Get Free Growth Audit
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
@@ -144,34 +146,34 @@ export default function Footer() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8">
           {/* Brand */}
-          <motion.div {...fadeUp(0.05)} className="col-span-2 lg:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
+          <motion.div {...fadeUp(0.05)} className="col-span-1 sm:col-span-2 lg:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
             <Link href="/" className="flex items-center gap-2.5 mb-5 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light flex items-center justify-center shadow-[0_4px_15px_rgba(220,38,38,0.3)] group-hover:scale-110 transition-transform duration-300">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-dark via-brand to-brand-light flex items-center justify-center shadow-[0_4px_15px_rgba(225,29,72,0.35)] group-hover:scale-110 transition-transform duration-300">
                 <Zap className="w-5 h-5 text-white" fill="white" />
               </div>
-              <span className="text-xl font-bold text-white">{config.shortName}<span className="text-brand-blue-light">{config.name.replace(config.shortName, "")}</span></span>
+              <span className="text-xl font-bold text-[var(--text-primary)]">{config.shortName}<span className="text-brand">{config.name.replace(config.shortName, "")}</span></span>
             </Link>
-            <p className="text-white/45 text-sm leading-relaxed mb-6 max-w-xs">
+            <p className="text-[var(--text-secondary)] text-sm leading-relaxed mb-6 max-w-xs">
               The best website development &amp; digital marketing agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. Helping businesses grow with custom Next.js websites, technical SEO, Google Ads PPC management, and social media marketing across Gorakhpur, Uttar Pradesh, and India.
             </p>
             <div className="space-y-2.5">
-              <a href={`tel:${config.phone}`} className="flex items-center justify-center md:justify-start gap-2.5 text-sm text-white/40 hover:text-white transition-colors group">
-                <Phone className="w-4 h-4 text-brand-blue group-hover:text-brand-blue-light transition-colors shrink-0" />
+              <a href={`tel:${config.phone}`} className="flex items-center justify-center md:justify-start gap-2.5 text-sm text-[var(--text-secondary)] hover:text-brand transition-colors group">
+                <Phone className="w-4 h-4 text-brand group-hover:text-brand-light transition-colors shrink-0" />
                 {config.phone}
               </a>
-              <a href={`mailto:${config.email}`} className="flex items-center justify-center md:justify-start gap-2.5 text-sm text-white/40 hover:text-white transition-colors group">
-                <Mail className="w-4 h-4 text-brand-blue group-hover:text-brand-blue-light transition-colors shrink-0" />
+              <a href={`mailto:${config.email}`} className="flex items-center justify-center md:justify-start gap-2.5 text-sm text-[var(--text-secondary)] hover:text-brand transition-colors group">
+                <Mail className="w-4 h-4 text-brand group-hover:text-brand-light transition-colors shrink-0" />
                 {config.email}
               </a>
               <a
                 href={config.gmbUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center md:justify-start gap-2.5 text-sm text-white/40 hover:text-white transition-colors group"
+                className="flex items-center justify-center md:justify-start gap-2.5 text-sm text-[var(--text-secondary)] hover:text-brand transition-colors group"
               >
-                <MapPin className="w-4 h-4 text-brand-blue mt-0.5 shrink-0 group-hover:text-brand-blue-light transition-colors" />
+                <MapPin className="w-4 h-4 text-brand mt-0.5 shrink-0 group-hover:text-brand-light transition-colors" />
                 <span className="text-center md:text-left">{config.address}</span>
               </a>
             </div>
@@ -180,14 +182,14 @@ export default function Footer() {
           {/* Quick Links */}
           <motion.div {...fadeUp(0.12)} className="col-span-1 lg:col-span-2">
             <div className="mb-5 flex flex-col items-center md:items-start">
-              <h4 className="text-white font-semibold text-xs uppercase tracking-[0.15em]">Quick Links</h4>
-              <span className="mt-2 block w-8 h-0.5 rounded-full bg-gradient-to-r from-brand-blue to-brand-blue-light" />
+              <h4 className="text-[var(--text-primary)] font-semibold text-xs uppercase tracking-[0.15em]">Quick Links</h4>
+              <span className="mt-2 block w-8 h-0.5 rounded-full bg-gradient-to-r from-brand to-amber-500" />
             </div>
             <ul className="space-y-2.5">
               {footerLinks.quickLinks.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-white/40 hover:text-white transition-colors flex items-center gap-1.5 group">
-                    <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 text-brand-blue-light" />
+                  <Link href={link.href} className="text-sm text-[var(--text-secondary)] hover:text-brand transition-colors flex items-center gap-1.5 group">
+                    <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 text-brand" />
                     {link.label}
                   </Link>
                 </li>
@@ -196,16 +198,16 @@ export default function Footer() {
           </motion.div>
 
           {/* Services */}
-          <motion.div {...fadeUp(0.19)} className="col-span-1 lg:col-span-3">
+          <motion.div {...fadeUp(0.18)} className="col-span-1 sm:col-span-2 lg:col-span-3">
             <div className="mb-5 flex flex-col items-center md:items-start">
-              <h4 className="text-white font-semibold text-xs uppercase tracking-[0.15em]">Services</h4>
-              <span className="mt-2 block w-8 h-0.5 rounded-full bg-gradient-to-r from-brand-blue to-brand-blue-light" />
+              <h4 className="text-[var(--text-primary)] font-semibold text-xs uppercase tracking-[0.15em]">Services</h4>
+              <span className="mt-2 block w-8 h-0.5 rounded-full bg-gradient-to-r from-brand to-amber-500" />
             </div>
             <ul className="space-y-2.5">
               {footerLinks.services.map((link) => (
                 <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-white/40 hover:text-white transition-colors flex items-center gap-1.5 group">
-                    <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 text-brand-blue-light" />
+                  <Link href={link.href} className="text-sm text-[var(--text-secondary)] hover:text-brand transition-colors flex items-center gap-1.5 group">
+                    <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 text-brand" />
                     {link.label}
                   </Link>
                 </li>
@@ -214,27 +216,27 @@ export default function Footer() {
           </motion.div>
 
           {/* Newsletter & Socials */}
-          <motion.div {...fadeUp(0.26)} className="col-span-2 lg:col-span-3 flex flex-col">
+          <motion.div {...fadeUp(0.26)} className="col-span-1 sm:col-span-2 lg:col-span-3 flex flex-col">
             <div className="mb-5 flex flex-col items-center md:items-start">
-              <h4 className="text-white font-semibold text-xs uppercase tracking-[0.15em]">Stay Updated</h4>
-              <span className="mt-2 block w-8 h-0.5 rounded-full bg-gradient-to-r from-brand-blue to-brand-blue-light" />
+              <h4 className="text-[var(--text-primary)] font-semibold text-xs uppercase tracking-[0.15em]">Stay Updated</h4>
+              <span className="mt-2 block w-8 h-0.5 rounded-full bg-gradient-to-r from-brand to-amber-500" />
             </div>
-            <p className="text-sm text-white/40 mb-4 leading-relaxed">
+            <p className="text-sm text-[var(--text-secondary)] mb-4 leading-relaxed">
               Get marketing tips, industry insights, and growth strategies straight to your inbox.
             </p>
             <form onSubmit={handleSubscribe} className="space-y-2">
               <input type="email" value={subEmail} onChange={(e) => { setSubEmail(e.target.value); setSubStatus("idle"); }} placeholder="Enter your email" className="input-field text-sm w-full" required />
-              <button type="submit" disabled={subStatus === "loading"} className="btn-primary w-full justify-center text-sm py-2.5 group disabled:opacity-60">
+              <button type="submit" disabled={subStatus === "loading"} className="btn-primary w-full justify-center text-sm py-2.5 group disabled:opacity-60 animate-shine">
                 {subStatus === "loading" ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Subscribing...</> : subStatus === "success" ? <><CheckCircle className="w-3.5 h-3.5" /> Subscribed!</> : <><ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" /> Subscribe</>}
               </button>
-              {subStatus === "error" && <p className="text-red-400 text-xs">Something went wrong. Try again.</p>}
+              {subStatus === "error" && <p className="text-red-500 text-xs">Something went wrong. Try again.</p>}
             </form>
             <div className="mt-6">
-              <p className="text-[10px] text-white/25 uppercase tracking-[0.15em] font-semibold mb-3">Follow Us</p>
+              <p className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-[0.15em] font-semibold mb-3">Follow Us</p>
               <div className="flex gap-2 flex-wrap">
                 {socials.map(({ svg, href, label }) => (
                   <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                    className="w-9 h-9 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-white/40 hover:text-white hover:border-brand-blue/40 hover:bg-brand-blue/10 hover:-translate-y-1 transition-all duration-200"
+                    className="w-9 h-9 rounded-xl bg-[var(--bg-card)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:text-white hover:bg-brand hover:border-brand hover:shadow-glow-sm hover:-translate-y-1 transition-all duration-200 shadow-sm"
                   >
                     {svg}
                   </a>
@@ -244,15 +246,15 @@ export default function Footer() {
           </motion.div>
         </div>
 
-        <motion.div {...fadeUp(0.3)} className="mt-16 pt-8 pb-4 border-t border-white/8 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4">
-          <p className="text-xs text-white/25 text-center sm:text-left">
+        <motion.div {...fadeUp(0.3)} className="mt-16 pt-8 pb-4 border-t border-[var(--border-default)] flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4">
+          <p className="text-xs text-[var(--text-tertiary)] text-center sm:text-left">
             &copy; {new Date().getFullYear()} {config.name}. All rights reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            <Link href="/privacy-policy" className="text-xs text-white/25 hover:text-white/50 transition-colors">Privacy Policy</Link>
-            <Link href="/refund-cancellation" className="text-xs text-white/25 hover:text-white/50 transition-colors">Refund &amp; Cancellation</Link>
-            <Link href="/terms" className="text-xs text-white/25 hover:text-white/50 transition-colors">Terms of Service</Link>
-            <Link href="/sitemap.xml" className="text-xs text-white/25 hover:text-white/50 transition-colors">Sitemap</Link>
+            <Link href="/privacy-policy" className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">Privacy Policy</Link>
+            <Link href="/refund-cancellation" className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">Refund &amp; Cancellation</Link>
+            <Link href="/terms" className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">Terms of Service</Link>
+            <Link href="/sitemap.xml" className="text-xs text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors">Sitemap</Link>
           </div>
         </motion.div>
       </div>
@@ -265,15 +267,15 @@ export default function Footer() {
             exit={{ y: 80, opacity: 0 }}
             className="fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm"
           >
-            <div className="bg-white text-black rounded-2xl shadow-xl border border-black/10 p-4 flex items-center gap-3">
+            <div className="bg-[var(--bg-card)] text-[var(--text-primary)] rounded-2xl shadow-2xl border border-[var(--border-default)] p-4 flex items-center gap-3 backdrop-blur-2xl">
               <div className="w-9 h-9 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
                 <CheckCircle className="w-5 h-5 text-green-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold">Subscribed!</p>
-                <p className="text-xs text-black/50 truncate">{subEmail}</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Subscribed!</p>
+                <p className="text-xs text-[var(--text-secondary)] truncate">{subEmail}</p>
               </div>
-              <button onClick={() => setShowToast(false)} className="w-7 h-7 rounded-full bg-black/5 flex items-center justify-center shrink-0 hover:bg-black/10 transition-colors">
+              <button onClick={() => setShowToast(false)} className="w-7 h-7 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center shrink-0 hover:bg-black/10 dark:hover:bg-white/20 transition-colors text-[var(--text-tertiary)]">
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>

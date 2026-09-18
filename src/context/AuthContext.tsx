@@ -86,6 +86,9 @@ interface AuthContextType {
   clearCart: () => void;
   requireAuthForAction: (actionCallback: () => void) => boolean;
   recordNewOrder: (orderData: { title: string; amount: string; planId?: string; isSubscription?: boolean; numericAmount?: number }) => Promise<UserOrder>;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
+  refreshAdminStatus: () => void;
 }
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -108,6 +111,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile>(DEFAULT_PROFILE);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<UserOrder[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  const refreshAdminStatus = useCallback((userEmail?: string) => {
+    const emailToCheck = userEmail || auth.currentUser?.email;
+    fetch("/api/admin/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailToCheck || "" }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setIsAdmin(!!data.isAdmin);
+        setIsSuperAdmin(!!data.isSuper);
+      })
+      .catch(() => {
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
+      });
+  }, []);
 
   // Guards against double-submitting the same purchase (rapid double-click
   // or re-render races) creating duplicate order entries.
@@ -310,11 +333,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (dbErr) {
           console.warn("Firestore sync notice (Database may be in test mode):", dbErr);
         }
+        // Verify and sync Admin status immediately
+        if (currentUser.email) {
+          refreshAdminStatus(currentUser.email);
+        } else {
+          setIsAdmin(false);
+          setIsSuperAdmin(false);
+        }
       } else {
         // Signed out / visitor: nothing personal lingers in the UI
         setCart([]);
         setOrders([]);
         setUserProfile(DEFAULT_PROFILE);
+        setIsAdmin(false);
+        setIsSuperAdmin(false);
       }
       setLoading(false);
     });
@@ -495,6 +527,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await signOut(auth);
       setUser(null);
+      setIsAdmin(false);
+      setIsSuperAdmin(false);
+      fetch("/api/admin/logout", { method: "POST" }).catch(() => {});
     } catch (err) {
       console.error("Sign out error:", err);
     }
@@ -669,6 +704,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         requireAuthForAction,
         recordNewOrder,
+        isAdmin,
+        isSuperAdmin,
+        refreshAdminStatus,
       }}
     >
       {children}

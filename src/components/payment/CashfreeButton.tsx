@@ -61,7 +61,7 @@ export default function CashfreeButton({
     const isProd =
       process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
       process.env.NEXT_PUBLIC_CASHFREE_LIVE === "true";
-    getCashfreeSdk(isProd ? "production" : "sandbox").catch(() => {});
+    getCashfreeSdk(isProd ? "production" : "sandbox").catch(() => { });
 
     return () => {
       mountedRef.current = false;
@@ -86,7 +86,7 @@ export default function CashfreeButton({
 
   const handleClick = useCallback(async () => {
     setStatus("processing");
-    setMessage("Connecting to Cashfree secure payment gateway…");
+    setMessage("Connecting to Payment Gateway…");
     setFallbackSession(null);
     try {
       const res = await fetchWithTimeout(
@@ -121,7 +121,7 @@ export default function CashfreeButton({
         throw new Error("Payment session not created. Please try again.");
       }
 
-      setMessage("Opening Cashfree payment popup…");
+      setMessage("Opening Payment popup…");
 
       const isProd =
         process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ||
@@ -245,7 +245,7 @@ export default function CashfreeButton({
                 return;
               }
             }
-          } catch {}
+          } catch { }
 
           if (mountedRef.current) {
             setStatus("idle");

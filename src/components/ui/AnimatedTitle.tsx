@@ -44,8 +44,7 @@ export function AnimatedTitle({
         return (
           <Fragment key={`w-${index}`}>
             <motion.span
-              className="inline mr-[0.22em] whitespace-nowrap"
-              style={{ wordBreak: "break-word" }}
+              className="inline-block mr-[0.22em] max-w-full break-words"
               initial={{ opacity: 0, y: 32 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}

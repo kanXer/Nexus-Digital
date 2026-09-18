@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -11,6 +12,12 @@ export default function SiteChrome() {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
   const isAdminLogin = pathname === "/admin";
+
+  // Scroll to top on every page navigation — ensures new pages always start at top
+  // Uses instant scroll (no smooth) so the user sees the top of the new page immediately
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
 
   // Protected admin pages have their own sidebar/navigation via the admin layout,
   // so the public site chrome (navbar, footer, popups) must not overlap it.

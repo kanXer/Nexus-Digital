@@ -59,20 +59,20 @@ export default function UserProfileModal() {
           </button>
 
           <div className="mb-6">
-            <h3 className="text-2xl font-bold text-white flex items-center gap-2">
+            <h3 className="text-2xl font-bold text-[var(--text-primary)] flex items-center gap-2">
               <User className="w-6 h-6 text-brand-blue-light" />
-              Billing & Account Profile
+              Billing &amp; Account Profile
             </h3>
-            <p className="text-white/60 text-xs sm:text-sm mt-1">
+            <p className="text-[var(--text-secondary)] text-xs sm:text-sm mt-1">
               Your details automatically pre-fill on every checkout and enquiry form across Nexus Digital.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-white/70 mb-1">Full Name *</label>
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Full Name *</label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                 <input
                   type="text"
                   value={formData.name}
@@ -86,9 +86,9 @@ export default function UserProfileModal() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">Email Address *</label>
+                <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Email Address *</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="email"
                     value={formData.email}
@@ -101,9 +101,9 @@ export default function UserProfileModal() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">Phone Number *</label>
+                <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Phone Number *</label>
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="tel"
                     value={formData.phone}
@@ -118,9 +118,9 @@ export default function UserProfileModal() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">Company / Business Name</label>
+                <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Company / Business Name</label>
                 <div className="relative">
-                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     value={formData.company}
@@ -132,9 +132,9 @@ export default function UserProfileModal() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-white/70 mb-1">GSTIN / Tax ID (Optional)</label>
+                <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">GSTIN / Tax ID (Optional)</label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     value={formData.gstin || ""}
@@ -147,13 +147,13 @@ export default function UserProfileModal() {
             </div>
 
             {/* Billing Address Section */}
-            <div className="pt-2 border-t border-white/10">
-              <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-1.5">
+            <div className="pt-2 border-t border-[var(--border-default)]">
+              <h4 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-1.5">
                 <MapPin className="w-4 h-4 text-brand-blue-light" /> Billing Address
               </h4>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-white/70 mb-1">Street Address</label>
+                  <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Street Address</label>
                   <input
                     type="text"
                     value={formData.address || ""}
@@ -165,7 +165,7 @@ export default function UserProfileModal() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-white/70 mb-1">City</label>
+                    <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">City</label>
                     <input
                       type="text"
                       value={formData.city || ""}
@@ -176,7 +176,7 @@ export default function UserProfileModal() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-white/70 mb-1">State</label>
+                    <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">State</label>
                     <input
                       type="text"
                       value={formData.state || ""}
@@ -187,7 +187,7 @@ export default function UserProfileModal() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-white/70 mb-1">Pincode</label>
+                    <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1">Pincode</label>
                     <input
                       type="text"
                       value={formData.pincode || ""}

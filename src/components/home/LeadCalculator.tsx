@@ -63,10 +63,10 @@ export default function LeadCalculator() {
             <div className="space-y-7">
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm font-medium text-white/70 flex items-center gap-2">
+                  <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
                     <IndianRupee className="w-4 h-4 text-brand-blue-light" /> Monthly Marketing Budget
                   </label>
-                  <span className="text-sm font-bold text-white">{formatINR(budget)}</span>
+                  <span className="text-sm font-bold text-[var(--text-primary)]">{formatINR(budget)}</span>
                 </div>
                 <input
                   type="range"
@@ -77,26 +77,26 @@ export default function LeadCalculator() {
                   onChange={(e) => setBudget(Number(e.target.value))}
                   className="w-full accent-[#DC2626]"
                 />
-                <div className="flex justify-between text-[10px] text-white/30 mt-1.5">
+                <div className="flex justify-between text-[10px] text-[var(--text-muted)] mt-1.5 font-mono">
                   <span>₹5K</span>
                   <span>₹3L</span>
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-white/70 flex items-center gap-2 mb-3">
+                <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2 mb-3">
                   <TrendingUp className="w-4 h-4 text-brand-blue-light" /> Your Industry
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {INDUSTRIES.map((ind) => (
                     <button
                       key={ind.id}
                       type="button"
                       onClick={() => setIndustryId(ind.id)}
-                      className={`text-[12px] px-3 py-2 rounded-xl border transition-all cursor-pointer ${
+                      className={`text-[12px] px-3 py-2 rounded-xl border transition-all cursor-pointer truncate ${
                         industryId === ind.id
-                          ? "bg-brand-blue/15 border-brand-blue/40 text-white"
-                          : "bg-white/3 border-white/8 text-white/55 hover:border-white/20"
+                          ? "bg-brand-blue/15 border-brand-blue/40 text-brand-blue dark:text-white font-semibold shadow-sm"
+                          : "bg-black/5 dark:bg-white/3 border-[var(--border-default)] text-[var(--text-secondary)] hover:border-brand-blue/30"
                       }`}
                     >
                       {ind.label}
@@ -107,10 +107,10 @@ export default function LeadCalculator() {
 
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm font-medium text-white/70 flex items-center gap-2">
+                  <label className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-brand-blue-light" /> Avg. Customer Value
                   </label>
-                  <span className="text-sm font-bold text-white">{formatINR(avgValue)}</span>
+                  <span className="text-sm font-bold text-[var(--text-primary)]">{formatINR(avgValue)}</span>
                 </div>
                 <input
                   type="range"

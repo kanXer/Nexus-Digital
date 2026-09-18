@@ -229,6 +229,25 @@ export function ChatWidget() {
     }
   }, [user]);
 
+  // Dynamic launcher positioning:
+  // BackToTop appears at bottom-6 (24px) when scrolled down (scrollY > 200).
+  // ChatWidget launcher smoothly animates up to 92px above BackToTop.
+  // When near the top (scrollY <= 200), ChatWidget returns to bottom-6 (24px).
+  useEffect(() => {
+    const updatePosition = () => {
+      if (open) {
+        setLauncherBottom(24);
+        return;
+      }
+      const isScrolled = window.scrollY > 200;
+      setLauncherBottom(isScrolled ? 92 : 24);
+    };
+
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, { passive: true });
+    return () => window.removeEventListener("scroll", updatePosition);
+  }, [open]);
+
   // First name used for a personalized greeting + sent to the AI.
   const firstName =
     userProfile.name?.trim().split(/\s+/)[0] ||
@@ -272,22 +291,14 @@ export function ChatWidget() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // Position the launcher in the exact space previously occupied by the floating WhatsApp button:
-  // Not scrolled: folds down to 24px (bottom-most)
-  // Scrolled: rises above BackToTop to 104px (24px + 56px + 24px gap)
+  // Broadcast chat state so BackToTop & FloatingModeButton hide when chat opens
   useEffect(() => {
-    const compute = () => {
-      const scrolled = window.scrollY > 150;
-      setLauncherBottom(scrolled ? 104 : 24);
-    };
-    compute();
-    const onScroll = () => compute();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
+    window.dispatchEvent(new CustomEvent("nexus-chat-open", { detail: { open } }));
+  }, [open]);
+
+  // Keep launcher anchored at bottom-6 (24px) for rock-solid ergonomics without colliding with BackToTop
+  useEffect(() => {
+    setLauncherBottom(24);
   }, []);
 
   // Periodic attention animation — every ~7s the launcher softly pulses.
@@ -762,7 +773,7 @@ export function ChatWidget() {
     <>
       {/* Hint bubble + launcher — placed in the exact floating WhatsApp spot */}
       <div
-        className="fixed right-6 z-40 flex flex-col items-end gap-3 transition-all duration-300 ease-out will-change-transform"
+        className="fixed right-5 sm:right-6 z-40 flex flex-col items-end gap-3 transition-all duration-300 ease-out will-change-transform"
         style={{ bottom: launcherBottom }}
       >
         <AnimatePresence>
@@ -772,87 +783,117 @@ export function ChatWidget() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.85 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="relative glass-card rounded-2xl rounded-br-sm px-4 py-2.5 text-[11px] sm:text-xs font-semibold shadow-card cursor-pointer max-w-[calc(100vw-5rem)] sm:max-w-xs text-[var(--text-primary)] border border-[var(--border-default)]"
+              className="relative rounded-2xl rounded-br-sm px-4 py-2.5 text-[11px] sm:text-xs font-semibold shadow-xl cursor-pointer max-w-[calc(100vw-5rem)] sm:max-w-xs text-[var(--text-primary)] border border-brand/20 bg-[var(--bg-card)] backdrop-blur-xl hover:scale-105 transition-transform duration-200"
+              style={{
+                boxShadow: "0 10px 30px rgba(0,0,0,0.12), 0 0 20px rgba(225,29,72,0.15)",
+              }}
               onClick={toggle}
             >
               <span className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-brand-red" />
+                <span className="w-2 h-2 rounded-full bg-brand animate-ping" />
+                <Sparkles className="w-3.5 h-3.5 text-brand" />
                 {HINT_MESSAGES[hintIndex]}
               </span>
-              <span className="absolute -bottom-1 right-5 w-3 h-3 bg-[var(--bg-secondary)] border-r border-b border-[var(--border-default)] rotate-45" />
+              <span className="absolute -bottom-1.5 right-5 w-3 h-3 bg-[var(--bg-card)] border-r border-b border-brand/20 rotate-45" />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Launcher */}
-        <motion.button
-          type="button"
-          onClick={toggle}
-          aria-label="Chat with Friday — WhatsApp & Call Support"
-          aria-expanded={open}
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 2, type: "spring", stiffness: 200, damping: 15 }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="relative w-14 h-14 rounded-full flex items-center justify-center text-white shadow-glow-lg cursor-pointer overflow-visible"
-          style={{ background: "var(--gradient-brand)", boxShadow: "0 10px 30px rgba(220,38,38,0.45)" }}
-        >
-          {/* Periodic glow pulse */}
-          <AnimatePresence>
-            {!open && (
-              <motion.span
-                key={pulse}
-                initial={{ opacity: 0.6, scale: 1 }}
-                animate={{ opacity: 0, scale: 2.1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.6, ease: "easeOut" }}
-                className="absolute inset-0 rounded-full bg-brand-blue pointer-events-none"
-              />
-            )}
-          </AnimatePresence>
-          {/* Breathing ring */}
-          <span
-            className="absolute inset-0 rounded-full ring-2 ring-brand-blue-light animate-pulse pointer-events-none"
-            style={{ animationDuration: "3s" }}
-          />
-
-          {/* Active connect badge (WhatsApp & Call) */}
+        {/* Launcher with Rotating Gradient Halo & Shimmer */}
+        <div className="relative group">
+          {/* Rotating Conic Gradient Outer Halo */}
           {!open && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 z-20 pointer-events-none">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-black items-center justify-center shadow-sm">
-                <MessageCircle className="w-2.5 h-2.5 text-white" fill="white" />
-              </span>
-            </span>
+            <div
+              className="absolute -inset-1 rounded-full opacity-70 group-hover:opacity-100 blur-[6px] transition-opacity duration-300 pointer-events-none"
+              style={{
+                background: "conic-gradient(from 0deg, #BE123C, #F43F5E, #F59E0B, #0EA5E9, #BE123C)",
+                animation: "spin 8s linear infinite",
+              }}
+            />
           )}
 
-          <AnimatePresence mode="wait" initial={false}>
-            {open ? (
-              <motion.span
-                key="x"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="relative z-10"
-              >
-                <X className="w-6 h-6" />
-              </motion.span>
-            ) : (
-              <motion.span
-                key="bot"
-                initial={{ scale: 0, rotate: -45, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                exit={{ scale: 0, rotate: 45, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 260, damping: 18 }}
-                className="relative z-10"
-              >
-                <Bot className="w-7 h-7" />
-              </motion.span>
+          <motion.button
+            type="button"
+            onClick={toggle}
+            aria-label="Chat with Friday — AI Growth Strategist"
+            aria-expanded={open}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 1.2, type: "spring", stiffness: 220, damping: 16 }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            className="relative w-14 h-14 sm:w-15 sm:h-15 rounded-full flex items-center justify-center cursor-pointer overflow-hidden border border-white/30 backdrop-blur-2xl shadow-[0_12px_35px_rgba(225,29,72,0.45),0_0_25px_rgba(245,158,11,0.3)] transition-all duration-300"
+            style={{
+              background: "linear-gradient(135deg, #BE123C 0%, #E11D48 50%, #F59E0B 100%)",
+            }}
+          >
+            {/* Shimmer sweep */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" />
+
+            {/* Periodic glow pulse */}
+            <AnimatePresence>
+              {!open && (
+                <motion.span
+                  key={pulse}
+                  initial={{ opacity: 0.7, scale: 1 }}
+                  animate={{ opacity: 0, scale: 1.6 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.8, ease: "easeOut" }}
+                  className="absolute inset-0 rounded-full bg-brand pointer-events-none"
+                />
+              )}
+            </AnimatePresence>
+
+            {/* Pulsing breathing radar ring */}
+            {!open && (
+              <div
+                className="absolute -inset-1.5 rounded-full border border-amber-400/40 animate-ping pointer-events-none opacity-40"
+                style={{ animationDuration: "3.2s" }}
+              />
             )}
-          </AnimatePresence>
-        </motion.button>
+
+            <AnimatePresence mode="wait" initial={false}>
+              {open ? (
+                <motion.span
+                  key="x"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative z-10"
+                >
+                  <X className="w-6 h-6 text-white" />
+                </motion.span>
+              ) : (
+                <div className="relative z-10 flex items-center justify-center w-full h-full">
+                  {/* AI Bot Icon with live animation */}
+                  <div className="relative flex items-center justify-center">
+                    <Bot className="w-7 h-7 sm:w-8 sm:h-8 text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)] animate-pulse" />
+                    <Sparkles className="absolute -top-1 -right-1 w-3.5 h-3.5 text-amber-300 animate-spin" style={{ animationDuration: "6s" }} />
+                  </div>
+
+                  {/* Active live radar ping (Online badge) */}
+                  <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 flex h-3.5 w-3.5 z-20 pointer-events-none">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white items-center justify-center shadow-sm">
+                      <span className="w-1 h-1 rounded-full bg-white" />
+                    </span>
+                  </span>
+                </div>
+              )}
+            </AnimatePresence>
+          </motion.button>
+
+          {/* Hover Tooltip */}
+          {!open && (
+            <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-200 whitespace-nowrap z-50 hidden sm:block">
+              <div className="bg-[var(--bg-card)] text-[var(--text-primary)] text-xs font-bold py-1.5 px-3 rounded-xl shadow-xl border border-[var(--border-default)] flex items-center gap-2 backdrop-blur-xl">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Chat with Friday AI</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Chat window */}

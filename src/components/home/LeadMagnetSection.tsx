@@ -144,7 +144,7 @@ export default function LeadMagnetSection() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your name (optional)"
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-red-400/80 outline-none focus:border-brand-blue/50"
+                      className="input-field text-sm"
                     />
                     <input
                       type="email"
@@ -152,7 +152,7 @@ export default function LeadMagnetSection() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Work email *"
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-red-400/80 outline-none focus:border-brand-blue/50"
+                      className="input-field text-sm"
                     />
                     {status === "error" && <p className="text-red-400 text-xs">{msg}</p>}
                     <button type="submit" disabled={status === "loading"} className="btn-primary justify-center text-sm group w-full">
