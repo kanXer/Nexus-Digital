@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 2592000,
     remotePatterns: [],
   },
   async headers() {
@@ -35,7 +36,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://ui-avatars.com https://*.firebasestorage.app https://www.google-analytics.com https://www.gstatic.com https://lh3.googleusercontent.com https://*.googleusercontent.com https://*.cashfree.com https://cashfreelogo.cashfree.com",
               "font-src 'self' data: https://fonts.gstatic.com",
               "connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://*.firebaseio.com https://*.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.cashfree.com https://sdk.cashfree.com https://api.cashfree.com https://checkout.cashfree.com https://payments.cashfree.com https://*.cloudfunctions.net https://www.google.com https://vercel.live wss: wss://*.firebaseio.com",
-              "frame-src 'self' https://*.cashfree.com https://api.cashfree.com https://sdk.cashfree.com https://checkout.cashfree.com https://payments.cashfree.com https://*.firebaseapp.com https://accounts.google.com https://accounts.youtube.com https://vercel.live",
+              "frame-src 'self' https://*.google.com https://www.google.com https://maps.google.com https://*.cashfree.com https://api.cashfree.com https://sdk.cashfree.com https://checkout.cashfree.com https://payments.cashfree.com https://*.firebaseapp.com https://accounts.google.com https://accounts.youtube.com https://vercel.live",
               "media-src 'self' blob: data:",
             ].join("; "),
           },
