@@ -40,8 +40,8 @@ export default function AdminAccountPage() {
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/admin/session");
-        if (res.status === 401) {
+        const res = await fetch("/api/admin/check");
+        if (!res.ok) {
           router.replace("/admin");
           return;
         }

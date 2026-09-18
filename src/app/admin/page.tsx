@@ -18,10 +18,10 @@ export default function AdminLoginPage() {
     const init = async () => {
       // 1. Check if an admin session cookie already exists
       try {
-        const res = await fetch("/api/admin/verify-admin");
+        const res = await fetch("/api/admin/check");
         if (!cancelled && res.ok) {
           const data = await res.json();
-          if (data.verified) {
+          if (data.isAdmin || data.verified) {
             router.replace("/admin/dashboard");
             return;
           }
@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
           // User already logged into Firebase — auto-submit their email to the admin login API
           setStage("auto");
           try {
-            const res = await fetch("/api/admin/login", {
+            const res = await fetch("/api/admin/check", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ email: firebaseUser.email }),
@@ -88,14 +88,14 @@ export default function AdminLoginPage() {
       }
 
       // Verify email against backend superadmin (.env) or database authorized admins
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("/api/admin/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
       const data = await res.json();
-      if (!res.ok) {
+      if (!res.ok || !data.isAdmin) {
         throw new Error(data.error || "Access Denied: Your email is not authorized for Admin Access.");
       }
 

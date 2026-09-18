@@ -9,18 +9,22 @@ import {
 } from "@/lib/admin";
 
 /**
- * Handles admin authorization checking and seamless session initialization
- * for authorized administrators (.env SuperAdmin + DB authorized admins).
+ * Unified Admin Authorization & Session Verification Route
+ * Handles admin identity verification, cookie provisioning, and superadmin checks
+ * based entirely on Firebase Google Identity + .env / MongoDB authorization.
  */
 async function verifyAndAuthorize(targetEmail?: string | null) {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
-  // 1. If valid session cookie already exists, verify it
+  // 1. Verify existing session cookie if present
   if (token) {
     const sessionEmail = await getSessionEmail(token);
     if (sessionEmail && (await isAllowedAdminEmail(sessionEmail))) {
       return {
+        success: true,
+        verified: true,
+        authed: true,
         isAdmin: true,
         isSuper: isTopAdmin(sessionEmail),
         email: sessionEmail,
@@ -28,14 +32,13 @@ async function verifyAndAuthorize(targetEmail?: string | null) {
     }
   }
 
-  // 2. If no valid session cookie yet, but an email is provided (from authenticated Firebase user)
+  // 2. If targetEmail is provided (from authenticated Firebase user)
   if (targetEmail) {
     const normalized = targetEmail.toLowerCase().trim();
     const isAllowed = await isAllowedAdminEmail(normalized);
 
     if (isAllowed) {
       try {
-        // Auto-provision signed session cookie so user gets immediate dashboard access
         const newToken = await createAdminSession(normalized);
         cookieStore.set(SESSION_COOKIE, newToken, {
           httpOnly: true,
@@ -47,32 +50,53 @@ async function verifyAndAuthorize(targetEmail?: string | null) {
         });
 
         return {
+          success: true,
+          verified: true,
+          authed: true,
           isAdmin: true,
           isSuper: isTopAdmin(normalized),
           email: normalized,
         };
       } catch (err) {
-        console.error("Failed to auto-create admin session in check route:", err);
+        console.error("Failed to establish admin session:", err);
       }
     }
+
+    return {
+      success: false,
+      verified: false,
+      authed: false,
+      isAdmin: false,
+      isSuper: false,
+      error: "Access Denied: Your account is not authorized for Admin Access.",
+    };
   }
 
-  return { isAdmin: false, isSuper: false };
+  return {
+    success: false,
+    verified: false,
+    authed: false,
+    isAdmin: false,
+    isSuper: false,
+  };
 }
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const queryEmail = searchParams.get("email");
   const result = await verifyAndAuthorize(queryEmail);
-  return NextResponse.json(result);
+  return NextResponse.json(result, { status: result.authed || result.verified ? 200 : 401 });
 }
 
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const result = await verifyAndAuthorize(body?.email);
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: result.success ? 200 : 403 });
   } catch {
-    return NextResponse.json({ isAdmin: false, isSuper: false });
+    return NextResponse.json(
+      { success: false, verified: false, authed: false, isAdmin: false, isSuper: false, error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
