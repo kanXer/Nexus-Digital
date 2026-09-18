@@ -8,54 +8,38 @@ import {
   SESSION_COOKIE,
 } from "@/lib/admin";
 
+interface AuthResult {
+  success: boolean;
+  verified: boolean;
+  authed: boolean;
+  isAdmin: boolean;
+  isSuper: boolean;
+  email?: string;
+  newToken?: string;
+  error?: string;
+}
+
 /**
  * Unified Admin Authorization & Session Verification Route
- * Handles admin identity verification, cookie provisioning, and superadmin checks
- * based entirely on Firebase Google Identity + .env / MongoDB authorization.
  */
-async function verifyAndAuthorize(targetEmail?: string | null) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
+async function verifyAndAuthorize(targetEmail?: string | null): Promise<AuthResult> {
+  const normalizedTarget = targetEmail?.toLowerCase().trim();
 
-  // 1. Verify existing session cookie if present
-  if (token) {
-    const sessionEmail = await getSessionEmail(token);
-    if (sessionEmail && (await isAllowedAdminEmail(sessionEmail))) {
-      return {
-        success: true,
-        verified: true,
-        authed: true,
-        isAdmin: true,
-        isSuper: isTopAdmin(sessionEmail),
-        email: sessionEmail,
-      };
-    }
-  }
-
-  // 2. If targetEmail is provided (from authenticated Firebase user)
-  if (targetEmail) {
-    const normalized = targetEmail.toLowerCase().trim();
-    const isAllowed = await isAllowedAdminEmail(normalized);
+  // 1. Agar specific targetEmail pass hua hai, toh pehle use authorize karke naya session banayein
+  if (normalizedTarget) {
+    const isAllowed = await isAllowedAdminEmail(normalizedTarget);
 
     if (isAllowed) {
       try {
-        const newToken = await createAdminSession(normalized);
-        cookieStore.set(SESSION_COOKIE, newToken, {
-          httpOnly: true,
-          sameSite: "lax",
-          secure: process.env.NODE_ENV === "production",
-          path: "/",
-          maxAge: 7 * 24 * 60 * 60,
-          priority: "high",
-        });
-
+        const newToken = await createAdminSession(normalizedTarget);
         return {
           success: true,
           verified: true,
           authed: true,
           isAdmin: true,
-          isSuper: isTopAdmin(normalized),
-          email: normalized,
+          isSuper: isTopAdmin(normalizedTarget),
+          email: normalizedTarget,
+          newToken,
         };
       } catch (err) {
         console.error("Failed to establish admin session:", err);
@@ -72,6 +56,24 @@ async function verifyAndAuthorize(targetEmail?: string | null) {
     };
   }
 
+  // 2. Agar koi email provide nahi kiya, toh existing cookie session verify karein
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+
+  if (token) {
+    const sessionEmail = await getSessionEmail(token);
+    if (sessionEmail && (await isAllowedAdminEmail(sessionEmail))) {
+      return {
+        success: true,
+        verified: true,
+        authed: true,
+        isAdmin: true,
+        isSuper: isTopAdmin(sessionEmail),
+        email: sessionEmail,
+      };
+    }
+  }
+
   return {
     success: false,
     verified: false,
@@ -81,21 +83,58 @@ async function verifyAndAuthorize(targetEmail?: string | null) {
   };
 }
 
-export async function GET(req: Request) {
+export async function GET(req: Request): Promise<NextResponse> {
   const { searchParams } = new URL(req.url);
   const queryEmail = searchParams.get("email");
   const result = await verifyAndAuthorize(queryEmail);
-  return NextResponse.json(result, { status: result.authed || result.verified ? 200 : 401 });
+
+  const status = result.authed || result.verified ? 200 : 401;
+  const res = NextResponse.json(result, { status });
+
+  if (result.newToken) {
+    res.cookies.set(SESSION_COOKIE, result.newToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60,
+      priority: "high",
+    });
+  }
+
+  return res;
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     const body = await req.json().catch(() => ({}));
     const result = await verifyAndAuthorize(body?.email);
-    return NextResponse.json(result, { status: result.success ? 200 : 403 });
+
+    const status = result.success ? 200 : 403;
+    const res = NextResponse.json(result, { status });
+
+    if (result.newToken) {
+      res.cookies.set(SESSION_COOKIE, result.newToken, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60,
+        priority: "high",
+      });
+    }
+
+    return res;
   } catch {
     return NextResponse.json(
-      { success: false, verified: false, authed: false, isAdmin: false, isSuper: false, error: "Internal server error" },
+      {
+        success: false,
+        verified: false,
+        authed: false,
+        isAdmin: false,
+        isSuper: false,
+        error: "Internal server error",
+      },
       { status: 500 }
     );
   }
