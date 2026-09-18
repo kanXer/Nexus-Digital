@@ -103,7 +103,7 @@ const glossaryTerms = [
 
 export default function Terms() {
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-300">
       {/* Hero */}
       <section className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />

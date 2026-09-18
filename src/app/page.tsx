@@ -9,7 +9,14 @@ import { WordRotator } from "@/components/ui/WordRotator";
 import { trackEvent, WHATSAPP_AUDIT, waLink } from "@/lib/analytics";
 import HeroCommandCenter from "@/components/home/HeroCommandCenter";
 
-const HomeBelowFold = dynamic(() => import("@/components/home/HomeBelowFold"), { ssr: false });
+const HomeBelowFold = dynamic(() => import("@/components/home/HomeBelowFold"), {
+  ssr: true,
+  loading: () => (
+    <div className="min-h-[250px] flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-brand-blue/30 border-t-brand-blue-light animate-spin" />
+    </div>
+  ),
+});
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,34 +37,34 @@ export default function HomePage() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
 
   return (
-    <div className="bg-black overflow-hidden">
+    <div className="bg-[var(--bg-primary)] overflow-x-clip transition-colors duration-300">
       {/* ═══ HERO ═══ */}
       <section ref={heroRef} className="relative min-h-screen flex items-start lg:items-center pt-24 pb-12 lg:pb-16 overflow-hidden ambient-mesh">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="absolute inset-0 bg-nexus-constellation pointer-events-none opacity-90" />
-        <div className="absolute inset-0 bg-black/30 pointer-events-none" />
-        <div className="absolute inset-0 noise-bg pointer-events-none" />
+        <div className="absolute inset-0 bg-transparent dark:bg-black/30 pointer-events-none" />
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-25" />
 
         {/* Dynamic Chromatic Nebula — 4-Point Floating Photons */}
-        <motion.div animate={{ x: [0, 35, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.08, 0.95, 1] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }} className="absolute top-20 left-10 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-red-600/15 rounded-full blur-[100px] md:blur-[140px] pointer-events-none" />
-        <motion.div animate={{ x: [0, -30, 25, 0], y: [0, 30, -35, 0], scale: [1, 0.95, 1.08, 1] }} transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-20 right-10 w-[260px] h-[260px] md:w-[520px] md:h-[520px] bg-purple-600/14 rounded-full blur-[90px] md:blur-[130px] pointer-events-none" />
-        <motion.div animate={{ x: [0, 25, -20, 0], y: [0, -25, 20, 0] }} transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }} className="absolute top-1/2 left-1/4 w-[220px] h-[220px] md:w-[400px] md:h-[400px] bg-cyan-500/10 rounded-full blur-[80px] md:blur-[120px] pointer-events-none" />
-        <motion.div animate={{ x: [0, -20, 20, 0], y: [0, 20, -20, 0] }} transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }} className="absolute top-1/3 right-1/4 w-[180px] h-[180px] md:w-[320px] md:h-[320px] bg-emerald-500/8 rounded-full blur-[70px] md:blur-[110px] pointer-events-none" />
+        <motion.div animate={{ x: [0, 35, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.08, 0.95, 1] }} transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }} className="absolute top-20 left-10 w-[240px] h-[240px] sm:w-[300px] sm:h-[300px] md:w-[600px] md:h-[600px] bg-red-600/10 dark:bg-red-600/15 rounded-full blur-[80px] md:blur-[140px] pointer-events-none" />
+        <motion.div animate={{ x: [0, -30, 25, 0], y: [0, 30, -35, 0], scale: [1, 0.95, 1.08, 1] }} transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-20 right-10 w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] md:w-[520px] md:h-[520px] bg-amber-500/10 dark:bg-purple-600/14 rounded-full blur-[70px] md:blur-[130px] pointer-events-none" />
+        <motion.div animate={{ x: [0, 25, -20, 0], y: [0, -25, 20, 0] }} transition={{ duration: 26, repeat: Infinity, ease: "easeInOut" }} className="absolute top-1/2 left-1/4 w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] md:w-[400px] md:h-[400px] bg-cyan-500/8 dark:bg-cyan-500/10 rounded-full blur-[60px] md:blur-[120px] pointer-events-none" />
+        <motion.div animate={{ x: [0, -20, 20, 0], y: [0, 20, -20, 0] }} transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }} className="absolute top-1/3 right-1/4 w-[150px] h-[150px] sm:w-[180px] sm:h-[180px] md:w-[320px] md:h-[320px] bg-emerald-500/6 dark:bg-emerald-500/8 rounded-full blur-[50px] md:blur-[110px] pointer-events-none" />
 
         <motion.div style={{ y: heroY }} className="container-custom section-padding relative z-10 w-full">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             {/* Left Content (7 columns on desktop) */}
             <motion.div initial="hidden" animate="show" variants={containerVariants} className="lg:col-span-7 text-center lg:text-left">
               <motion.div variants={itemVariants}>
-                <span className="tag-badge mb-5 inline-flex items-center gap-2 border-brand-blue/30 bg-brand-blue/10 text-white/90">
-                  <span className="radar-dot bg-green-400" />
-                  <span>Next-Gen Web Architecture &amp; Performance Growth · Gorakhpur, Uttar Pradesh &amp; Pan-India</span>
+                <span className="tag-badge mb-5 inline-flex items-center gap-2 border-brand-blue/30 bg-brand-blue/10 text-[var(--text-primary)]">
+                  <span className="radar-dot bg-green-500" />
+                  <span className="text-[11px] sm:text-xs">Next-Gen Web Architecture &amp; Performance Growth · Gorakhpur, UP &amp; Pan-India</span>
                 </span>
               </motion.div>
 
-              <motion.h1 variants={itemVariants} className="font-display text-[clamp(2.1rem,5.5vw,3.5rem)] font-extrabold text-white leading-[1.12] tracking-[-0.035em] mb-5 break-words">
+              <motion.h1 variants={itemVariants} className="font-display text-[clamp(1.85rem,5.5vw,3.5rem)] font-extrabold text-[var(--text-primary)] leading-[1.14] tracking-[-0.035em] mb-5 break-words">
                 Turn Clicks Into <br className="hidden sm:inline" />
-                <span className="text-white">Paying Clients.</span>
+                <span className="text-[var(--text-primary)]">Paying Clients.</span>
                 <br />
                 <WordRotator
                   words={[
@@ -70,7 +77,7 @@ export default function HomePage() {
                 />
               </motion.h1>
 
-              <motion.p variants={itemVariants} className="text-base sm:text-lg text-white/70 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed font-normal">
+              <motion.p variants={itemVariants} className="text-base sm:text-lg text-[var(--text-secondary)] max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed font-normal">
                 We build high-speed custom web applications and manage profit-engineered SEO &amp; Paid Ad campaigns. No slow templates, no fluff — just measurable leads, sales, and explosive growth for businesses in Gorakhpur, Uttar Pradesh, and across India.
               </motion.p>
 

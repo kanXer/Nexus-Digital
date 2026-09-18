@@ -19,21 +19,21 @@ export default function AboutPage() {
   const valueIcons: Record<string, React.ElementType> = { Target, Lightbulb, Handshake, Rocket, Shield, HeartHandshake };
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-300">
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="absolute inset-0 grid-dots opacity-25 pointer-events-none" />
-        <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.span className="tag-badge mb-5 inline-flex" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>About Us</motion.span>
           <AnimatedTitle
             as="h1"
             title="We Build Digital Growth Engines"
             highlight="Digital Growth"
-            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-[var(--text-primary)] leading-[1.15] tracking-[-0.02em] mb-5"
           />
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 max-w-2xl mx-auto leading-relaxed">
-            We are the <strong className="text-white">best digital marketing agency in Gorakhpur, Uttar Pradesh</strong> — and the most results-obsessed. Nexus Digital is a premier <strong className="text-white">digital marketing agency in Gorakhpur, Uttar Pradesh</strong> built on one belief: every business deserves marketing that actually works. We are a digital marketing agency Gorakhpur, Uttar Pradesh businesses grow with — combining data, creativity, and technology to generate real leads, real revenue, and real brand authority across Gorakhpur, Uttar Pradesh, Lucknow, and all of India.
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
+            We are the <strong className="text-[var(--text-primary)]">best digital marketing agency in Gorakhpur, Uttar Pradesh</strong> — and the most results-obsessed. Nexus Digital is a premier <strong className="text-[var(--text-primary)]">digital marketing agency in Gorakhpur, Uttar Pradesh</strong> built on one belief: every business deserves marketing that actually works. We are a digital marketing agency Gorakhpur, Uttar Pradesh businesses grow with — combining data, creativity, and technology to generate real leads, real revenue, and real brand authority across Gorakhpur, Uttar Pradesh, Lucknow, and all of India.
           </motion.p>
         </div>
       </section>
@@ -57,21 +57,34 @@ export default function AboutPage() {
       <section className="section-padding">
         <div className="max-w-4xl mx-auto">
           <SectionHeading badge="Our Journey" title="From First Steps to " highlight="Trusted Partner" subtitle="Here's how we started and where we're headed — helping local businesses grow one campaign at a time." />
-          <div className="mt-14 relative">
-            <div className="absolute left-4 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-px bg-gradient-to-b from-brand-blue via-brand-blue/50 to-transparent" />
-            <div className="space-y-10">
+        <div className="mt-12 relative">
+            {/* Vertical line — left-8 on mobile, centered on md+ */}
+            <div className="absolute left-8 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-px bg-gradient-to-b from-brand-blue via-brand-blue/50 to-transparent" />
+            <div className="space-y-8 md:space-y-10">
               {agencyTimeline.map((item, i) => (
-                <motion.div key={item.year} initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }} className={`relative flex flex-col md:flex-row items-start gap-6 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}>
-                  <div className={`flex-1 ${i % 2 === 0 ? "md:text-right md:pr-10" : "md:text-left md:pl-10"}`}>
-                    <div className="glass-card rounded-xl p-5 border border-white/8 inline-block max-w-md hover:border-white/15 transition-all">
+                <motion.div
+                  key={item.year}
+                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
+                  className={`relative flex items-start gap-0 md:gap-6 ${i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
+                >
+                  {/* Dot — left-8 mobile, centered desktop */}
+                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 top-5 w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light border-2 border-black dark:border-[#0B1120] border-[var(--bg-primary)] flex items-center justify-center z-10 shadow-[0_0_15px_rgba(59,130,246,0.4)] shrink-0">
+                    <div className="w-2 h-2 rounded-full bg-white" />
+                  </div>
+
+                  {/* Card — full width on mobile, half-width on desktop */}
+                  <div className={`flex-1 pl-20 md:pl-0 ${i % 2 === 0 ? "md:text-right md:pr-10" : "md:text-left md:pl-10"}`}>
+                    <div className="glass-card rounded-xl p-4 md:p-5 border border-white/8 inline-block w-full md:w-auto md:max-w-md hover:border-white/15 transition-all">
                       <span className="text-brand-blue-light text-xs font-bold">{item.year}</span>
-                      <h3 className="text-white font-semibold text-base mt-1">{item.event}</h3>
+                      <h3 className="text-white font-semibold text-sm md:text-base mt-1">{item.event}</h3>
                       <p className="text-white/45 text-xs mt-1 leading-relaxed">{item.detail}</p>
                     </div>
                   </div>
-                  <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue-dark via-brand-blue to-brand-blue-light border-2 border-black flex items-center justify-center z-10 shadow-[0_0_15px_rgba(220,38,38,0.3)]">
-                    <div className="w-2 h-2 rounded-full bg-white" />
-                  </div>
+
+                  {/* Spacer for desktop alternating layout */}
                   <div className="flex-1 hidden md:block" />
                 </motion.div>
               ))}

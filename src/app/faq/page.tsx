@@ -58,20 +58,20 @@ const faqGroups = [
 
 export default function FaqPage() {
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-300">
       <section className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="absolute inset-0 grid-dots opacity-25 pointer-events-none" />
-        <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.span className="tag-badge mb-5 inline-flex" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>FAQ &amp; Knowledge Base</motion.span>
           <AnimatedTitle
             as="h1"
             title="Website Development & Digital Marketing FAQs"
             highlight="FAQs"
-            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-[var(--text-primary)] leading-[1.15] tracking-[-0.02em] mb-5"
           />
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 max-w-2xl mx-auto leading-relaxed">
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
             Everything you need to know about custom website development, e-commerce, SEO, Google Ads, social media marketing, and local SEO in Gorakhpur, Uttar Pradesh &amp; India — answered honestly by {config.name}, founded by Sahil Srivastava.
           </motion.p>
         </div>

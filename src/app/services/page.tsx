@@ -30,11 +30,11 @@ function DynamicIcon({ name, className }: { name: string; className?: string }) 
 
 export default function ServicesPage() {
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-300">
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="absolute inset-0 grid-dots opacity-25 pointer-events-none" />
-        <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
         <div className="max-w-7xl mx-auto text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}>
             <span className="tag-badge mb-5 inline-flex">Our Services</span>
@@ -43,15 +43,46 @@ export default function ServicesPage() {
             as="h1"
             title="Full-Stack Digital Marketing"
             highlight="Services That Convert"
-            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-[var(--text-primary)] leading-[1.15] tracking-[-0.02em] mb-5"
           />
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
-            className="text-lg text-white/55 max-w-2xl mx-auto mb-8 leading-relaxed"
+            className="text-base sm:text-lg text-[var(--text-secondary)] max-w-2xl mx-auto mb-6 leading-relaxed"
           >
-            From social media to paid ads, SEO to web development — our digital marketing services in Gorakhpur, Uttar Pradesh &amp; India are designed with one goal: growing your revenue. As the best digital marketing agency in Gorakhpur, Uttar Pradesh, we are a top digital marketing company in Gorakhpur, Uttar Pradesh offering full-service campaigns. From ranking your brand via the best SEO company in Gorakhpur, Uttar Pradesh to designing high-converting sites as a website designing company in Gorakhpur, Uttar Pradesh, running high-performance campaigns as a premier social media marketing agency in Gorakhpur, Uttar Pradesh, or maximizing your ROAS with expert PPC services in Gorakhpur, Uttar Pradesh — we have you covered.
+            One goal: <strong className="text-[var(--text-primary)]">growing your revenue</strong>. From social media to paid ads, SEO to web design — the best digital marketing agency in Gorakhpur, Uttar Pradesh &amp; India is here to help.
+          </motion.p>
+          {/* SEO keyword pills — visible on lg, hidden text stays crawlable */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.28, ease: [0.22, 1, 0.36, 1] as const }}
+            className="hidden lg:flex flex-wrap justify-center gap-2 max-w-3xl mx-auto mb-8"
+          >
+            {[
+              "Best SEO Company Gorakhpur",
+              "Social Media Marketing Agency UP",
+              "Google Ads & PPC Services",
+              "Website Designing Gorakhpur",
+              "Meta Ads Management",
+              "Local SEO Uttar Pradesh",
+              "Top Digital Marketing Company",
+              "Performance Marketing India",
+            ].map((kw) => (
+              <span key={kw} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[var(--bg-secondary)] border border-[var(--border-default)] text-[var(--text-secondary)]">
+                {kw}
+              </span>
+            ))}
+          </motion.div>
+          {/* Mobile: compact sub-text */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.28, ease: [0.22, 1, 0.36, 1] as const }}
+            className="lg:hidden text-sm text-[var(--text-secondary)] max-w-xl mx-auto mb-8 leading-relaxed"
+          >
+            SEO · Google Ads · Meta Ads · Website Design · Social Media · PPC · Local SEO — Gorakhpur, Uttar Pradesh &amp; Pan-India.
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}>
             <Link href="/enquiry#enquiry-form" onClick={() => trackEvent("service_cta_click", { service: "all", location: "services_hero" })} className="btn-primary px-8 py-4 group">
@@ -62,13 +93,13 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <div className="sticky top-16 z-30 bg-black/80 backdrop-blur-xl border-b border-white/8 py-3 px-4">
+      <div className="sticky top-16 lg:top-20 z-30 bg-[var(--nav-bg)] backdrop-blur-xl border-b border-[var(--border-default)] py-3 px-4 transition-colors duration-300">
         <div className="max-w-7xl mx-auto flex gap-2 overflow-x-auto no-scrollbar">
           {serviceCategories.map((cat) => (
             <a
               key={cat.id}
               href={`#${cat.id}`}
-              className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold text-white/60 border border-white/10 hover:text-white hover:border-brand-blue/40 hover:bg-brand-blue/10 transition-all"
+              className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold text-[var(--text-secondary)] border border-[var(--border-default)] hover:text-[var(--text-primary)] hover:border-brand-red/40 hover:bg-brand-red/10 transition-all"
             >
               {cat.title}
             </a>

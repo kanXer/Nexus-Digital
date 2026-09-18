@@ -70,7 +70,7 @@ export default function CartPage() {
 
   return (
     <RequireAuth>
-      <div className="bg-black min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-300">
         {/* Ambient Glows */}
         <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-brand-blue/10 rounded-full blur-[150px] pointer-events-none mix-blend-screen opacity-70" />
         <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-brand-red/10 rounded-full blur-[150px] pointer-events-none mix-blend-screen opacity-70" />
@@ -79,7 +79,7 @@ export default function CartPage() {
         <div className="max-w-6xl mx-auto relative z-10">
           {/* Header */}
           <div className="mb-10">
-            <Link href="/pricing" className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors mb-4">
+            <Link href="/pricing" className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors mb-4">
               ← Back to Pricing
             </Link>
             <div className="flex items-end justify-between flex-wrap gap-4">

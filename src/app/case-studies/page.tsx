@@ -10,20 +10,20 @@ export default function CaseStudiesPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-300">
       <section className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="absolute inset-0 grid-dots opacity-25 pointer-events-none" />
-        <div className="absolute inset-0 noise-bg pointer-events-none opacity-30" />
+        <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <motion.span className="tag-badge mb-5 inline-flex" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>Case Studies</motion.span>
           <AnimatedTitle
             as="h1"
             title="Real Clients. Real Results."
             highlight="Real Results."
-            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-white leading-[1.15] tracking-[-0.02em] mb-5"
+            className="font-display text-[clamp(1.9rem,3.6vw,2.9rem)] font-bold text-[var(--text-primary)] leading-[1.15] tracking-[-0.02em] mb-5"
           />
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-white/55 leading-relaxed">
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }} className="text-lg text-[var(--text-secondary)] leading-relaxed">
             Detailed breakdowns of campaigns delivering steady, measurable results for our clients — from Google Ads PPC management and SEO to lead generation for businesses in Gorakhpur, Uttar Pradesh &amp; India.
           </motion.p>
         </div>

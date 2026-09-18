@@ -14,15 +14,14 @@ import { Toaster } from "react-hot-toast";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-body",
   display: "swap",
 });
 
 const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  weight: ["600", "700", "800", "900"],
   variable: "--font-heading",
   display: "swap",
 });
@@ -32,8 +31,8 @@ const ogImage = config.ogImage;
 
 export const metadata: Metadata = {
   metadataBase: new URL(config.website),
-  title: { default: `${config.name} | Best Digital Marketing Agency in Gorakhpur, Uttar Pradesh`, template: `%s | ${config.name}` },
-  description: `Nexus Digital is the Best Digital Marketing and also best Website Development Agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. We specialize in Custom Next.js Web Development, E-Commerce, SEO, Google Ads, and Social Media Marketing to scale businesses across Gorakhpur, Uttar Pradesh, Lucknow, and all of India.`,
+  title: { default: `${config.name} | Best Web Development & Digital Marketing Agency in Gorakhpur, Uttar Pradesh`, template: `%s | ${config.name}` },
+  description: `Nexus Digital is the Best Digital Marketing & Website Development Agency in Gorakhpur, Uttar Pradesh, founded by Sahil Srivastava. We specialize in Custom Next.js Web Development, E-Commerce, SEO, Google Ads, and Social Media Marketing to scale businesses across Gorakhpur, Uttar Pradesh, Lucknow, and all of India.`,
   keywords: [
     // Web Development — Gorakhpur, UP & India
     "best website development in gorakhpur",
@@ -180,7 +179,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#000000",
+  themeColor: "#FAF8F5",
   interactiveWidget: "resizes-content",
 };
 
@@ -337,22 +336,25 @@ const schemaMarkup = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-      <html lang="en" className={`${jakarta.variable} ${outfit.variable}`} data-theme="dark" suppressHydrationWarning>
+    <html lang="en" className={`${jakarta.variable} ${outfit.variable}`} data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://api.telegram.org" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.setAttribute('data-theme','dark');document.documentElement.classList.add('dark');}else{document.documentElement.setAttribute('data-theme','light');document.documentElement.classList.remove('dark');}}catch(e){}})();`,
+          }}
+        />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaMarkup) }} />
 
-        {/* Google Analytics (GA4) */}
+        {/* Google Analytics (GA4) — Lazy loaded to prevent main thread contention */}
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
-              strategy="afterInteractive"
+              strategy="lazyOnload"
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="lazyOnload">
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
@@ -365,10 +367,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </>
         )}
       </head>
-      <body className="bg-black text-white antialiased overflow-x-hidden" suppressHydrationWarning>
+      <body className="bg-[var(--bg-primary)] text-[var(--text-primary)] antialiased overflow-x-hidden transition-colors duration-300 min-h-screen" suppressHydrationWarning>
         <Analytics/>
         <AuthProvider>
-          <main>{children}</main>
+          <main className="min-h-screen">{children}</main>
           <SiteChrome />
           <AuthModal />
           <UserProfileModal />
@@ -378,11 +380,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position="bottom-center"
             toastOptions={{
               style: {
-                background: '#111',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'var(--bg-card)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-default)',
+                backdropFilter: 'blur(16px)',
                 borderRadius: '16px',
                 fontSize: '14px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
               },
             }}
           />

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicy() {
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-300">
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
         <div className="max-w-3xl mx-auto relative z-10">

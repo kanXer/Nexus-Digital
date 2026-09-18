@@ -6,7 +6,6 @@ import {
   getAllAdmins,
   addAdmin,
   deleteAdmin,
-  updateAdmin,
   SESSION_COOKIE,
 } from "@/lib/admin";
 import { isRateLimited, getClientIp } from "@/lib/rateLimit";
@@ -48,32 +47,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429 });
   }
   try {
-    const { email, password } = await req.json();
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
-    }
-    await addAdmin(email, password);
-    return NextResponse.json({ success: true });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Failed to add admin";
-    return NextResponse.json({ error: msg }, { status: 400 });
-  }
-}
-
-export async function PATCH(req: Request) {
-  const auth = await requireSuper();
-  if (auth.error) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
-  }
-  try {
-    const { email, newEmail, newPassword } = await req.json();
+    const { email } = await req.json();
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
-    await updateAdmin(email, { email: newEmail, password: newPassword });
-    return NextResponse.json({ success: true });
+    const cleanEmail = email.toLowerCase().trim();
+    if (!cleanEmail.includes("@")) {
+      return NextResponse.json({ error: "Please provide a valid email address" }, { status: 400 });
+    }
+    await addAdmin(cleanEmail, auth.email || "superadmin");
+    return NextResponse.json({ success: true, message: `Admin access granted to ${cleanEmail}` });
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Failed to update admin";
+    const msg = err instanceof Error ? err.message : "Failed to add admin";
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 }
@@ -90,7 +75,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
     await deleteAdmin(email);
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, message: `Admin ${email} removed` });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to delete admin";
     return NextResponse.json({ error: msg }, { status: 400 });

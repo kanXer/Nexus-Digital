@@ -948,7 +948,7 @@ function CheckoutContent() {
 export default function CheckoutPage() {
   return (
     <RequireAuth>
-      <div className="bg-black min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-300">
         {/* Ambient Glows */}
         <div className="absolute top-10 left-1/4 w-[500px] h-[500px] bg-brand-blue/10 rounded-full blur-[130px] pointer-events-none mix-blend-screen opacity-60" />
         <div className="absolute bottom-10 right-1/4 w-[400px] h-[400px] bg-brand-red/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen opacity-60" />
@@ -957,7 +957,7 @@ export default function CheckoutPage() {
         <div className="max-w-5xl mx-auto mb-8 relative z-10 flex items-center justify-between">
           <Link
             href="/cart"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-white/50 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Cart & Review
           </Link>

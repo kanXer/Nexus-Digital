@@ -21,7 +21,7 @@ export default function PortfolioPage() {
   const filtered = active === "All" ? portfolioItems : portfolioItems.filter((p) => p.category === active);
 
   return (
-    <div className="bg-black min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-300">
       {/* Hero */}
       <section className="relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
@@ -34,13 +34,13 @@ export default function PortfolioPage() {
             as="h1"
             title="Work That Speaks for Itself"
             highlight="Speaks for Itself"
-            className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight mb-5"
+            className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--text-primary)] leading-tight mb-5"
           />
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
-            className="text-lg text-white/55"
+            className="text-lg text-[var(--text-secondary)]"
           >
             A selection of campaigns, websites, and creative work across industries — created by the top digital marketing company in Gorakhpur, Uttar Pradesh.
           </motion.p>
@@ -54,11 +54,10 @@ export default function PortfolioPage() {
             <button
               key={cat}
               onClick={() => setActive(cat)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                active === cat
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${active === cat
                   ? "bg-gradient-brand text-white shadow-glow-sm"
                   : "glass-card text-white/55 hover:text-white border border-white/8"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -101,19 +100,19 @@ export default function PortfolioPage() {
                     )}
                   </div>
 
-                  <div className="p-4 border-t border-white/5 flex flex-col justify-between flex-1">
+                  <div className="p-4 border-t border-[var(--border-default)] flex flex-col justify-between flex-1">
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-xs font-semibold text-brand-blue-light bg-brand-blue/10 px-2 py-0.5 rounded-full border border-brand-blue/20">
                           {item.tag}
                         </span>
-                        <span className="text-xs text-white/40">{item.category}</span>
+                        <span className="text-xs text-[var(--text-muted)]">{item.category}</span>
                       </div>
-                      <h3 className="text-white font-semibold text-sm mb-2">{item.title}</h3>
+                      <h3 className="text-[var(--text-primary)] font-semibold text-sm mb-2">{item.title}</h3>
                     </div>
                     <div>
-                      <p className="text-green-400 text-[11px] font-bold uppercase tracking-wider bg-green-400/10 inline-block px-2 py-1 rounded mb-3">✦ {item.result}</p>
-                      <Link href="/enquiry#enquiry-form" className="flex items-center justify-between w-full text-xs font-semibold text-white/70 bg-white/5 hover:bg-white/10 border border-white/10 px-3 py-2 rounded transition-colors group/link">
+                      <p className="text-green-600 dark:text-green-400 text-[11px] font-bold uppercase tracking-wider bg-green-500/10 inline-block px-2 py-1 rounded mb-3">✦ {item.result}</p>
+                      <Link href="/enquiry#enquiry-form" className="flex items-center justify-between w-full text-xs font-semibold text-[var(--text-secondary)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] border border-[var(--border-default)] px-3 py-2 rounded transition-colors group/link">
                         Want these results?
                         <ArrowRight className="w-3.5 h-3.5 text-brand-blue-light transition-transform group-hover/link:translate-x-1" />
                       </Link>
@@ -131,7 +130,7 @@ export default function PortfolioPage() {
         <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-r from-red-600/20 via-rose-600/20 to-orange-600/20 blur-3xl" />
         <div className="max-w-3xl mx-auto relative z-10 flex flex-col items-center">
-          <span className="bg-red-500/20 text-red-300 border border-red-500/30 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 animate-pulse">
+          <span className="bg-red-500/20 text-white-300 border border-red-500/30 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 animate-pulse">
             Your Business Could Be Next
           </span>
           <AnimatedTitle

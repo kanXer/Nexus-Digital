@@ -330,7 +330,7 @@ function SuccessContent() {
 
 export default function PaymentSuccessPage() {
   return (
-    <div className="bg-black min-h-screen pt-28 pb-24">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen pt-28 pb-24 transition-colors duration-300">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-green-500/5 rounded-full blur-[120px]" />
