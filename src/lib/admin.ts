@@ -143,3 +143,13 @@ export async function deleteAdmin(email: string) {
   await db.collection("admins").deleteOne({ email: normalized });
   await db.collection("sessions").deleteMany({ email: normalized });
 }
+
+// Backward-compatibility stubs for Firebase-based admin authentication
+export async function registerAdmin(email: string) {
+  throw new Error("Public admin registration is disabled. Admin access is granted only via .env or by the super admin.");
+}
+
+export async function changeOwnPassword() {
+  throw new Error("Password management is deprecated. Authentication is managed via Firebase Google Identity.");
+}
+
