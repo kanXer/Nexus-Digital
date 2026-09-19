@@ -107,7 +107,7 @@ export function BackToTop() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 15, scale: 0.8 }}
           transition={{ type: "spring", stiffness: 380, damping: 24 }}
-          className="fixed bottom-6 right-5 sm:right-6 z-40 group select-none"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 z-40 group select-none"
         >
           {/* Ambient Glow Aura */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-brand via-rose-500 to-amber-500 blur-md opacity-45 group-hover:opacity-85 transition-opacity duration-300 animate-pulse pointer-events-none" />
@@ -155,8 +155,8 @@ export function BackToTop() {
             <ArrowUp className="w-5 h-5 sm:w-5.5 sm:h-5.5 relative z-10 transition-transform duration-300 group-hover:-translate-y-1 drop-shadow" />
           </button>
 
-          {/* Hover Tooltip */}
-          <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-200 whitespace-nowrap">
+          {/* Tooltip — above button on mobile (so it doesn't clip edges), left of button on sm+ */}
+          <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 sm:bottom-auto sm:top-1/2 sm:left-auto sm:-translate-x-0 sm:-translate-y-1/2 sm:right-full sm:mr-3 sm:mb-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap">
             <div className="bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[11px] font-bold py-1 px-2.5 rounded-lg shadow-md border border-[var(--border-default)] flex items-center gap-1.5 backdrop-blur-md">
               <span>Back to Top</span>
               <span className="text-[10px] text-brand font-semibold">{scrollProgress}%</span>

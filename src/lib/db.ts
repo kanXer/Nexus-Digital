@@ -3,17 +3,36 @@ import { MongoClient, Db } from "mongodb";
 const uri = process.env.MONGODB_URI;
 const dbName = process.env.MONGODB_DB || "nexusdigital";
 
-let client: MongoClient | null = null;
-let db: Db | null = null;
+// ---------------------------------------------------------------------------
+// Global cache — survives Next.js hot-reload and multiple serverless
+// invocations in the same Node.js process.
+// ---------------------------------------------------------------------------
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
+  // eslint-disable-next-line no-var
+  var _mongoDbPromise: Promise<Db> | undefined;
+}
 
-export async function getDb(): Promise<Db> {
-  if (db) return db;
-  if (!uri) throw new Error("MONGODB_URI not set");
-  client = new MongoClient(uri);
-  await client.connect();
-  db = client.db(dbName);
-  await ensureIndexes(db);
-  return db;
+function getClientPromise(): Promise<MongoClient> {
+  if (!uri) throw new Error("MONGODB_URI is not set");
+  if (!globalThis._mongoClientPromise) {
+    const client = new MongoClient(uri);
+    globalThis._mongoClientPromise = client.connect();
+  }
+  return globalThis._mongoClientPromise;
+}
+
+export function getDb(): Promise<Db> {
+  if (!globalThis._mongoDbPromise) {
+    // Chain off the client promise so indexes are only set up once per process
+    globalThis._mongoDbPromise = getClientPromise().then(async (client) => {
+      const db = client.db(dbName);
+      await ensureIndexes(db);
+      return db;
+    });
+  }
+  return globalThis._mongoDbPromise;
 }
 
 async function ensureIndexes(db: Db) {
