@@ -7,6 +7,7 @@ export function BackToTop() {
   const [visible, setVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
+  const [overlayOpen, setOverlayOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,9 +28,44 @@ export function BackToTop() {
     };
     window.addEventListener("nexus-chat-open", handleChatState);
 
+    // Check for open modals, off-canvas drawers, popups, or mobile sidebar
+    const checkOverlayState = () => {
+      const hasModalOrDrawer =
+        document.querySelector(
+          '[role="dialog"], .fixed.inset-0.z-50, [data-modal-open="true"], [data-drawer-open="true"]'
+        ) !== null || document.body.style.overflow === "hidden";
+      setOverlayOpen(hasModalOrDrawer);
+    };
+
+    // Run initial check
+    checkOverlayState();
+
+    // Observe DOM changes to automatically catch any newly mounted dialogs, modals or sidebars
+    const observer = new MutationObserver(() => {
+      checkOverlayState();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["style", "class", "data-modal-open", "data-drawer-open"],
+    });
+
+    // Custom overlay event listener
+    const handleOverlayState = (e: Event) => {
+      const ce = e as CustomEvent<{ open: boolean }>;
+      if (typeof ce.detail?.open === "boolean") {
+        setOverlayOpen(ce.detail.open);
+      }
+    };
+    window.addEventListener("nexus-overlay-open", handleOverlayState);
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("nexus-chat-open", handleChatState);
+      window.removeEventListener("nexus-overlay-open", handleOverlayState);
+      observer.disconnect();
     };
   }, []);
 
@@ -60,8 +96,8 @@ export function BackToTop() {
     requestAnimationFrame(step);
   };
 
-  // Hide when chat widget is open to ensure clean, unobstructed chat window
-  const shouldShow = visible && !chatOpen;
+  // Hide when chat widget, mobile sidebar, drawers, or modal popups are open
+  const shouldShow = visible && !chatOpen && !overlayOpen;
 
   return (
     <AnimatePresence>

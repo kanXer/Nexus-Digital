@@ -1,7 +1,15 @@
 import { randomBytes, createHmac, timingSafeEqual } from "crypto";
 import { getDb } from "@/lib/db";
 
-export const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
+export function getAdminEmails(): string[] {
+  const raw = process.env.ADMIN_EMAIL || process.env.ADMIN_EMAILS || "";
+  return raw
+    .split(/[,;\s]+/)
+    .map((e) => e.replace(/^["']|["']$/g, "").trim().toLowerCase())
+    .filter(Boolean);
+}
+
+export const ADMIN_EMAIL = getAdminEmails()[0] || "";
 export const SESSION_COOKIE = "admin_session";
 const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
 const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || "change-this-secret-in-production";
@@ -23,15 +31,16 @@ export function verifySignedToken(signed: string): string | null {
 }
 
 export function isTopAdmin(email: string): boolean {
-  if (!ADMIN_EMAIL || !email) return false;
-  return email.toLowerCase().trim() === ADMIN_EMAIL;
+  if (!email) return false;
+  const normalized = email.toLowerCase().trim();
+  return getAdminEmails().includes(normalized);
 }
 
 export async function isAllowedAdminEmail(email: string): Promise<boolean> {
   if (!email) return false;
   const normalized = email.toLowerCase().trim();
   // 1. Superadmin defined in .env
-  if (ADMIN_EMAIL !== "" && normalized === ADMIN_EMAIL) {
+  if (isTopAdmin(normalized)) {
     return true;
   }
   // 2. Additional admins added by the superadmin in DB
@@ -39,7 +48,8 @@ export async function isAllowedAdminEmail(email: string): Promise<boolean> {
     const db = await getDb();
     const admin = await db.collection("admins").findOne({ email: normalized });
     return !!admin;
-  } catch {
+  } catch (err) {
+    console.error("isAllowedAdminEmail DB lookup failed:", err);
     return false;
   }
 }
@@ -107,7 +117,7 @@ export async function getAllAdmins(): Promise<AdminRecord[]> {
     .sort({ createdAt: 1 })
     .toArray();
   return admins
-    .filter((a) => a.email.toLowerCase().trim() !== ADMIN_EMAIL)
+    .filter((a) => !isTopAdmin(a.email))
     .map((a) => ({
       email: a.email,
       role: a.role === "super" ? "super" : "admin",
@@ -118,8 +128,8 @@ export async function getAllAdmins(): Promise<AdminRecord[]> {
 
 export async function addAdmin(email: string, addedByEmail: string) {
   const normalized = email.toLowerCase().trim();
-  if (normalized === ADMIN_EMAIL) {
-    throw new Error("This is the super admin account and already has full access");
+  if (isTopAdmin(normalized)) {
+    throw new Error("This account is configured as super admin in .env and already has full access");
   }
   const db = await getDb();
   const existing = await db.collection("admins").findOne({ email: normalized });
@@ -136,8 +146,8 @@ export async function addAdmin(email: string, addedByEmail: string) {
 
 export async function deleteAdmin(email: string) {
   const normalized = email.toLowerCase().trim();
-  if (normalized === ADMIN_EMAIL) {
-    throw new Error("You cannot delete the super admin account configured in .env");
+  if (isTopAdmin(normalized)) {
+    throw new Error("You cannot delete a super admin account configured in .env");
   }
   const db = await getDb();
   await db.collection("admins").deleteOne({ email: normalized });

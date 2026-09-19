@@ -286,6 +286,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUserProfile((prev) => ({ ...prev, ...initProfile }));
           }
 
+          // Sync logged-in user to database for unified newsletter audience & CRM
+          if (currentUser.email) {
+            fetch("/api/auth/sync-user", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                uid: currentUser.uid,
+                email: currentUser.email,
+                name: currentUser.displayName || currentUser.email.split("@")[0],
+                phone: currentUser.phoneNumber || "",
+              }),
+            }).catch(() => {});
+          }
+
           // Fetch Cart from Firestore DB
           const cartDocRef = doc(db, "carts", currentUser.uid);
           const cartSnap = await getDoc(cartDocRef);

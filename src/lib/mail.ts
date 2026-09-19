@@ -426,3 +426,98 @@ export async function sendNewsletterMail(subscribers: { email: string; name?: st
     }
   }
 }
+
+export interface QueryResolvedData {
+  clientName: string;
+  clientEmail: string;
+  service?: string;
+  originalMessage?: string;
+  resolutionNotes?: string;
+  submissionType?: string;
+}
+
+export async function sendQueryResolvedEmail(d: QueryResolvedData) {
+  if (!transporter || !d.clientEmail) {
+    return;
+  }
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#0d0d12;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#e2e8f0">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0d12;padding:40px 16px">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#16161f;border-radius:18px;overflow:hidden;border:1px solid #272738;box-shadow:0 12px 40px rgba(0,0,0,0.5)">
+        <!-- Header -->
+        <tr>
+          <td style="padding:36px 40px;background:linear-gradient(135deg,#dc2626,#991b1b);text-align:center">
+            <div style="font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#fecdd3;margin-bottom:8px">Nexus Digital Support</div>
+            <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:900;letter-spacing:-0.5px">Your Inquiry Has Been Resolved</h1>
+          </td>
+        </tr>
+        <!-- Content -->
+        <tr>
+          <td style="padding:36px 40px">
+            <p style="font-size:16px;line-height:1.6;color:#f1f5f9;margin:0 0 20px 0">
+              Hi <strong>${d.clientName || "Valued Client"}</strong>,
+            </p>
+            <p style="font-size:14px;line-height:1.6;color:#94a3b8;margin:0 0 24px 0">
+              Thank you for getting in touch with us regarding <strong>${d.service || "our digital agency services"}</strong>. Our executive team has reviewed your request and your inquiry has now been marked as <strong style="color:#34d399">Resolved</strong>.
+            </p>
+
+            ${
+              d.resolutionNotes
+                ? `
+            <div style="background:#1e1e2d;border-left:4px solid #dc2626;padding:18px 20px;border-radius:8px;margin-bottom:24px">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#f87171;margin-bottom:6px">Resolution Remarks</div>
+              <p style="font-size:14px;color:#e2e8f0;line-height:1.6;margin:0;white-space:pre-wrap">${d.resolutionNotes}</p>
+            </div>
+            `
+                : ""
+            }
+
+            ${
+              d.originalMessage
+                ? `
+            <div style="background:#13131a;border:1px solid #232333;padding:14px 18px;border-radius:8px;margin-bottom:28px">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:4px">Your Original Request</div>
+              <p style="font-size:13px;color:#94a3b8;font-style:italic;line-height:1.5;margin:0">"${d.originalMessage}"</p>
+            </div>
+            `
+                : ""
+            }
+
+            <!-- CTA Actions -->
+            <div style="text-align:center;padding:10px 0 20px 0">
+              <a href="https://wa.me/919696262007?text=${encodeURIComponent(
+                `Hi Nexus Digital team, this is regarding my resolved inquiry for ${d.service || "services"}.`
+              )}" style="display:inline-block;padding:13px 28px;background:linear-gradient(135deg,#dc2626,#e11d48);color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;border-radius:10px;box-shadow:0 4px 16px rgba(220,38,38,0.4)">
+                Chat with Account Manager
+              </a>
+            </div>
+
+            <p style="font-size:13px;color:#64748b;line-height:1.5;margin:20px 0 0 0;text-align:center">
+              Need further assistance? You can also reply directly to this email or call us at <strong style="color:#e2e8f0">+91 9696262007</strong>.
+            </p>
+
+            <hr style="border:none;border-top:1px solid #232333;margin:32px 0 20px 0">
+            <p style="font-size:11px;color:#64748b;text-align:center;margin:0">
+              ${config.name} — ${config.address}<br/>
+              <a href="${config.website}" style="color:#dc2626;text-decoration:none">${config.website}</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  await sendMail(
+    d.clientEmail,
+    `Inquiry Resolved: ${d.service || "Your Request with Nexus Digital"}`,
+    html
+  );
+}
+
