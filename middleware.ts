@@ -15,10 +15,19 @@ function looksLikeSignedToken(value: string | undefined): boolean {
 }
 
 export function middleware(request: NextRequest) {
-  // Protect all /admin routes except /admin (login page) and API routes needed for login
+  // Public admin endpoints that do not require an existing session cookie:
+  // - /api/admin/check: handles initial authentication and session cookie provisioning
+  // - /api/admin/logout: allows clearing cookies even if session has expired
+  // - POST /api/admin/orders: allows client checkout to save order details to DB
+  const isPublicApiRoute =
+    request.nextUrl.pathname === "/api/admin/check" ||
+    request.nextUrl.pathname === "/api/admin/logout" ||
+    (request.method === "POST" && request.nextUrl.pathname === "/api/admin/orders") ||
+    ["/api/admin/login", "/api/admin/register", "/api/admin/session", "/api/admin/verify-admin"].includes(request.nextUrl.pathname);
+
+  // Protect all /admin routes except /admin (login page) and protected /api/admin/ routes
   const isProtectedAdminRoute = request.nextUrl.pathname.startsWith("/admin/") && !request.nextUrl.pathname.startsWith("/admin/login");
-  const isProtectedApiRoute = request.nextUrl.pathname.startsWith("/api/admin/") &&
-    !["/api/admin/login", "/api/admin/register", "/api/admin/session", "/api/admin/verify-admin"].includes(request.nextUrl.pathname);
+  const isProtectedApiRoute = request.nextUrl.pathname.startsWith("/api/admin/") && !isPublicApiRoute;
 
   if (isProtectedAdminRoute || isProtectedApiRoute) {
     const sessionCookie = request.cookies.get(SESSION_COOKIE);
