@@ -108,6 +108,10 @@ export default function AdminLoginPage() {
         setLoading(false);
         return;
       }
+      if (code === "auth/unauthorized-domain") {
+        setError("Domain not authorized in Firebase. Please add this domain to Firebase Console -> Authentication -> Settings -> Authorized Domains.");
+        return;
+      }
       setError(err?.message || "Failed to authenticate with Firebase.");
     } finally {
       setLoading(false);

@@ -8,41 +8,51 @@ import {
   SESSION_COOKIE,
 } from "@/lib/admin";
 
-interface AuthResult {
-  success: boolean;
-  verified: boolean;
-  authed: boolean;
-  isAdmin: boolean;
-  isSuper: boolean;
-  email?: string;
-  newToken?: string;
-  error?: string;
-}
-
 /**
  * Unified Admin Authorization & Session Verification Route
+ * Handles admin identity verification, cookie provisioning, and superadmin checks
+ * based entirely on Firebase Google Identity + .env / MongoDB authorization.
  */
-async function verifyAndAuthorize(targetEmail?: string | null): Promise<AuthResult> {
-  const normalizedTarget = targetEmail?.toLowerCase().trim();
+async function verifyAndAuthorize(targetEmail?: string | null) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
 
-  // 1. Agar specific targetEmail pass hua hai, toh pehle use authorize karke naya session banayein
-  if (normalizedTarget) {
-    const isAllowed = await isAllowedAdminEmail(normalizedTarget);
+  // 1. If targetEmail is provided (user attempting to login or refresh via Firebase email)
+  if (targetEmail) {
+    const normalized = targetEmail.toLowerCase().trim();
+    const isAllowed = await isAllowedAdminEmail(normalized);
 
     if (isAllowed) {
       try {
-        const newToken = await createAdminSession(normalizedTarget);
+        const newToken = await createAdminSession(normalized);
+        const cookieOpts = {
+          httpOnly: true,
+          sameSite: "lax" as const,
+          secure: process.env.NODE_ENV === "production",
+          path: "/",
+          maxAge: 7 * 24 * 60 * 60,
+        };
+        cookieStore.set(SESSION_COOKIE, newToken, cookieOpts);
+
         return {
           success: true,
           verified: true,
           authed: true,
           isAdmin: true,
-          isSuper: isTopAdmin(normalizedTarget),
-          email: normalizedTarget,
-          newToken,
+          isSuper: isTopAdmin(normalized),
+          email: normalized,
+          token: newToken,
         };
       } catch (err) {
         console.error("Failed to establish admin session:", err);
+        return {
+          success: false,
+          verified: false,
+          authed: false,
+          isAdmin: false,
+          isSuper: false,
+          error: `Authorized as admin, but failed to create session in database (${err instanceof Error ? err.message : "DB error"}). Please check MongoDB Atlas connection.`,
+        };
       }
     }
 
@@ -56,10 +66,7 @@ async function verifyAndAuthorize(targetEmail?: string | null): Promise<AuthResu
     };
   }
 
-  // 2. Agar koi email provide nahi kiya, toh existing cookie session verify karein
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-
+  // 2. No targetEmail provided: verify existing session cookie
   if (token) {
     const sessionEmail = await getSessionEmail(token);
     if (sessionEmail && (await isAllowedAdminEmail(sessionEmail))) {
@@ -70,6 +77,7 @@ async function verifyAndAuthorize(targetEmail?: string | null): Promise<AuthResu
         isAdmin: true,
         isSuper: isTopAdmin(sessionEmail),
         email: sessionEmail,
+        token,
       };
     }
   }
@@ -83,58 +91,32 @@ async function verifyAndAuthorize(targetEmail?: string | null): Promise<AuthResu
   };
 }
 
-export async function GET(req: Request): Promise<NextResponse> {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const queryEmail = searchParams.get("email");
   const result = await verifyAndAuthorize(queryEmail);
-
-  const status = result.authed || result.verified ? 200 : 401;
-  const res = NextResponse.json(result, { status });
-
-  if (result.newToken) {
-    res.cookies.set(SESSION_COOKIE, result.newToken, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60,
-      priority: "high",
-    });
-  }
-
-  return res;
+  return NextResponse.json(result, { status: result.authed || result.verified ? 200 : 401 });
 }
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const result = await verifyAndAuthorize(body?.email);
-
-    const status = result.success ? 200 : 403;
-    const res = NextResponse.json(result, { status });
-
-    if (result.newToken) {
-      res.cookies.set(SESSION_COOKIE, result.newToken, {
+    const response = NextResponse.json(result, { status: result.success ? 200 : 403 });
+    if (result.success && result.token) {
+      response.cookies.set(SESSION_COOKIE, result.token, {
         httpOnly: true,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
         path: "/",
         maxAge: 7 * 24 * 60 * 60,
-        priority: "high",
       });
     }
-
-    return res;
-  } catch {
+    return response;
+  } catch (err) {
+    console.error("POST /api/admin/check error:", err);
     return NextResponse.json(
-      {
-        success: false,
-        verified: false,
-        authed: false,
-        isAdmin: false,
-        isSuper: false,
-        error: "Internal server error",
-      },
+      { success: false, verified: false, authed: false, isAdmin: false, isSuper: false, error: "Internal server error" },
       { status: 500 }
     );
   }
