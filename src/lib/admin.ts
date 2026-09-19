@@ -1,24 +1,13 @@
 import { randomBytes, createHmac, timingSafeEqual } from "crypto";
 import { getDb } from "@/lib/db";
 
-// Dynamic check taaki runtime par latest .env value mile
-export function getAdminEmail(): string {
-  const raw = process.env.ADMIN_EMAIL || "";
-  return raw.replace(/^["']|["']$/g, "").toLowerCase().trim();
-}
-
-// Backward compatibility ke liye (agar kisi file me import { ADMIN_EMAIL } ho)
-export const ADMIN_EMAIL: string = getAdminEmail();
-
-function getSessionSecret(): string {
-  return process.env.ADMIN_SESSION_SECRET || "change-this-secret-in-production";
-}
-
+export const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
 export const SESSION_COOKIE = "admin_session";
 const SESSION_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || "change-this-secret-in-production";
 
 function signToken(token: string): string {
-  return `${token}.${createHmac("sha256", getSessionSecret()).update(token).digest("hex")}`;
+  return `${token}.${createHmac("sha256", SESSION_SECRET).update(token).digest("hex")}`;
 }
 
 export function verifySignedToken(signed: string): string | null {
@@ -26,7 +15,7 @@ export function verifySignedToken(signed: string): string | null {
   if (dot <= 0) return null;
   const token = signed.slice(0, dot);
   const sig = signed.slice(dot + 1);
-  const expected = createHmac("sha256", getSessionSecret()).update(token).digest("hex");
+  const expected = createHmac("sha256", SESSION_SECRET).update(token).digest("hex");
   const a = Buffer.from(sig);
   const b = Buffer.from(expected);
   if (a.length !== b.length) return null;
@@ -34,21 +23,17 @@ export function verifySignedToken(signed: string): string | null {
 }
 
 export function isTopAdmin(email: string): boolean {
-  const adminEmail = getAdminEmail();
-  if (!adminEmail || !email) return false;
-  return email.toLowerCase().trim() === adminEmail;
+  if (!ADMIN_EMAIL || !email) return false;
+  return email.toLowerCase().trim() === ADMIN_EMAIL;
 }
 
 export async function isAllowedAdminEmail(email: string): Promise<boolean> {
   if (!email) return false;
   const normalized = email.toLowerCase().trim();
-  const adminEmail = getAdminEmail();
-
   // 1. Superadmin defined in .env
-  if (adminEmail !== "" && normalized === adminEmail) {
+  if (ADMIN_EMAIL !== "" && normalized === ADMIN_EMAIL) {
     return true;
   }
-
   // 2. Additional admins added by the superadmin in DB
   try {
     const db = await getDb();
@@ -78,7 +63,7 @@ export async function createAdminSession(email: string): Promise<string> {
   return signToken(token);
 }
 
-export async function logoutSession(signedToken: string): Promise<void> {
+export async function logoutSession(signedToken: string) {
   const token = verifySignedToken(signedToken);
   if (!token) return;
   const db = await getDb();
@@ -115,7 +100,6 @@ export interface AdminRecord {
 }
 
 export async function getAllAdmins(): Promise<AdminRecord[]> {
-  const adminEmail = getAdminEmail();
   const db = await getDb();
   const admins = await db
     .collection("admins")
@@ -123,7 +107,7 @@ export async function getAllAdmins(): Promise<AdminRecord[]> {
     .sort({ createdAt: 1 })
     .toArray();
   return admins
-    .filter((a) => a.email.toLowerCase().trim() !== adminEmail)
+    .filter((a) => a.email.toLowerCase().trim() !== ADMIN_EMAIL)
     .map((a) => ({
       email: a.email,
       role: a.role === "super" ? "super" : "admin",
@@ -132,10 +116,9 @@ export async function getAllAdmins(): Promise<AdminRecord[]> {
     }));
 }
 
-export async function addAdmin(email: string, addedByEmail: string): Promise<void> {
+export async function addAdmin(email: string, addedByEmail: string) {
   const normalized = email.toLowerCase().trim();
-  const adminEmail = getAdminEmail();
-  if (normalized === adminEmail) {
+  if (normalized === ADMIN_EMAIL) {
     throw new Error("This is the super admin account and already has full access");
   }
   const db = await getDb();
@@ -151,10 +134,9 @@ export async function addAdmin(email: string, addedByEmail: string): Promise<voi
   });
 }
 
-export async function deleteAdmin(email: string): Promise<void> {
+export async function deleteAdmin(email: string) {
   const normalized = email.toLowerCase().trim();
-  const adminEmail = getAdminEmail();
-  if (normalized === adminEmail) {
+  if (normalized === ADMIN_EMAIL) {
     throw new Error("You cannot delete the super admin account configured in .env");
   }
   const db = await getDb();
@@ -163,10 +145,11 @@ export async function deleteAdmin(email: string): Promise<void> {
 }
 
 // Backward-compatibility stubs for Firebase-based admin authentication
-export async function registerAdmin(..._args: unknown[]): Promise<never> {
+export async function registerAdmin(..._args: any[]) {
   throw new Error("Public admin registration is disabled. Admin access is granted only via .env or by the super admin.");
 }
 
-export async function changeOwnPassword(..._args: unknown[]): Promise<never> {
+export async function changeOwnPassword(..._args: any[]) {
   throw new Error("Password management is deprecated. Authentication is managed via Firebase Google Identity.");
 }
+
