@@ -74,19 +74,19 @@ export default function OrdersPage() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] flex items-center gap-3">
-            <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-blue to-brand-blue-light flex items-center justify-center shadow-glow-sm">
+            <span className="w-10 h-10 rounded-2xl bg-gradient-to-br from-red-600 via-rose-600 to-red-800 flex items-center justify-center shadow-[0_4px_16px_rgba(220,38,38,0.4)]">
               <PackageCheck className="w-5 h-5 text-white" />
             </span>
-            Orders & Subscriptions
+            Orders &amp; Sales
           </h1>
-          <p className="text-sm text-[var(--text-secondary)] mt-1 ml-[52px]">All customer purchases and subscription payments.</p>
+          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1 sm:ml-[52px]">Customer purchases, retainers, and package subscriptions.</p>
         </div>
         <button
           onClick={load}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-default)] text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-brand-blue/30 hover:shadow-glow-sm transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-default)] text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-red-500/30 hover:shadow-glow-sm transition-all duration-200 cursor-pointer"
         >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+          {loading ? <Loader2 className="w-4 h-4 animate-spin text-red-500" /> : <RefreshCw className="w-4 h-4" />}
           Refresh
         </button>
       </motion.div>
@@ -120,7 +120,7 @@ export default function OrdersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, product..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-default)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-brand-blue/40 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.08)] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-default)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-red-500/40 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.08)] transition-all"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -128,9 +128,9 @@ export default function OrdersPage() {
             <button
               key={key}
               onClick={() => toggleSort(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 sortKey === key
-                  ? "bg-brand-blue/15 text-brand-blue-light border border-brand-blue/25"
+                  ? "bg-red-500/15 text-rose-400 border border-red-500/30 shadow-glow-sm"
                   : "bg-[var(--bg-card)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
               }`}
             >
@@ -145,7 +145,7 @@ export default function OrdersPage() {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="rounded-2xl bg-[var(--bg-card)] border border-[var(--border-default)] overflow-hidden shadow-card">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-brand-blue-light" />
+            <Loader2 className="w-8 h-8 animate-spin text-red-500" />
             <p className="text-sm text-[var(--text-muted)]">Loading orders...</p>
           </div>
         ) : filtered.length === 0 ? (
@@ -181,7 +181,7 @@ export default function OrdersPage() {
                     <td className="px-5 py-4 text-[var(--text-muted)] text-xs font-medium">{i + 1}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue/20 to-brand-blue-light/20 border border-brand-blue/20 flex items-center justify-center text-[10px] font-bold text-brand-blue-light shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-600/20 to-rose-600/20 border border-red-500/20 flex items-center justify-center text-[10px] font-bold text-rose-400 shrink-0">
                           {(order.name || order.email || "U").slice(0, 2).toUpperCase()}
                         </div>
                         <div className="min-w-0">
@@ -192,7 +192,7 @@ export default function OrdersPage() {
                     </td>
                     <td className="px-5 py-4 hidden sm:table-cell">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-default)] text-xs font-medium text-[var(--text-primary)]">
-                        <CreditCard className="w-3 h-3 text-brand-blue-light" />
+                        <CreditCard className="w-3 h-3 text-rose-400" />
                         {order.planName}
                       </span>
                     </td>

@@ -392,39 +392,39 @@ export default function AdminCouponsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="always-dark bg-[#0e0c1a] border border-white/20 rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl relative max-h-[92vh] overflow-y-auto text-white"
+              className="always-dark bg-[#0e0c1a] border border-white/20 rounded-3xl p-4 sm:p-7 max-w-xl w-full shadow-2xl relative max-h-[92vh] overflow-y-auto text-white"
             >
               {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="absolute top-5 right-5 p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer"
                 title="Close"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
 
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-brand-red/25 text-brand-red border border-brand-red/40">
+                <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-red-500/20 text-rose-400 border border-red-500/30">
                   Offer Engine
                 </span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 flex items-center gap-2.5">
-                <Sparkles className="w-6 h-6 text-brand-red" /> Create Promo Coupon
+                <Sparkles className="w-6 h-6 text-red-500" /> Create Promo Coupon
               </h3>
               <p className="text-white/70 text-sm sm:text-base mb-6 font-medium">
                 Create a dynamic discount code that instantly validates at checkout.
               </p>
 
               {/* Live Ticket Preview */}
-              <div className="mb-6 relative overflow-hidden rounded-2xl border-2 border-dashed border-brand-red/50 bg-gradient-to-br from-brand-red/15 via-brand-purple/15 to-transparent p-5">
+              <div className="mb-6 relative overflow-hidden rounded-2xl border-2 border-dashed border-red-500/50 bg-gradient-to-br from-red-600/15 via-purple-600/15 to-transparent p-4 sm:p-5">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <span className="p-2.5 rounded-xl bg-brand-red/25 text-brand-red border border-brand-red/40 shrink-0">
+                    <span className="p-2.5 rounded-xl bg-red-500/20 text-rose-400 border border-red-500/30 shrink-0">
                       <Tag className="w-5 h-5" />
                     </span>
                     <div className="min-w-0">
-                      <div className="font-mono font-black text-lg sm:text-xl tracking-widest text-white truncate">
+                      <div className="font-mono font-black text-base sm:text-xl tracking-widest text-white truncate">
                         {formData.code || "OFFERCODE"}
                       </div>
                       <p className="text-xs sm:text-sm text-white/80 truncate font-medium mt-0.5">
@@ -433,7 +433,7 @@ export default function AdminCouponsPage() {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="text-lg sm:text-xl font-black text-brand-red block">
+                    <span className="text-base sm:text-xl font-black text-rose-400 block">
                       {formData.discountValue
                         ? formData.discountType === "percentage"
                           ? `${formData.discountValue}% OFF`
@@ -466,7 +466,7 @@ export default function AdminCouponsPage() {
               <form onSubmit={handleCreateSubmit} className="space-y-5 text-sm">
                 <div>
                   <label className="block text-white/95 mb-2 font-bold text-sm sm:text-base">
-                    Coupon Code <span className="text-brand-red">*</span>
+                    Coupon Code <span className="text-rose-400">*</span>
                   </label>
                   <div className="relative">
                     <input
@@ -475,7 +475,7 @@ export default function AdminCouponsPage() {
                       value={formData.code}
                       onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, "") })}
                       placeholder="e.g. MEGA50, FREESHIP, WELCOME20"
-                      className="w-full pl-4 pr-12 py-3.5 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono font-black text-base sm:text-lg uppercase tracking-wider focus:outline-none focus:border-brand-red/80 focus:ring-2 focus:ring-brand-red/30 transition-all placeholder:text-white/30"
+                      className="w-full pl-4 pr-12 py-3 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono font-black text-base sm:text-lg uppercase tracking-wider focus:outline-none focus:border-red-500/80 focus:ring-2 focus:ring-red-500/30 transition-all placeholder:text-white/30"
                     />
                     <Tag className="w-5 h-5 text-white/40 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
@@ -488,7 +488,7 @@ export default function AdminCouponsPage() {
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="e.g. Special Launch 15% Off on All Growth Bundles"
-                    className="w-full px-4 py-3.5 rounded-xl bg-white/[0.08] border border-white/20 text-white text-sm sm:text-base font-medium focus:outline-none focus:border-brand-red/80 focus:ring-2 focus:ring-brand-red/30 transition-all placeholder:text-white/30"
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.08] border border-white/20 text-white text-sm sm:text-base font-medium focus:outline-none focus:border-red-500/80 focus:ring-2 focus:ring-red-500/30 transition-all placeholder:text-white/30"
                   />
                 </div>
 
@@ -499,9 +499,9 @@ export default function AdminCouponsPage() {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, discountType: "percentage" })}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+                      className={`flex items-center justify-center gap-2 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                         formData.discountType === "percentage"
-                          ? "bg-gradient-to-r from-brand-red to-brand-orange text-white shadow-lg shadow-brand-red/30"
+                          ? "bg-gradient-to-r from-red-600 via-rose-600 to-amber-500 text-white shadow-lg shadow-red-500/30"
                           : "text-white/70 hover:text-white hover:bg-white/10"
                       }`}
                     >
@@ -510,9 +510,9 @@ export default function AdminCouponsPage() {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, discountType: "flat" })}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold transition-all cursor-pointer ${
+                      className={`flex items-center justify-center gap-2 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
                         formData.discountType === "flat"
-                          ? "bg-gradient-to-r from-brand-red to-brand-orange text-white shadow-lg shadow-brand-red/30"
+                          ? "bg-gradient-to-r from-red-600 via-rose-600 to-amber-500 text-white shadow-lg shadow-red-500/30"
                           : "text-white/70 hover:text-white hover:bg-white/10"
                       }`}
                     >
@@ -524,7 +524,7 @@ export default function AdminCouponsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-white/95 mb-2 font-bold text-sm sm:text-base">
-                      Discount Value {formData.discountType === "percentage" ? "(%)" : "(₹)"} <span className="text-brand-red">*</span>
+                      Discount Value {formData.discountType === "percentage" ? "(%)" : "(₹)"} <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="number"
@@ -534,7 +534,7 @@ export default function AdminCouponsPage() {
                       value={formData.discountValue}
                       onChange={(e) => setFormData({ ...formData, discountValue: e.target.value })}
                       placeholder={formData.discountType === "percentage" ? "e.g. 15" : "e.g. 1500"}
-                      className="w-full px-4 py-3.5 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono text-base font-black focus:outline-none focus:border-brand-red/80 focus:ring-2 focus:ring-brand-red/30 transition-all placeholder:text-white/30"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono text-base font-black focus:outline-none focus:border-red-500/80 focus:ring-2 focus:ring-red-500/30 transition-all placeholder:text-white/30"
                     />
                   </div>
 
@@ -546,7 +546,7 @@ export default function AdminCouponsPage() {
                       value={formData.minOrderAmount}
                       onChange={(e) => setFormData({ ...formData, minOrderAmount: e.target.value })}
                       placeholder="0 for none"
-                      className="w-full px-4 py-3.5 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono text-base font-bold focus:outline-none focus:border-brand-red/80 focus:ring-2 focus:ring-brand-red/30 transition-all placeholder:text-white/30"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono text-base font-bold focus:outline-none focus:border-red-500/80 focus:ring-2 focus:ring-red-500/30 transition-all placeholder:text-white/30"
                     />
                   </div>
                 </div>
@@ -563,7 +563,7 @@ export default function AdminCouponsPage() {
                       value={formData.maxDiscountAmount}
                       onChange={(e) => setFormData({ ...formData, maxDiscountAmount: e.target.value })}
                       placeholder={formData.discountType === "flat" ? "N/A for flat" : "Optional cap"}
-                      className="w-full px-4 py-3.5 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono text-base font-bold focus:outline-none focus:border-brand-red/80 focus:ring-2 focus:ring-brand-red/30 transition-all placeholder:text-white/30 disabled:opacity-35 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.08] border border-white/20 text-white font-mono text-base font-bold focus:outline-none focus:border-red-500/80 focus:ring-2 focus:ring-red-500/30 transition-all placeholder:text-white/30 disabled:opacity-35 disabled:cursor-not-allowed"
                     />
                   </div>
 
@@ -573,29 +573,29 @@ export default function AdminCouponsPage() {
                       type="date"
                       value={formData.expiryDate}
                       onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                      className="w-full px-4 py-3.5 rounded-xl bg-[#141224] border border-white/20 text-white text-sm sm:text-base font-medium focus:outline-none focus:border-brand-red/80 focus:ring-2 focus:ring-brand-red/30 [color-scheme:dark] transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-[#141224] border border-white/20 text-white text-sm sm:text-base font-medium focus:outline-none focus:border-red-500/80 focus:ring-2 focus:ring-red-500/30 [color-scheme:dark] transition-all"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3.5 pt-2 p-4 rounded-xl bg-white/[0.05] border border-white/15">
+                <div className="flex items-center gap-3.5 pt-2 p-3 sm:p-4 rounded-xl bg-white/[0.05] border border-white/15">
                   <input
                     type="checkbox"
                     id="isActive"
                     checked={formData.isActive}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="rounded border-white/30 text-brand-red focus:ring-0 w-5 h-5 cursor-pointer accent-brand-red"
+                    className="rounded border-white/30 text-red-600 focus:ring-0 w-5 h-5 cursor-pointer accent-red-600"
                   />
-                  <label htmlFor="isActive" className="text-white font-bold cursor-pointer select-none text-sm sm:text-base">
+                  <label htmlFor="isActive" className="text-white font-bold cursor-pointer select-none text-xs sm:text-sm">
                     Activate this coupon immediately for customer checkout
                   </label>
                 </div>
 
-                <div className="flex items-center justify-end gap-4 pt-5 border-t border-white/15">
+                <div className="flex items-center justify-end gap-3 sm:gap-4 pt-4 border-t border-white/15">
                   <button
                     type="button"
                     onClick={() => setShowCreateModal(false)}
-                    className="px-5 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer font-bold text-sm sm:text-base"
+                    className="px-4 py-2.5 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer font-bold text-xs sm:text-sm"
                   >
                     Cancel
                   </button>
@@ -603,7 +603,7 @@ export default function AdminCouponsPage() {
                   <button
                     type="submit"
                     disabled={formSubmitting}
-                    className="btn-primary px-8 py-3 rounded-xl font-extrabold text-sm sm:text-base flex items-center gap-2.5 cursor-pointer disabled:opacity-50 shadow-xl shadow-brand-red/30"
+                    className="btn-primary px-6 sm:px-8 py-2.5 sm:py-3 rounded-xl font-extrabold text-xs sm:text-sm flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-xl shadow-red-600/30"
                   >
                     {formSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                     Save Coupon

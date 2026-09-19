@@ -608,6 +608,26 @@ textarea.input-field { min-height: 7rem; resize: vertical; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(220, 38, 38, 0.5);
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) var(--bg-secondary);
+}
+
 .shadow-glow-sm { box-shadow: 0 0 20px rgba(220, 38, 38, 0.2); }
 .shadow-glow { box-shadow: 0 0 30px rgba(220, 38, 38, 0.3); }
 .shadow-glow-lg { box-shadow: 0 0 50px rgba(220, 38, 38, 0.4); }

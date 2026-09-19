@@ -110,29 +110,29 @@ export default function AdminAccountPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-20">
-      <Link href="/admin/dashboard" className="inline-flex items-center gap-2 mb-5 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] px-3 py-2 rounded-lg transition-all">
+    <div className="space-y-6 max-w-4xl mx-auto pb-16">
+      <Link href="/admin/dashboard" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] px-3 py-2 rounded-lg transition-all">
         <ArrowLeft className="w-4 h-4" /> Back to Dashboard
       </Link>
-      <div className="relative mb-8 overflow-hidden rounded-3xl bg-[var(--bg-card)] border border-[var(--border-default)] p-8 shadow-card">
-        <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 bg-brand-blue/10 blur-[90px] rounded-full" />
+      <div className="relative overflow-hidden rounded-3xl bg-[var(--bg-card)] border border-[var(--border-default)] p-5 sm:p-7 md:p-8 shadow-card">
+        <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 bg-red-600/10 blur-[90px] rounded-full" />
         <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-600 via-rose-600 to-red-800 shadow-[0_4px_16px_rgba(220,38,38,0.4)] flex items-center justify-center">
                 <UserCog className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-black text-[var(--text-primary)]">Admin Account</h1>
+              <h1 className="text-2xl md:text-3xl font-black text-[var(--text-primary)]">Admin Security &amp; Accounts</h1>
             </div>
-            <p className="text-[var(--text-muted)] text-sm">Manage your login credentials and admin accounts.</p>
+            <p className="text-[var(--text-muted)] text-sm">Manage administrative credentials and role access.</p>
           </div>
           {email && (
             <div className="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl border bg-[var(--bg-secondary)] border-[var(--border-default)] text-[var(--text-secondary)] self-start sm:self-center">
-              <ShieldCheck className="w-4 h-4 text-brand-blue-light shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-rose-400 shrink-0" />
               <span className="hidden sm:inline text-[var(--text-muted)]">Signed in as</span>
               <span className="text-[var(--text-primary)] truncate max-w-[180px]">{email}</span>
               {isSuper && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-red text-white border border-brand-red/80 shrink-0">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-600 text-white border border-red-500 shrink-0">
                   Super Admin
                 </span>
               )}
@@ -143,7 +143,7 @@ export default function AdminAccountPage() {
 
       {loading && (
         <div className="flex items-center justify-center py-24 text-[var(--text-muted)]">
-          <Loader2 className="w-6 h-6 animate-spin" />
+          <Loader2 className="w-6 h-6 animate-spin text-red-500" />
         </div>
       )}
 
@@ -152,7 +152,7 @@ export default function AdminAccountPage() {
           {/* Firebase Identity & Security Status */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-card">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 via-rose-600 to-red-800 shadow-glow-sm flex items-center justify-center">
                 <ShieldCheck className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -181,7 +181,7 @@ export default function AdminAccountPage() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-default)] p-6 shadow-card">
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-brand-blue-light shadow-glow-sm flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 via-rose-600 to-red-800 shadow-glow-sm flex items-center justify-center">
                     <UserCog className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -244,14 +244,14 @@ export default function AdminAccountPage() {
                 <div className="space-y-2">
                   {admins.map((admin) => (
                     <div key={admin.email} className="flex items-center gap-3 bg-[var(--bg-secondary)] border border-[var(--border-default)] rounded-xl px-4 py-3">
-                      <div className="w-9 h-9 rounded-full bg-brand-blue/15 border border-brand-blue/25 flex items-center justify-center shrink-0">
-                        <Mail className="w-4 h-4 text-brand-blue-light" />
+                      <div className="w-9 h-9 rounded-full bg-red-500/15 border border-red-500/25 flex items-center justify-center shrink-0">
+                        <Mail className="w-4 h-4 text-rose-400" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-[var(--text-primary)] text-sm font-medium truncate flex items-center gap-2">
                           {admin.email}
                           {admin.role === "super" && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-red text-white border border-brand-red/80 flex items-center gap-1 shrink-0">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-600 text-white border border-red-500 flex items-center gap-1 shrink-0">
                               <ShieldCheck className="w-3 h-3" /> Super Admin
                             </span>
                           )}

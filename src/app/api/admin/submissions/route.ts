@@ -84,3 +84,63 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Failed to delete submission" }, { status: 500 });
   }
 }
+
+export async function POST(req: Request) {
+  const email = await requireAuth();
+  if (!email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const {
+      name,
+      email: leadEmail,
+      phone,
+      service,
+      dealValue,
+      priority,
+      source,
+      status = "pending",
+      message,
+      notes,
+      type = "enquiry",
+    } = body;
+
+    if (!name && !leadEmail && !phone) {
+      return NextResponse.json({ error: "Lead must have at least a name, email, or phone." }, { status: 400 });
+    }
+
+    const db = await getDb();
+    const newDoc = {
+      type,
+      status,
+      data: {
+        name: name || "Anonymous Lead",
+        email: leadEmail || "",
+        phone: phone || "",
+        service: service || "Digital Marketing Consultation",
+        dealValue: Number(dealValue) || 0,
+        priority: priority || "medium",
+        source: source || "Direct / Offline",
+        message: message || "Manually captured lead by admin",
+        notes: notes || "",
+        capturedBy: email,
+      },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    const result = await db.collection("submissions").insertOne(newDoc);
+    return NextResponse.json({
+      success: true,
+      lead: {
+        id: result.insertedId.toString(),
+        ...newDoc,
+      },
+    });
+  } catch (err) {
+    console.error("Admin create lead error:", err);
+    return NextResponse.json({ error: "Failed to create lead" }, { status: 500 });
+  }
+}

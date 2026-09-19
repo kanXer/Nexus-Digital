@@ -12,6 +12,16 @@ export async function POST() {
       console.error("logoutSession failed:", err);
     }
   }
-  cookieStore.delete(SESSION_COOKIE);
+  cookieStore.set(SESSION_COOKIE, "", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  });
+  try {
+    cookieStore.delete(SESSION_COOKIE);
+  } catch {}
   return NextResponse.json({ success: true });
 }
